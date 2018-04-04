@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hoau.miser.module.sys.base.server.dao.OuterBranchDao">
+	<resultMap
+		type="com.hoau.miser.module.sys.base.api.shared.domain.OuterBranchEntity"
+		id="outerBranchResultMap">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="code" column="CODE" jdbcType="VARCHAR" />
+		<result property="name" column="NAME" jdbcType="VARCHAR" />
+		<result property="logistCode" column="LOGIST_CODE" jdbcType="VARCHAR" />
+		<result property="province" column="PROVINCE" jdbcType="VARCHAR" />
+		<result property="provinceCode" column="PROVINCE_CODE" jdbcType="VARCHAR" />
+		<result property="city" column="CITY" jdbcType="VARCHAR" />
+		<result property="cityCode" column="CITY_CODE" jdbcType="VARCHAR" />
+		<result property="county" column="COUNTY" jdbcType="VARCHAR" />
+		<result property="countyCode" column="COUNTY_CODE" jdbcType="VARCHAR" />
+		<result property="areaCode" column="AREA_CODE" jdbcType="VARCHAR" />
+		<result property="phone" column="PHONE" jdbcType="VARCHAR" />
+		<result property="fax" column="FAX" jdbcType="VARCHAR" />
+		<result property="addressDetail" column="ADDRESS_DETAIL"
+			jdbcType="VARCHAR" />
+		<result property="lng" column="LNG" jdbcType="NUMERIC" />
+		<result property="lat" column="LAT" jdbcType="NUMERIC" />
+		<result property="isSpecifiedTime" column="IS_SPECIFIED_TIME"
+			jdbcType="CHAR" />
+		<result property="isShipment" column="IS_SHIPMENT" jdbcType="CHAR" />
+		<result property="isDelivery" column="IS_DELIVERY" jdbcType="CHAR" />
+		<result property="isPickUp" column="IS_PICK_UP" jdbcType="CHAR" />
+		<result property="active" column="ACTIVE" jdbcType="CHAR" />
+		<result property="modifyTime" column="MODIFY_TIME" jdbcType="TIMESTAMP" />
+
+	</resultMap>
+
+	<sql id="query_outerBrach_param">
+		ID AS ID,
+		CODE AS CODE,
+		NAME AS NAME,
+		LOGIST_CODE AS LOGIST_CODE,
+		PROVINCE AS PROVINCE,
+		PROVINCE_CODE AS PROVINCE_CODE,
+		CITY AS CITY,
+		CITY_CODE AS CITY_CODE,
+		COUNTY AS COUNTY,
+		COUNTY_CODE AS COUNTY_CODE,
+		AREA_CODE AS AREA_CODE,
+		PHONE AS PHONE,
+		FAX AS FAX,
+		ADDRESS_DETAIL AS ADDRESS_DETAIL,
+		LNG AS LNG,
+		LAT AS LAT,
+		IS_SPECIFIED_TIME AS IS_SPECIFIED_TIME,
+		IS_SHIPMENT AS IS_SHIPMENT,
+		IS_DELIVERY AS IS_DELIVERY,
+		IS_PICK_UP AS IS_PICK_UP,
+		MODIFY_TIME,
+		ACTIVE AS ACTIVE
+	</sql>
+	
+	<!--
+		logistCode:物流编码,
+		provinceCode：省, 
+		cityCode:市,
+		countyCode:区 
+		active：是否有效
+	-->
+	<sql id="outerBrach_where_base_param">
+		
+		<if test="logistCode != null and logistCode != ''">
+			AND BRANCH.LOGIST_CODE LIKE CONCAT(CONCAT('%', #{logistCode,jdbcType=VARCHAR}),'%')
+		</if>
+		<if test="provinceCode != null and provinceCode != ''">
+			AND BRANCH.PROVINCE_CODE = #{provinceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="cityCode != null and cityCode != ''">
+			AND BRANCH.CITY_CODE = #{cityCode,jdbcType=VARCHAR}
+		</if>
+		<if test="countyCode != null and countyCode != ''">
+			AND BRANCH.COUNTY_CODE = #{countyCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="active != null and active != ''">
+			AND BRANCH.ACTIVE = #{active,jdbcType=VARCHAR}
+		</if>
+		
+	</sql> 
+	
+	<select id="queryOuterBranchList" parameterType="com.hoau.miser.module.sys.base.api.shared.domain.OuterBranchEntity" resultMap="outerBranchResultMap">
+			SELECT
+		<include refid="query_outerBrach_param" />
+		  	FROM T_BSE_OUTER_BRANCH BRANCH		  	
+		    <where>
+            <include refid="outerBrach_where_base_param"></include>
+        </where>
+	 </select>
+	  <select id="queryOuterBranchCount" parameterType="com.hoau.miser.module.sys.base.api.shared.domain.OuterBranchEntity"
+		resultType="Long">
+			SELECT
+		     COUNT(1)
+		  	FROM T_BSE_OUTER_BRANCH BRANCH
+		   <where>
+            <include refid="outerBrach_where_base_param"></include>
+        </where> 
+	 </select>
+	 
+	
+
+
+	
+</mapper>

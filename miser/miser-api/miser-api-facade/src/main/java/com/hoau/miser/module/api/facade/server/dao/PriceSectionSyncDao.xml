@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.facade.server.dao.PriceSectionSyncDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.PriceSectionSyncEntity"
+		id="priceSectionResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="CODE" property="code" jdbcType="VARCHAR" />
+		<id column="SHORT_CODE" property="shortCode" jdbcType="VARCHAR" />
+		<id column="NAME" property="name" jdbcType="VARCHAR" />
+		<id column="SUIT_PRODUCT" property="suitProduct" jdbcType="VARCHAR" />
+		<id column="SUIT_PRODUCT_NAME" property="suitProductName" jdbcType="VARCHAR" />
+		<id column="SECTIONED_ITEM" property="sectionedItem" jdbcType="VARCHAR" />
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<id column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<id column="REUNITE_SOURCE" property="reuniteSource" jdbcType="VARCHAR" />
+		<id column="PRICE" property="price" jdbcType="VARCHAR" />
+		<id column="PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+		<id column="SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+		<id column="SUITOA" property="suitoa" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.PriceSectionSubSyncEntity"
+		id="priceSectionSubResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+		<id column="START_VALUE" property="startValue" jdbcType="DOUBLE" />
+		<id column="END_VALUE" property="endValue" jdbcType="DOUBLE" />
+		<id column="SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+		<id column="PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+		<id column="PRICE" property="price" jdbcType="DOUBLE" />
+		<id column="CALC_ALONE" property="calcAlone" jdbcType="VARCHAR" />
+		<id column="MIN_PRICE" property="minPrice" jdbcType="DOUBLE" />
+		<id column="MAX_PRICE" property="maxPrice" jdbcType="DOUBLE" />
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<id column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 分段主表带明细的返回类型 -->
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.PriceSectionSyncEntity"
+		id="priceSectionWithSubResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="SHORT_CODE" property="shortCode" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="SUIT_PRODUCT" property="suitProduct" jdbcType="VARCHAR" />
+		<result column="SUIT_PRODUCT_NAME" property="suitProductName" jdbcType="VARCHAR" />
+		<result column="SECTIONED_ITEM" property="sectionedItem" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="REUNITE_SOURCE" property="reuniteSource" jdbcType="VARCHAR" />
+		<collection property="subEntities" ofType="com.hoau.miser.module.api.facade.shared.domain.PriceSectionSubSyncEntity">
+			<id column="SUB_ID" property="id" jdbcType="VARCHAR" />
+			<id column="SUB_SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+			<id column="SUB_START_VALUE" property="startValue" jdbcType="DOUBLE" />
+			<id column="SUB_END_VALUE" property="endValue" jdbcType="DOUBLE" />
+			<id column="SUB_SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE" property="price" jdbcType="DOUBLE" />
+			<id column="SUB_CALC_ALONE" property="calcAlone" jdbcType="VARCHAR" />
+			<id column="SUB_MIN_PRICE" property="minPrice" jdbcType="DOUBLE" />
+			<id column="SUB_MAX_PRICE" property="maxPrice" jdbcType="DOUBLE" />
+			<id column="SUB_REMARK" property="remark" jdbcType="VARCHAR" />
+			<id column="SUB_ACTIVE" property="active" jdbcType="VARCHAR" />
+			<id column="SUB_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+			<id column="SUB_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		</collection>
+	</resultMap>
+	
+	<sql id="query_mian_param">
+		PSE.CODE AS code
+	</sql>
+	
+	<sql id="queryConditionOne">
+		<where>
+			rownum = 1
+			<if test="sectionedItem!=null and sectionedItem!=''">
+				and PSE.SECTIONED_ITEM=#{sectionedItem,jdbcType=VARCHAR}
+			</if>
+			<if test="active!=null and active!=''">
+				and PSE.ACTIVE=#{active,jdbcType=VARCHAR}
+			</if>
+			<if test="suitoa!=null and suitoa!=''">
+				and PSE.SUITOA=#{suitoa,jdbcType=VARCHAR}
+			</if>
+			<if test="price!=null and price!=''">
+				and PSE.ID IN ((SELECT section_id
+                FROM t_Price_Section_Sub
+                WHERE price = #{price,jdbcType=VARCHAR}
+                AND ACTIVE = 'Y'
+                ))
+			</if>
+			<if test="suitProduct!=null and suitProduct!=''">
+				and (PSE.SUIT_PRODUCT=#{suitProduct,jdbcType=VARCHAR} or PSE.SUIT_PRODUCT='00000000000000000000')
+			</if>
+		</where> 
+	</sql>
+	<select id="queryPriceSection" resultMap="priceSectionResultMap" parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_SECTION PSE
+		<include refid="queryConditionOne"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	<!-- 增加一条优惠分段 -->
+	<insert id="addPriceSection" parameterType="com.hoau.miser.module.api.facade.shared.domain.PriceSectionSyncEntity">
+	    INSERT INTO T_PRICE_SECTION
+	     (
+	    	ID,
+			CODE,
+			SHORT_CODE,
+			NAME,
+			SUIT_PRODUCT,
+			SECTIONED_ITEM,
+			REMARK,
+			ACTIVE,
+			CREATE_TIME,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE,
+			REUNITE_SOURCE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{code,jdbcType=VARCHAR},
+	    	#{shortCode,jdbcType=VARCHAR},
+	    	#{name,jdbcType=VARCHAR},
+	    	#{suitProduct,jdbcType=VARCHAR},
+	    	#{sectionedItem,jdbcType=VARCHAR},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR},
+	    	#{reuniteSource,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<!-- 增加一条优惠分段 -->
+	<insert id="addPriceSectionSub" parameterType="com.hoau.miser.module.api.facade.shared.domain.PriceSectionSubSyncEntity">
+	    INSERT INTO T_PRICE_SECTION_SUB
+	     (
+	    ID,
+		SECTION_ID,
+		START_VALUE,
+		END_VALUE,
+		SECTION_ACCODING_ITEM,
+		PRICE_TYPE,
+		PRICE,
+		CALC_ALONE,
+		MIN_PRICE,
+		MAX_PRICE,
+		REMARK,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{sectionId,jdbcType=VARCHAR},
+	    	#{startValue,jdbcType=DOUBLE},
+	    	#{endValue,jdbcType=DOUBLE},
+	    	#{sectionAccodingItem,jdbcType=VARCHAR},
+	    	#{priceType,jdbcType=VARCHAR},
+	    	#{price,jdbcType=DOUBLE},
+	    	#{calcAlone,jdbcType=VARCHAR},
+	    	#{minPrice,jdbcType=DOUBLE},
+	    	#{maxPrice,jdbcType=DOUBLE},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+</mapper>

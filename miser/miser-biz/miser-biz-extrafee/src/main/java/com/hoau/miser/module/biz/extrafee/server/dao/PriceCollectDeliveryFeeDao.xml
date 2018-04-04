@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.extrafee.server.dao.PriceCollectDeliveryFeeDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.extrafee.shared.domain.PriceCollectDeliveryFeeEntity"
+		id="priceCollectDeliveryFeeResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		
+		<id column="BEGINPRICECITYCODE" property="beginPriceCityCode" jdbcType="VARCHAR" />
+		<id column="BEGINPRICECITYNAME" property="beginPriceCityName" jdbcType="VARCHAR" />
+		
+		<id column="TRANSTYPECODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<id column="TRANSTYPENAME" property="transTypeName" jdbcType="VARCHAR" />
+		
+		<id column="COLLECTDELIVERYTYPE" property="collectDeliveryType" jdbcType="INTEGER" />
+		<id column="COLLECTDELIVERYNAME" property="collectDeliveryName" jdbcType="VARCHAR" />
+		
+		<id column="COLLECTDELIVERYRATE" property="collectDeliveryRate" jdbcType="DECIMAL" />
+		<id column="RATELOCKTYPE" property="rateLockType" jdbcType="INTEGER" />
+		<id column="RATELOCKNAME" property="rateLockName" jdbcType="VARCHAR" />
+		
+		
+		<id column="LOWESTCOLLECTDELIVERYFEE" property="lowestCollectDeliveryFee" jdbcType="DECIMAL" />
+		<id column="HIGHESTCOLLECTDELIVERYFEE" property="highestCollectDeliveryFee" jdbcType="DECIMAL" />
+
+		<id column="EFFECTIVETIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+        <id column="INVALIDTIME" property="invalidTime" jdbcType="TIMESTAMP" />
+        
+		<id column="EFFECTIVETIMESTR" property="effectiveTimeStr" jdbcType="VARCHAR" />
+        <id column="INVALIDTIMESTR" property="invalidTimeStr" jdbcType="VARCHAR" />
+        
+        				
+		<id column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+		<id column="CREATEUSERNAME" property="createUserName" jdbcType="VARCHAR" />
+		<id column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<id column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<id column="MODIFYUSERNAME" property="modifyUserName" jdbcType="VARCHAR" />
+		<id column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<id column="STATUS" property="status" jdbcType="VARCHAR" />
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	
+
+	<sql id="mainSqlBody">
+	SELECT Z.ID,
+	       Z.BEGINPRICECITYCODE,
+	       Z.TRANSTYPECODE,
+	       Z.COLLECTDELIVERYTYPE,
+	       Z.COLLECTDELIVERYRATE,
+	       Z.RATELOCKTYPE,
+	       Z.LOWESTCOLLECTDELIVERYFEE,
+	       Z.HIGHESTCOLLECTDELIVERYFEE,
+	       Z.REMARK,
+	       Z.CREATE_TIME,
+	       Z.CREATE_USER_CODE,
+	       Z.MODIFY_TIME,
+	       Z.MODIFY_USER_CODE,
+	       Z.ACTIVE,
+	       Z.TRANSTYPENAME,
+	       Z.CREATEUSERCODE,
+	       Z.MODIFYUSERCODE,
+	       Z.EFFECTIVETIME,
+	       Z.INVALIDTIME,
+	       Z.EFFECTIVETIMESTR,
+	       Z.INVALIDTIMESTR,	       
+	       Z.STATUS,
+	       Z.BEGINPRICECITYNAME,
+	       Z.COLLECTDELIVERYNAME,
+	       Z.RATELOCKNAME
+	  FROM (SELECT T.ID,
+	               T.BEGINPRICECITYCODE,
+	               T.TRANSTYPECODE,
+	               T.COLLECTDELIVERYTYPE,
+	               T.COLLECTDELIVERYRATE,
+	               T.RATELOCKTYPE,
+	               T.LOWESTCOLLECTDELIVERYFEE,
+	               T.HIGHESTCOLLECTDELIVERYFEE,
+	               T.REMARK,
+	               T.CREATE_TIME,
+	               T.CREATE_USER_CODE,
+	               T.MODIFY_TIME,
+	               T.MODIFY_USER_CODE,
+	               DECODE(T.ACTIVE,'Y','是','否') ACTIVE,
+	               T.EFFECTIVETIME,
+	               T.INVALIDTIME,
+	               TO_CHAR(T.EFFECTIVETIME,'yyyy-mm-dd hh24:mi:ss') EFFECTIVETIMESTR,
+	               TO_CHAR(T.INVALIDTIME,'yyyy-mm-dd hh24:mi:ss') INVALIDTIMESTR,
+	               <![CDATA[
+	               CASE
+	                 WHEN T.ACTIVE = 'N' THEN
+	                  'DELETED'
+	                 WHEN T.INVALIDTIME IS NOT NULL and T.INVALIDTIME < SYSDATE THEN
+	                  'PASSED'
+	                 WHEN T.EFFECTIVETIME > SYSDATE THEN
+	                  'WAIT'
+	                 ELSE
+	                 'EFFECTIVE' 
+	               END AS STATUS,
+	               ]]>
+	               A.NAME TRANSTYPENAME,
+	               T.CREATE_USER_CODE || B.EMP_NAME CREATEUSERCODE,
+	               T.MODIFY_USER_CODE || C.EMP_NAME MODIFYUSERCODE,
+	               D.NAME BEGINPRICECITYNAME,
+	               E.VALUE_NAME COLLECTDELIVERYNAME,
+	               F.VALUE_NAME RATELOCKNAME
+	          FROM T_PRICE_COLLECTDELIVERY T
+	          LEFT JOIN (SELECT CODE, NAME
+	                      FROM T_BSE_TRANS_TYPE
+	                     WHERE ACTIVE = 'Y') A
+	            ON T.TRANSTYPECODE = A.CODE
+	          LEFT JOIN (SELECT USER_NAME, EMP_NAME
+	                      FROM T_BSE_USER
+	                     WHERE ACTIVE = 'Y') B
+	            ON T.CREATE_USER_CODE = B.USER_NAME
+	          LEFT JOIN (SELECT USER_NAME, EMP_NAME
+	                      FROM T_BSE_USER
+	                     WHERE ACTIVE = 'Y') C
+	            ON T.MODIFY_USER_CODE = C.USER_NAME
+	          LEFT JOIN (SELECT CODE, NAME FROM T_PRICE_CITY) D
+	            ON T.BEGINPRICECITYCODE = D.CODE
+	          LEFT JOIN (SELECT VALUE_CODE, VALUE_NAME
+	                      FROM T_BSE_DATA_DICTIONARY_VALUE
+	                     WHERE TERMS_CODE = 'COLLECTDELIVERYTYPE'
+	                     AND  ACTIVE = 'Y') E
+	            ON T.COLLECTDELIVERYTYPE = E.VALUE_CODE
+	          LEFT JOIN (SELECT VALUE_CODE, VALUE_NAME
+	                      FROM T_BSE_DATA_DICTIONARY_VALUE
+	                     WHERE TERMS_CODE = 'LOCK_TYPE'
+	                     AND  ACTIVE = 'Y') F
+	            ON T.RATELOCKTYPE = F.VALUE_CODE) Z
+	 WHERE 1 = 1
+		
+	 
+	</sql>
+ 
+ 
+ <sql id="mainSqlBody2">
+	SELECT Z.ID,
+	       Z.BEGINPRICECITYCODE,
+	       Z.TRANSTYPECODE,
+	       Z.COLLECTDELIVERYTYPE,
+	       Z.COLLECTDELIVERYRATE,
+	       Z.RATELOCKTYPE,
+	       Z.LOWESTCOLLECTDELIVERYFEE,
+	       Z.HIGHESTCOLLECTDELIVERYFEE,
+	       Z.REMARK,
+	       Z.CREATE_TIME,
+	       Z.CREATE_USER_CODE,
+	       Z.MODIFY_TIME,
+	       Z.MODIFY_USER_CODE,
+	       Z.ACTIVE,
+	       Z.TRANSTYPENAME,
+	       Z.CREATEUSERCODE,
+	       Z.MODIFYUSERCODE,
+	       Z.EFFECTIVETIME,
+	       Z.INVALIDTIME,
+	       Z.EFFECTIVETIMESTR,
+	       Z.INVALIDTIMESTR,	       
+	       Z.STATUS,
+	       Z.BEGINPRICECITYNAME,
+	       Z.COLLECTDELIVERYNAME,
+	       Z.RATELOCKNAME
+	  FROM (SELECT T.ID,
+	               T.BEGINPRICECITYCODE,
+	               T.TRANSTYPECODE,
+	               T.COLLECTDELIVERYTYPE,
+	               T.COLLECTDELIVERYRATE,
+	               T.RATELOCKTYPE,
+	               T.LOWESTCOLLECTDELIVERYFEE,
+	               T.HIGHESTCOLLECTDELIVERYFEE,
+	               T.REMARK,
+	               T.CREATE_TIME,
+	               T.CREATE_USER_CODE,
+	               T.MODIFY_TIME,
+	               T.MODIFY_USER_CODE,
+	               DECODE(T.ACTIVE,'Y','是','否') ACTIVE,
+	               T.EFFECTIVETIME,
+	               T.INVALIDTIME,
+	               TO_CHAR(T.EFFECTIVETIME,'yyyy-mm-dd hh24:mi:ss') EFFECTIVETIMESTR,
+	               TO_CHAR(T.INVALIDTIME,'yyyy-mm-dd hh24:mi:ss') INVALIDTIMESTR,
+	               <![CDATA[
+	               CASE
+	                 WHEN T.ACTIVE = 'N' THEN
+	                  '已废弃'
+	                 WHEN T.INVALIDTIME IS NOT NULL and T.INVALIDTIME < SYSDATE THEN
+	                  '已过期'
+	                 WHEN T.EFFECTIVETIME > SYSDATE THEN
+	                  '待生效'
+	                 ELSE
+	                 '生效中' 
+	               END AS STATUS,
+	               ]]>
+	               A.NAME TRANSTYPENAME,
+	               T.CREATE_USER_CODE || B.EMP_NAME CREATEUSERCODE,
+	               T.MODIFY_USER_CODE || C.EMP_NAME MODIFYUSERCODE,
+	               D.NAME BEGINPRICECITYNAME,
+	               E.VALUE_NAME COLLECTDELIVERYNAME,
+	               F.VALUE_NAME RATELOCKNAME
+	          FROM T_PRICE_COLLECTDELIVERY T
+	          LEFT JOIN (SELECT CODE, NAME
+	                      FROM T_BSE_TRANS_TYPE
+	                     WHERE ACTIVE = 'Y') A
+	            ON T.TRANSTYPECODE = A.CODE
+	          LEFT JOIN (SELECT USER_NAME, EMP_NAME
+	                      FROM T_BSE_USER
+	                     WHERE ACTIVE = 'Y') B
+	            ON T.CREATE_USER_CODE = B.USER_NAME
+	          LEFT JOIN (SELECT USER_NAME, EMP_NAME
+	                      FROM T_BSE_USER
+	                     WHERE ACTIVE = 'Y') C
+	            ON T.MODIFY_USER_CODE = C.USER_NAME
+	          LEFT JOIN (SELECT CODE, NAME FROM T_PRICE_CITY) D
+	            ON T.BEGINPRICECITYCODE = D.CODE
+	          LEFT JOIN (SELECT VALUE_CODE, VALUE_NAME
+	                      FROM T_BSE_DATA_DICTIONARY_VALUE
+	                     WHERE TERMS_CODE = 'COLLECTDELIVERYTYPE'
+	                     AND  ACTIVE = 'Y') E
+	            ON T.COLLECTDELIVERYTYPE = E.VALUE_CODE
+	          LEFT JOIN (SELECT VALUE_CODE, VALUE_NAME
+	                      FROM T_BSE_DATA_DICTIONARY_VALUE
+	                     WHERE TERMS_CODE = 'LOCK_TYPE'
+	                     AND  ACTIVE = 'Y') F
+	            ON T.RATELOCKTYPE = F.VALUE_CODE) Z
+	 WHERE 1 = 1
+		
+	 
+	</sql>
+ 
+	
+	<!-- 查询条件 -->
+	<sql id="mainSqlCondtion">
+		
+		<if test="id != null and id != '' ">
+			and Z.ID = #{id,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="beginPriceCityCode != null and beginPriceCityCode != '' ">
+			and Z.BEGINPRICECITYCODE = #{beginPriceCityCode,jdbcType=VARCHAR}
+		</if>
+
+		<if test="transTypeCode != null and transTypeCode != '' ">
+			and Z.TRANSTYPECODE = #{transTypeCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="effectiveTime != null and effectiveTime != '' ">
+			and #{effectiveTime,jdbcType=TIMESTAMP} BETWEEN  Z.EFFECTIVETIME and Z.INVALIDTIME
+		</if>
+		
+		<if test="status != null and status != '' ">
+			and Z.STATUS = #{status,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="collectDeliveryType != null">
+			and Z.COLLECTDELIVERYTYPE = #{collectDeliveryType,jdbcType=INTEGER}
+		</if>
+		
+		<if test="rateLockType != null ">
+			and Z.RATELOCKTYPE = #{rateLockType,jdbcType=INTEGER}
+		</if>										
+	</sql>
+
+	<!-- 根据查询条件查询明细  -->
+	<select id="queryListByEntity"
+			parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceCollectDeliveryFeeEntity"
+			resultMap="priceCollectDeliveryFeeResultMap">
+		<include refid="mainSqlBody"></include>
+		<include refid="mainSqlCondtion"></include>
+	    ORDER BY Z.MODIFY_TIME DESC
+	</select>
+	
+		<!-- 用以实现导出的中文化  -->
+	<select id="queryListByEntity2"
+			parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceCollectDeliveryFeeEntity"
+			resultMap="priceCollectDeliveryFeeResultMap">
+		<include refid="mainSqlBody2"></include>
+		<include refid="mainSqlCondtion"></include>
+	    ORDER BY Z.MODIFY_TIME DESC
+	</select>
+	
+	
+	<!-- 记录数 -->
+	<select id="queryCountByEntity" 
+			resultType="Long" 
+			parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceCollectDeliveryFeeEntity">
+		SELECT COUNT(1)
+		FROM (
+			<include refid="mainSqlBody"></include>
+			<include refid="mainSqlCondtion"></include>
+		)
+	</select>
+	
+	
+	<!-- 增加 -->
+	<insert id="add" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceCollectDeliveryFeeEntity">
+	     INSERT INTO T_PRICE_COLLECTDELIVERY(
+		    ID, 
+			BEGINPRICECITYCODE, 
+			TRANSTYPECODE, 
+			COLLECTDELIVERYTYPE, 
+			COLLECTDELIVERYRATE, 
+			RATELOCKTYPE, 
+			LOWESTCOLLECTDELIVERYFEE, 
+			HIGHESTCOLLECTDELIVERYFEE,
+			EFFECTIVETIME,
+			INVALIDTIME, 
+			REMARK, 
+			CREATE_TIME, 
+			CREATE_USER_CODE, 
+			MODIFY_TIME, 
+			MODIFY_USER_CODE, 
+			ACTIVE
+	     ) VALUES (
+		      #{id,jdbcType=VARCHAR},
+		      #{beginPriceCityCode,jdbcType=VARCHAR}, 
+		      #{transTypeCode,jdbcType=VARCHAR}, 
+		      #{collectDeliveryType,jdbcType=INTEGER}, 
+		      #{collectDeliveryRate,jdbcType=DECIMAL},
+		      #{rateLockType,jdbcType=INTEGER},
+		      #{lowestCollectDeliveryFee,jdbcType=DECIMAL}, 
+		      #{highestCollectDeliveryFee,jdbcType=DECIMAL},
+		      #{effectiveTime,jdbcType=TIMESTAMP},
+		      #{invalidTime,jdbcType=TIMESTAMP},
+		      #{remark,jdbcType=VARCHAR},  
+		      SYSDATE, 
+		      #{createUserCode,jdbcType=VARCHAR}, 
+		      SYSDATE, 
+		      #{modifyUserCode,jdbcType=VARCHAR}, 
+		      #{active,jdbcType=CHAR}
+	     )
+	</insert>
+	
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceCollectDeliveryFeeEntity">
+	     UPDATE T_PRICE_COLLECTDELIVERY
+	        SET
+	          <if test=" collectDeliveryRate != null and collectDeliveryRate != '' ">
+	          	COLLECTDELIVERYRATE = #{collectDeliveryRate,jdbcType=DECIMAL},
+	          </if>
+	          <if test=" rateLockType != null and rateLockType != '' ">
+	          	RATELOCKTYPE = #{rateLockType,jdbcType=INTEGER},
+	          </if>
+	          <if test=" lowestCollectDeliveryFee != null and lowestCollectDeliveryFee != '' ">
+	          	LOWESTCOLLECTDELIVERYFEE = #{lowestCollectDeliveryFee,jdbcType=DECIMAL},
+	          </if>
+	          <if test=" highestCollectDeliveryFee != null and highestCollectDeliveryFee != '' ">
+	          	HIGHESTCOLLECTDELIVERYFEE = #{highestCollectDeliveryFee,jdbcType=DECIMAL},
+	          </if>
+
+			  <if test="effectiveTime != null and effectiveTime != '' ">
+				EFFECTIVETIME = #{effectiveTime,jdbcType=TIMESTAMP},
+			  </if>
+			  <if test="effectiveTime != null and effectiveTime != '' ">
+			    INVALIDTIME = #{invalidTime,jdbcType=TIMESTAMP},
+			  </if>
+	          
+	          <if test=" remark != null and remark != '' ">
+	          	REMARK = #{remark,jdbcType=VARCHAR},
+	          </if>
+	          <if test=" createUserCode != null and createUserCode != '' ">
+	          	CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+	          </if>
+	          <if test=" modifyUserCode != null and modifyUserCode != '' ">
+	          	MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+	          </if>
+	          <if test=" active != null and active != '' ">
+	          	ACTIVE = #{active,jdbcType=VARCHAR},
+	          </if>
+	          MODIFY_TIME = SYSDATE
+	     WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	
+	<update id="delete" parameterType="java.util.Map">
+		UPDATE T_PRICE_COLLECTDELIVERY
+		  SET 
+		     ACTIVE = 'N',
+		     MODIFY_TIME = SYSDATE,
+		     MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		WHERE ID IN (${selectedIdStr})
+	</update>
+	
+</mapper>

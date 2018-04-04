@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.PriceCityMappingDao">
+
+    <resultMap id="districtPriceMapping"
+		type="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity">
+		<result column="PROVINCE_CODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="PROVINCE_NAME" property="provinceName" jdbcType="VARCHAR" />
+		<result column="CITY_CODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+		<result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR" />
+		<result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remarks" jdbcType="VARCHAR" />
+		<result column="START_CITY_NAME" property="startPriceCity" jdbcType="VARCHAR" />
+		<result column="ARRIVE_CITY_NAME" property="arrivePriceCity" jdbcType="VARCHAR" />
+		<result column="START_CITY_CODE" property="startPriceCityCode" jdbcType="VARCHAR" />
+		<result column="ARRIVAL_CITY_CODE" property="arrivalPriceCityCode" jdbcType="VARCHAR" />
+		<result column="HAS_CORP" property="isLocations" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<result column="PRICE_CITY" property="priceCity" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="aging_result_map">
+		H.START_CITY_NAME AS START_CITY_NAME,
+		H.START_CITY_CODE AS START_CITY_CODE,
+		G.ARRIVE_CITY_CODE AS ARRIVE_CITY_CODE,
+		G.ARRIVE_CITY_NAME AS ARRIVE_CITY_NAME,
+		NVL(H.PROVINCE_CODE ,G.PROVINCE_CODE ) AS PROVINCE_CODE, 
+		NVL(H.CITY_CODE ,G.CITY_CODE ) AS CITY_CODE,
+		NVL(H.AREA_CODE ,G.AREA_CODE ) AS AREA_CODE, 
+		NVL(H.REMARK ,G.REMARK )AS REMARK, 
+		NVL(H.MODIFY_TIME ,G.MODIFY_TIME ) AS MODIFY_TIME,
+		NVL(H.MODIFY_USER_CODE ,G.MODIFY_USER_CODE ) AS MODIFY_USER_CODE
+	</sql>
+
+	<sql id="result_map">
+		D.START_CITY_NAME AS START_CITY_NAME,
+   		D.ARRIVE_CITY_NAME AS ARRIVE_CITY_NAME,
+   		D.START_CITY_CODE AS START_CITY_CODE,
+   		D.ARRIVE_CITY_CODE AS ARRIVAL_CITY_CODE,
+		D.REMARK AS REMARK,
+		D.MODIFY_TIME AS MODIFY_TIME,
+		D.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		E.PROVINCE_CODE AS PROVINCE_CODE,
+		E.CITY_CODE AS CITY_CODE,
+		E.AREA_CODE AS AREA_CODE,
+		E.PROVINCE_NAME AS PROVINCE_NAME,
+		E.CITY_NAME AS CITY_NAME,
+		E.AREA_NAME AS AREA_NAME,
+		E.HAS_CORP AS HAS_CORP
+	</sql>
+	
+	<sql id="result_map_export">
+		D.START_CITY_NAME AS START_CITY_NAME,
+   		D.ARRIVE_CITY_NAME AS ARRIVE_CITY_NAME,
+   		D.START_CITY_CODE AS START_CITY_CODE,
+   		D.ARRIVE_CITY_CODE AS ARRIVAL_CITY_CODE,
+		D.REMARK AS REMARK,
+		D.MODIFY_TIME AS MODIFY_TIME,
+		D.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		E.PROVINCE_CODE AS PROVINCE_CODE,
+		E.CITY_CODE AS CITY_CODE,
+		E.AREA_CODE AS AREA_CODE,
+		E.PROVINCE_NAME AS PROVINCE_NAME,
+		E.CITY_NAME AS CITY_NAME,
+		E.AREA_NAME AS AREA_NAME,
+		DECODE(E.HAS_CORP,'Y','是','N','否','') AS HAS_CORP
+	</sql>
+	
+		
+	<!-- 以下为web界面使用sql -->
+	<!-- 模糊查询参数 -->
+	<sql id="aging_condition_param">
+	    <if test="provinceCode != null and provinceCode != ''">
+	        	AND E.PROVINCE_CODE like CONCAT(CONCAT('%', #{provinceCode,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="cityCode != null and cityCode != ''">
+	        	AND E.CITY_CODE like CONCAT(CONCAT('%', #{cityCode,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="areaCode != null and areaCode != ''">
+	        	AND E.AREA_CODE like CONCAT(CONCAT('%', #{areaCode,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="isLocations != null and isLocations != ''">
+			   AND E.HAS_CORP = #{isLocations,jdbcType=VARCHAR}
+		</if>
+		<if test="startPriceCityCode != null and startPriceCityCode != ''">
+	        	AND D.START_CITY_CODE =#{startPriceCityCode,jdbcType=VARCHAR}
+	    </if>
+	    <if test="arrivalPriceCityCode != null and arrivalPriceCityCode != ''">
+			   AND D.ARRIVE_CITY_CODE = #{arrivalPriceCityCode,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<sql id="aging_condition_param_update">
+	    <if test="provinceName != null and provinceName != ''">
+	        	AND A.DISTRICT_NAME like CONCAT(CONCAT('%', #{provinceName,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="cityName != null and cityName != ''">
+	        	AND B.DISTRICT_NAME like CONCAT(CONCAT('%', #{cityName,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="areaName != null and areaName != ''">
+	        	AND C.DISTRICT_NAME like CONCAT(CONCAT('%', #{areaName,jdbcType=VARCHAR}), '%') 
+	    </if>
+	</sql>
+	
+	<select id="queryPriceCityByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity" resultMap="districtPriceMapping">
+	  	SELECT 
+	  	
+	  	  <if test="funcFlag == 'export' ">
+	        	<include refid="result_map_export"></include>
+	       </if>
+	       
+	  	  <if test="funcFlag != 'export' ">
+	        	<include refid="result_map"></include>
+	       </if>	       
+	  	
+	  	FROM
+	  	<![CDATA[(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,A.DISTRICT_CODE AS PROVINCE_CODE, B.DISTRICT_NAME AS CITY_NAME ,B.DISTRICT_CODE AS CITY_CODE, C.DISTRICT_NAME 
+			AS AREA_NAME,C.DISTRICT_CODE AS AREA_CODE, C.HAS_CORP AS HAS_CORP
+			FROM T_BSE_DISTRICT A 
+			LEFT JOIN  T_BSE_DISTRICT B ON A.DISTRICT_CODE=B.PARENT_DISTRICT_CODE 
+			LEFT JOIN T_BSE_DISTRICT C ON B.DISTRICT_CODE=C.PARENT_DISTRICT_CODE
+			WHERE A.DISTRICT_TYPE='PROVINCE' AND B.DISTRICT_TYPE='CITY' AND C.DISTRICT_TYPE='AREA' AND A.ACTIVE = 'Y'  AND B.ACTIVE = 'Y'  AND C.ACTIVE = 'Y' )E]]>
+	  	LEFT JOIN 
+	  	<![CDATA[(SELECT]]>
+	    <include refid="aging_result_map"></include>
+	    <![CDATA[FROM  
+	     (SELECT TIME.NAME AS START_CITY_NAME, MAPPING.PROVINCE_CODE, MAPPING.PRICE_CITY AS START_CITY_CODE, MAPPING.CITY_CODE, MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE,MAPPING.ACTIVE AS ACTIVE
+		FROM T_PRICE_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_PRICE_CITY TIME ON TIME.CODE=MAPPING.PRICE_CITY AND TIME.ACTIVE=MAPPING.ACTIVE AND TIME.PRICECITYSCOPE = #{priceCityScope,jdbcType=VARCHAR} 
+		AND TIME.TYPE='SEND' AND TIME.ACTIVE=MAPPING.ACTIVE 
+		WHERE MAPPING.ACTIVE='Y' )H
+		FULL JOIN 
+		(SELECT T1.NAME AS ARRIVE_CITY_NAME,MAPPING.PRICE_CITY AS ARRIVE_CITY_CODE,MAPPING.PROVINCE_CODE,MAPPING.CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE
+		FROM T_PRICE_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_PRICE_CITY T1 ON T1.CODE=MAPPING.PRICE_CITY 
+		AND T1.ACTIVE=MAPPING.ACTIVE AND T1.TYPE='ARRIVAL' AND T1.PRICECITYSCOPE = #{priceCityScope,jdbcType=VARCHAR} WHERE MAPPING.ACTIVE='Y' )G
+		ON H.PROVINCE_CODE=G.PROVINCE_CODE AND H.CITY_CODE=G.CITY_CODE AND H.AREA_CODE=G.AREA_CODE
+	    )D]]>
+	   <![CDATA[
+	  ON D.PROVINCE_CODE=E.PROVINCE_CODE AND D.CITY_CODE=E.CITY_CODE AND D.AREA_CODE=E.AREA_CODE
+	   ]]>
+	    <where>
+	        <include refid="aging_condition_param"></include>
+	    </where>
+	     ORDER BY  D.MODIFY_TIME,D.AREA_CODE ASC
+	</select>
+	
+	
+	<select id="countPriceCityByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity" resultType="long">
+	   SELECT 
+	  	COUNT(1)
+	  	FROM
+	  	<![CDATA[(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,A.DISTRICT_CODE AS PROVINCE_CODE, B.DISTRICT_NAME AS CITY_NAME ,B.DISTRICT_CODE AS CITY_CODE, C.DISTRICT_NAME 
+			AS AREA_NAME,C.DISTRICT_CODE AS AREA_CODE, C.HAS_CORP AS HAS_CORP
+			FROM T_BSE_DISTRICT A 
+			LEFT JOIN  T_BSE_DISTRICT B ON A.DISTRICT_CODE=B.PARENT_DISTRICT_CODE 
+			LEFT JOIN T_BSE_DISTRICT C ON B.DISTRICT_CODE=C.PARENT_DISTRICT_CODE
+			WHERE A.DISTRICT_TYPE='PROVINCE' AND B.DISTRICT_TYPE='CITY' AND C.DISTRICT_TYPE='AREA')E]]>
+	  	LEFT JOIN 
+	  	<![CDATA[(SELECT]]>
+	    <include refid="aging_result_map"></include>
+	    <![CDATA[FROM  
+	     (SELECT TIME.NAME AS START_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.PRICE_CITY AS START_CITY_CODE,MAPPING.CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE,MAPPING.ACTIVE AS ACTIVE
+		FROM T_PRICE_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_PRICE_CITY TIME ON TIME.CODE=MAPPING.PRICE_CITY AND TIME.ACTIVE=MAPPING.ACTIVE AND TIME.PRICECITYSCOPE = #{priceCityScope,jdbcType=VARCHAR}
+		AND TIME.TYPE='SEND' AND TIME.ACTIVE=MAPPING.ACTIVE 
+		WHERE MAPPING.ACTIVE='Y' )H
+		FULL JOIN 
+		(SELECT T1.NAME AS ARRIVE_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.PRICE_CITY AS ARRIVE_CITY_CODE,MAPPING.CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE
+		FROM T_PRICE_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_PRICE_CITY T1 ON T1.CODE=MAPPING.PRICE_CITY 
+		AND T1.ACTIVE=MAPPING.ACTIVE AND T1.TYPE='ARRIVAL' AND T1.PRICECITYSCOPE = #{priceCityScope,jdbcType=VARCHAR} WHERE MAPPING.ACTIVE='Y' )G
+		ON H.PROVINCE_CODE=G.PROVINCE_CODE AND H.CITY_CODE=G.CITY_CODE AND H.AREA_CODE=G.AREA_CODE
+	    )D]]>
+	   <![CDATA[
+	  ON D.PROVINCE_CODE=E.PROVINCE_CODE AND D.CITY_CODE=E.CITY_CODE AND D.AREA_CODE=E.AREA_CODE
+	   ]]>
+	    <where>
+	        <include refid="aging_condition_param"></include>
+	    </where>
+	</select>
+	
+	<!-- 增加价格城市 -->
+	<insert id="addPriceCityMapping" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity">
+		INSERT INTO T_PRICE_CITY_MAPPING_DISTRICT(/**bse 新增时效城市**/
+	    ID,
+	    PRICE_CITY,
+	    PROVINCE_CODE,
+	    CITY_CODE,
+	    AREA_CODE,
+	    REMARK,    
+	    ACTIVE,
+	    CREATE_TIME,
+	    CREATE_USER_CODE,
+	    MODIFY_TIME,
+	    MODIFY_USER_CODE,
+	    TYPE
+	    )VALUES(
+	    #{id,jdbcType=VARCHAR},
+	    #{priceCityCode,jdbcType=VARCHAR},
+	    #{provinceCode,jdbcType=VARCHAR},
+	    #{cityCode,jdbcType=VARCHAR},
+	    #{areaCode,jdbcType=VARCHAR},
+	    #{remarks,jdbcType=VARCHAR},
+	    #{active,jdbcType=CHAR},
+	    #{createDate,jdbcType=TIMESTAMP},
+	    #{createUser,jdbcType=VARCHAR},
+	    #{modifyDate,jdbcType=TIMESTAMP},
+	    #{modifyUser,jdbcType=VARCHAR},
+	    #{cityType,jdbcType=VARCHAR}
+	    )
+	</insert>
+
+	<update id="deletePriceCityMapping" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity">
+		UPDATE T_PRICE_CITY_MAPPING_DISTRICT DIS
+		<set>  
+        <if test="remarks != null and remarks != ''">DIS.REMARK= #{remarks,jdbcType=VARCHAR},</if>  
+        DIS.ACTIVE= #{active,jdbcType=CHAR},
+		DIS.MODIFY_TIME=#{modifyDate,jdbcType=VARCHAR},
+		DIS.MODIFY_USER_CODE=#{modifyUser,jdbcType=VARCHAR}
+   		</set> 
+		WHERE DIS.PRICE_CITY=#{resourceCode,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="queryPriceCityMappingByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity" resultType="long">
+		SELECT COUNT(1) FROM T_PRICE_CITY_MAPPING_DISTRICT T
+		WHERE T.ACTIVE='Y' AND T.TYPE=#{cityType,jdbcType=VARCHAR}
+		AND T.PROVINCE_CODE = #{provinceCode, jdbcType=VARCHAR}
+		AND T.CITY_CODE = #{cityCode, jdbcType=VARCHAR}
+		AND T.AREA_CODE = #{areaCode, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="queryCodeByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity" resultMap="districtPriceMapping">
+		SELECT PRO.DISTRICT_CODE AS PROVINCE_CODE,
+        	   CITY.DISTRICT_CODE AS CITY_CODE ,
+        	   AREA.DISTRICT_CODE AS AREA_CODE
+	      FROM T_BSE_DISTRICT PRO
+	      LEFT JOIN T_BSE_DISTRICT CITY
+	      ON CITY.PARENT_DISTRICT_CODE=PRO.DISTRICT_CODE
+	      LEFT JOIN T_BSE_DISTRICT AREA
+	      ON AREA.PARENT_DISTRICT_CODE=CITY.DISTRICT_CODE
+	      WHERE PRO.DISTRICT_NAME=#{provinceName,jdbcType=VARCHAR} 
+	      AND CITY.DISTRICT_NAME=#{cityName,jdbcType=VARCHAR} 
+	      AND AREA.DISTRICT_NAME=#{areaName,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="deletePriceCityMappingByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity">
+		UPDATE T_PRICE_CITY_MAPPING_DISTRICT DI
+			SET DI.ACTIVE='N',
+			DI.MODIFY_USER_CODE=#{modifyUser,jdbcType=VARCHAR},
+			DI.MODIFY_TIME=#{modifyDate,jdbcType=VARCHAR}
+			WHERE DI.PROVINCE_CODE=#{provinceCode,jdbcType=VARCHAR} 
+			AND DI.CITY_CODE=#{cityCode,jdbcType=VARCHAR} 
+			AND DI.AREA_CODE=#{areaCode,jdbcType=VARCHAR} 
+			AND DI.TYPE=#{cityType,jdbcType=VARCHAR} 
+			AND DI.ACTIVE='Y'
+	</update>
+
+	<select id="queryPriceCityInUpdate" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity"
+	 		resultMap="districtPriceMapping">
+			SELECT 
+	  	<include refid="result_map"></include>
+	  	FROM
+	  	<![CDATA[(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,A.DISTRICT_CODE AS PROVINCE_CODE, B.DISTRICT_NAME AS CITY_NAME ,B.DISTRICT_CODE AS CITY_CODE, C.DISTRICT_NAME 
+			AS AREA_NAME,C.DISTRICT_CODE AS AREA_CODE, C.HAS_CORP AS HAS_CORP
+			FROM T_BSE_DISTRICT A 
+			LEFT JOIN  T_BSE_DISTRICT B ON A.DISTRICT_CODE=B.PARENT_DISTRICT_CODE 
+			LEFT JOIN T_BSE_DISTRICT C ON B.DISTRICT_CODE=C.PARENT_DISTRICT_CODE]]>
+			<where>
+			A.DISTRICT_TYPE='PROVINCE' AND B.DISTRICT_TYPE='CITY' AND C.DISTRICT_TYPE='AREA'
+			<include refid="aging_condition_param_update"></include>
+			</where>
+			<![CDATA[)E]]>
+	  	LEFT JOIN 
+	  	<![CDATA[(SELECT]]>
+	    <include refid="aging_result_map"></include>
+	    <![CDATA[FROM  
+	     (SELECT TIME.NAME AS START_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.PRICE_CITY AS START_CITY_CODE,MAPPING.CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE,MAPPING.ACTIVE AS ACTIVE
+		FROM T_PRICE_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_PRICE_CITY TIME ON TIME.CODE=MAPPING.PRICE_CITY AND TIME.ACTIVE=MAPPING.ACTIVE AND TIME.PRICECITYSCOPE = #{priceCityScope,jdbcType=VARCHAR} 
+		AND TIME.TYPE='SEND' AND TIME.ACTIVE=MAPPING.ACTIVE 
+		WHERE MAPPING.ACTIVE='Y' )H
+		FULL JOIN 
+		(SELECT T1.NAME AS ARRIVE_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.PRICE_CITY AS ARRIVE_CITY_CODE,MAPPING.CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE
+		FROM T_PRICE_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_PRICE_CITY T1 ON T1.CODE=MAPPING.PRICE_CITY 
+		AND T1.ACTIVE=MAPPING.ACTIVE AND T1.TYPE='ARRIVAL' AND T1.PRICECITYSCOPE = #{priceCityScope,jdbcType=VARCHAR} WHERE MAPPING.ACTIVE='Y' )G
+		ON H.PROVINCE_CODE=G.PROVINCE_CODE AND H.CITY_CODE=G.CITY_CODE AND H.AREA_CODE=G.AREA_CODE
+	    )D]]>
+	   <![CDATA[
+	  ON D.PROVINCE_CODE=E.PROVINCE_CODE AND D.CITY_CODE=E.CITY_CODE AND D.AREA_CODE=E.AREA_CODE
+	   ]]>
+	</select>
+
+</mapper>

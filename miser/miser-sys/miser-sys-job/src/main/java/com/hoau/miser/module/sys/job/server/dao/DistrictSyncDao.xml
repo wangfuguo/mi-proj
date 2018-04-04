@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.sys.job.server.dao.DistrictSyncDao">
+    <delete id="deleteAllDistrictMDM">
+        DELETE FROM T_BSE_DISTRICT_MDM
+    </delete>
+    <select id="getLastVersionNo" resultType="long">
+        SELECT MAX(VERSION_NO) FROM T_BSE_DISTRICT_MDM
+    </select>
+    <select id="IsExistDistrictnMDMById" parameterType="java.lang.String" resultType="long">
+        SELECT COUNT(ID) FROM T_BSE_DISTRICT_MDM where  ID=#{id,jdbcType=VARCHAR}
+    </select>
+    
+	<update id="updateDistrictMDM" parameterType="com.hoau.miser.module.sys.job.shared.domain.DistrictEntity">
+	    UPDATE T_BSE_DISTRICT_MDM
+	    <set>
+	    	DISTRICT_CODE=#{districtCode,jdbcType=VARCHAR},
+	    	DISTRICT_NAME=#{districtName,jdbcType=VARCHAR},
+	    	DISTRICT_SHORT_NAME=#{districtNameShort,jdbcType=VARCHAR},
+	    	DISTRICT_TYPE=#{districtType,jdbcType=VARCHAR},
+	    	PARENT_DISTRICT_CODE=#{parentDistrictCode,jdbcType=VARCHAR},
+	    	PINYIN=#{pinyin,jdbcType=VARCHAR},
+	    	PINYIN_SHORT=#{pinyinShort,jdbcType=VARCHAR},
+	    	VERSION_NO=#{versionNo,jdbcType=NUMERIC},
+	    	ACTIVE=#{active,jdbcType=VARCHAR},
+	    	MODIFY_TIME=#{modifyDate,jdbcType=TIMESTAMP},
+	    	MODIFY_USER_CODE=#{modifyUser,jdbcType=VARCHAR}
+	    </set>
+	    <where>
+	        ID = #{id,jdbcType=VARCHAR}
+	    </where> 
+	</update>
+	<insert id="addDistrictMDM" parameterType="com.hoau.miser.module.sys.job.shared.domain.DistrictEntity">
+	    INSERT 
+	    INTO T_BSE_DISTRICT_MDM
+	    (	
+	    	ID,
+	    	DISTRICT_CODE,
+	    	DISTRICT_NAME,
+	    	DISTRICT_SHORT_NAME,
+	    	DISTRICT_TYPE,
+	    	PARENT_DISTRICT_CODE,
+	    	PINYIN,
+	    	PINYIN_SHORT,
+	    	VERSION_NO,
+	    	ACTIVE,
+	    	CREATE_TIME,
+	    	CREATE_USER_CODE,
+	    	MODIFY_TIME,
+	    	MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{districtCode,jdbcType=VARCHAR},
+	    	#{districtName,jdbcType=VARCHAR},
+	    	#{districtNameShort,jdbcType=VARCHAR},
+	    	#{districtType,jdbcType=VARCHAR},
+	    	#{parentDistrictCode,jdbcType=VARCHAR},
+	    	#{pinyin,jdbcType=VARCHAR},
+	    	#{pinyinShort,jdbcType=VARCHAR},
+	    	#{versionNo,jdbcType=NUMERIC},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<update id="updateDistrictMDM2District">
+		MERGE INTO T_BSE_DISTRICT BU
+		USING (SELECT ID,
+			    	DISTRICT_CODE,
+			    	DISTRICT_NAME,
+			    	DISTRICT_SHORT_NAME,
+			    	DISTRICT_TYPE,
+			    	PARENT_DISTRICT_CODE,
+			    	PINYIN,
+			    	PINYIN_SHORT,
+			    	VERSION_NO,
+			    	ACTIVE,
+			    	CREATE_TIME,
+			    	CREATE_USER_CODE,
+			    	MODIFY_TIME,
+			    	MODIFY_USER_CODE
+		         FROM T_BSE_DISTRICT_MDM
+		       MINUS
+		       SELECT ID,
+				    	DISTRICT_CODE,
+				    	DISTRICT_NAME,
+				    	DISTRICT_SHORT_NAME,
+				    	DISTRICT_TYPE,
+				    	PARENT_DISTRICT_CODE,
+				    	PINYIN,
+				    	PINYIN_SHORT,
+				    	VERSION_NO,
+				    	ACTIVE,
+				    	CREATE_TIME,
+				    	CREATE_USER_CODE,
+				    	MODIFY_TIME,
+				    	MODIFY_USER_CODE
+		         FROM T_BSE_DISTRICT) MU
+		ON (BU.DISTRICT_CODE = MU.DISTRICT_CODE)
+		WHEN MATCHED THEN
+		  UPDATE
+		    SET BU.ID= MU.ID,
+				BU.DISTRICT_NAME=MU.DISTRICT_NAME,
+				BU.DISTRICT_SHORT_NAME=MU.DISTRICT_SHORT_NAME,
+				BU.DISTRICT_TYPE=MU.DISTRICT_TYPE,
+				BU.PARENT_DISTRICT_CODE=MU.PARENT_DISTRICT_CODE,
+				BU.PINYIN=MU.PINYIN,
+				BU.PINYIN_SHORT=MU.PINYIN_SHORT,
+				BU.VERSION_NO=MU.VERSION_NO,
+				BU.ACTIVE=MU.ACTIVE,
+				BU.CREATE_TIME=MU.CREATE_TIME,
+				BU.CREATE_USER_CODE=MU.CREATE_USER_CODE,
+				BU.MODIFY_TIME=MU.MODIFY_TIME,
+				BU.MODIFY_USER_CODE=MU.MODIFY_USER_CODE
+		         
+		WHEN NOT MATCHED THEN
+		  INSERT
+		    (	BU.ID,
+		     	BU.DISTRICT_CODE,       
+				BU.DISTRICT_NAME,      
+				BU.DISTRICT_SHORT_NAME, 
+				BU.DISTRICT_TYPE,       
+				BU.PARENT_DISTRICT_CODE,
+				BU.PINYIN,              
+				BU.PINYIN_SHORT,        
+				BU.VERSION_NO,          
+				BU.ACTIVE,              
+				BU.CREATE_TIME,         
+				BU.CREATE_USER_CODE,    
+				BU.MODIFY_TIME,         
+				BU.MODIFY_USER_CODE)
+		  VALUES
+		    (	MU.ID,
+		     	MU.DISTRICT_CODE,       
+				MU.DISTRICT_NAME,      
+				MU.DISTRICT_SHORT_NAME, 
+				MU.DISTRICT_TYPE,       
+				MU.PARENT_DISTRICT_CODE,
+				MU.PINYIN,              
+				MU.PINYIN_SHORT,        
+				MU.VERSION_NO,          
+				MU.ACTIVE,              
+				MU.CREATE_TIME,         
+				MU.CREATE_USER_CODE,    
+				MU.MODIFY_TIME,         
+				MU.MODIFY_USER_CODE)
+	</update>
+</mapper>

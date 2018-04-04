@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.PriceExtrafeeStandardSendDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.job.shared.domain.PriceExtrafeeStandardSendEntity"
+		id="PriceExtrafeeStandardResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+		<id column="TYPE" property="type" jdbcType="VARCHAR" />
+		<id column="MONEY" property="money" jdbcType="DOUBLE" />
+		<id column="LOCK_TYPE" property="lockType" jdbcType="INTEGER" />
+		<id column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<id column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<id column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<id column="state" property="state" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="query_mian_param">
+		PSE.ID AS id,
+		PSE.TRANS_TYPE_CODE AS trans_type_code,
+		(select NAME from T_BSE_TRANS_TYPE TTT where TTT.CODE=PSE.TRANS_TYPE_CODE and TTT.active='Y') AS trans_type_name,
+		PSE.TYPE AS type,
+		PSE.MONEY AS money,
+		PSE.LOCK_TYPE AS lockType,
+		PSE.EFFECTIVE_TIME AS effectiveTime,
+		PSE.INVALID_TIME AS invalidTime,
+		PSE.REMARK AS remark,
+		PSE.ACTIVE AS active,
+		PSE.CREATE_TIME AS createDate,
+		PSE.CREATE_USER_CODE AS createUser,
+		PSE.MODIFY_TIME AS modifyDate,
+		PSE.MODIFY_USER_CODE AS modifyUser,
+		<![CDATA[
+		case when (PSE.invalid_time<sysdate and PSE.active='Y') then 'PASSED'
+ 			                     when (PSE.effective_time<=sysdate and PSE.active='Y') then 'EFFECTIVE'
+ 			                     when (PSE.effective_time>sysdate and PSE.active='Y') then 'WAIT'
+ 			                     when (PSE.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND PSE.MODIFY_TIME >= #{startTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND PSE.MODIFY_TIME < #{endTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+		</where> 
+	</sql>
+<!-- 根据参数查询优惠分段信息  -->
+	<select id="queryListByParam" resultMap="PriceExtrafeeStandardResultMap"
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_EXTRAFEE_STANDARD 
+		PSE WHERE EXISTS (SELECT 1 FROM ( SELECT PSE.TRANS_TYPE_CODE,PSE.TYPE, MAX(PSE.MODIFY_TIME) 
+		AS MAX_MODIFY_TIME,max(CREATE_TIME) as CREATE_TIME FROM T_PRICE_EXTRAFEE_STANDARD PSE
+		
+		<where>
+			<trim  prefixOverrides="OR">
+				<if test="startTime != null  and startTime != '' ">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= PSE.Effective_Time and PSE.Effective_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+				<if test=" endTime != null  and endTime != ''">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= PSE.Invalid_Time and PSE.Invalid_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+			</trim>
+		</where>  
+		
+		GROUP BY PSE.TRANS_TYPE_CODE,PSE.TYPE ) xx  WHERE xx.TRANS_TYPE_CODE 
+		= PSE.TRANS_TYPE_CODE AND xx.TYPE = PSE.TYPE AND xx.MAX_MODIFY_TIME = PSE.MODIFY_TIME AND xx.CREATE_TIME=PSE.CREATE_TIME) 
+	</select>
+	
+	<select id="queryFailureData" resultMap="PriceExtrafeeStandardResultMap" 
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		SELECT 
+		A.ID AS ID,
+		PSE.ID AS id,
+		PSE.TRANS_TYPE_CODE AS trans_type_code,
+		(select NAME from T_BSE_TRANS_TYPE TTT where TTT.CODE=PSE.TRANS_TYPE_CODE and TTT.active='Y') AS trans_type_name,
+		PSE.TYPE AS type,
+		PSE.MONEY AS money,
+		PSE.LOCK_TYPE AS lockType,
+		PSE.EFFECTIVE_TIME AS effectiveTime,
+		PSE.INVALID_TIME AS invalidTime,
+		PSE.REMARK AS remark,
+		PSE.ACTIVE AS active,
+		PSE.CREATE_TIME AS createDate,
+		PSE.CREATE_USER_CODE AS createUser,
+		PSE.MODIFY_TIME AS modifyDate,
+		PSE.MODIFY_USER_CODE AS modifyUser
+		FROM T_JOB_SEND_FAILURE A 
+		JOIN T_PRICE_EXTRAFEE_STANDARD PSE ON A.BUSINESS_ID = PSE.ID
+		WHERE 
+		EXISTS (SELECT 1 FROM (
+		SELECT PSE.TRANS_TYPE_CODE,PSE.TYPE,MAX(PSE.CREATE_TIME) AS MAX_CREATE_TIME, MAX(PSE.MODIFY_TIME) AS MAX_MODIFY_TIME
+		FROM T_JOB_SEND_FAILURE A 
+		JOIN T_PRICE_EXTRAFEE_STANDARD PSE ON A.BUSINESS_ID = PSE.ID
+		<where>
+			<if test="type != null and type != ''">
+				AND A.TYPE = #{type, jdbcType=CHAR}
+			</if>
+			<if test="active != null and active != ''">
+				AND A.ACTIVE = #{active, jdbcType=CHAR}
+			</if>
+		</where> 
+		GROUP BY PSE.TRANS_TYPE_CODE,PSE.TYPE ) X
+		WHERE X.TRANS_TYPE_CODE = PSE.TRANS_TYPE_CODE AND X.TYPE = PSE.TYPE AND X.MAX_CREATE_TIME = PSE.CREATE_TIME AND X.MAX_MODIFY_TIME = PSE.MODIFY_TIME)
+		<if test="retryTimes != null and retryTimes != ''">
+    	<![CDATA[AND A.RETRY_TIMES < #{retryTimes, jdbcType=INTEGER}]]>
+    	</if> 
+	</select>
+	
+	<!-- 根据参数统计优惠分段信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_EXTRAFEE_STANDARD PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+</mapper>

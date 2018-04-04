@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.pricecard.server.dao.PricePackageFeeStandardDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PricePackageFeeStandardEntity"
+		id="ppFeeStandardResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="CALCULATION_TYPE" property="calculationType" jdbcType="VARCHAR" />
+		<id column="MONEY" property="money" jdbcType="DOUBLE" />
+		<id column="RATE" property="rate" jdbcType="DOUBLE" />
+		<id column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<id column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<id column="lock_type" property="lockType" jdbcType="VARCHAR" />
+		<id column="remark" property="remark" jdbcType="VARCHAR" />
+		<id column="active" property="active" jdbcType="VARCHAR" />
+		<id column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<association property="ppFeeItems"   resultMap="ppFeeItemsResultMap"/>
+	</resultMap>
+	
+	<resultMap id="ppFeeItemsResultMap" type="com.hoau.miser.module.biz.base.api.shared.domain.PricePackageFeeItemsEntity" >
+		<result property="code" column="PPFI_CODE" jdbcType="VARCHAR"/>
+		<result property="name" column="PPFI_NAME" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="query_mian_param">
+		PPFS.ID AS ID,
+		PPFS.CODE,
+		PPFS.CALCULATION_TYPE,
+		PPFS.MONEY,
+		PPFS.RATE,
+		PPFS.MIN_MONEY,
+		PPFS.MAX_MONEY2,
+		PPFS.LOCK_TYPE,
+		PPFS.effective_time AS effective_time,
+		PPFS.invalid_time AS invalid_time,
+		PPFS.remark AS remark,
+		PPFS.active AS active,
+		PPFS.create_time AS create_time,
+		PPFS.CREATE_USER_CODE create_user_code,
+		PPFS.modify_time AS modify_time,
+		PPFS.MODIFY_USER_CODE AS MODIFY_USER_CODE
+	</sql>
+	<sql id="query_ppFeeItems_param">
+		PPFI.name AS PPFI_NAME,
+		PPFI.code AS PPFI_CODE
+	</sql>
+	
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			<if test="ppFeeStandardEntity.ppFeeItems!=null">
+				and PPFS.CODE=#{ppFeeStandardEntity.ppFeeItems.code,jdbcType=VARCHAR}
+			</if>
+			<if test="ppFeeStandardEntity.active!=null and ppFeeStandardEntity.active!=''">
+				and PPFS.ACTIVE=#{ppFeeStandardEntity.active,jdbcType=VARCHAR}
+			</if>
+			<if test="ppFeeStandardEntity.id!=null and ppFeeStandardEntity.id!=''">
+				and PPFS.id=#{ppFeeStandardEntity.id,jdbcType=VARCHAR}
+			</if>
+		</where> 
+
+	</sql>
+
+	<!-- 根据参数查询信息-->
+	<select id="queryListByParam" resultMap="ppFeeStandardResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		,
+		<include refid="query_ppFeeItems_param"></include>
+		FROM T_PRICE_PACKAGE_FEE_STANDARD PPFS
+		Left join T_PRICE_PACKAGE_FEE_ITEMS PPFI on PPFS.CODE=PPFI.CODE
+		<include refid="queryCondition"></include>
+		ORDER BY PPFS.CREATE_TIME
+	</select>
+	
+	<!-- 根据参数统计信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_PACKAGE_FEE_STANDARD PPFS
+		Left join T_PRICE_PACKAGE_FEE_ITEMS PPFI on PPFS.CODE=PPFI.CODE
+		<include refid="queryCondition"></include>
+		ORDER BY PPFS.CREATE_TIME
+	</select>
+	<!-- 增加一条包装费信息 -->
+	<insert id="addPpFeeStandard" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PricePackageFeeStandardEntity">
+	    INSERT INTO T_PRICE_PACKAGE_FEE_STANDARD
+	     (	
+	    	ID,
+			CODE,
+			CALCULATION_TYPE,
+			MONEY,
+			RATE,
+			MIN_MONEY,
+			MAX_MONEY2,
+			LOCK_TYPE,
+			effective_time,
+			invalid_time,
+			remark,
+			active,
+			create_time,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{ppFeeItems.code,jdbcType=VARCHAR},
+	    	#{calculationType,jdbcType=VARCHAR},
+	    	#{money,jdbcType=DOUBLE},
+	    	#{rate,jdbcType=DOUBLE},
+	    	#{minMoney,jdbcType=DOUBLE},
+	    	#{maxMoney2,jdbcType=DOUBLE},
+	    	#{lockType,jdbcType=VARCHAR},
+	    	#{effectiveTime,jdbcType=TIMESTAMP},
+	    	#{invalidTime,jdbcType=TIMESTAMP},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改和删除都用这个 -->
+	<update id="delFeeStandard" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PricePackageFeeStandardEntity">
+	    UPDATE T_PRICE_PACKAGE_FEE_STANDARD SET 
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

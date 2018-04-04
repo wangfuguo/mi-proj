@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.DiscountPrivilegeTyDao">
+
+	<resultMap type="com.hoau.miser.module.api.itf.api.shared.domain.DiscountPrivilegeTyEntity"
+	  id="discountResultMap">
+    <id column="DISCOUNT_ID" property="id" jdbcType="VARCHAR" />
+    <result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+    <result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+    <result column="LAST_LAST_MONTH_AMOUNT" property="lastLastMonthAmount" jdbcType="DECIMAL" />
+    <result column="LAST_MONTH_AMOUNT" property="lastMonthAmount" jdbcType="DECIMAL" />
+    <result column="LAST_TWO_MONTHS_AVERAGE_AMOUNT" property="lastTwoMonthsAverageAmount" jdbcType="DECIMAL" />
+    <result column="CURRENT_MONTH_AMOUNT" property="currentMonthAmount" jdbcType="DECIMAL" />
+    <result column="CURRENT_DU_DISCOUNT" property="currentDuDiscount" jdbcType="DECIMAL" />
+    <result column="CURRENT_DD_DISCOUNT" property="currentDdDiscount" jdbcType="DECIMAL" />
+    <result column="DISCOUNT_ACTIVE" property="active" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+	<sql id="discountFields">
+    TPD.ID AS DISCOUNT_ID,
+    TCC.CUSTOMER_CODE AS CUSTOMER_CODE,
+    TPD.RECORD_MONTH AS RECORD_MONTH,
+    TPD.LAST_LAST_MONTH_AMOUNT AS LAST_LAST_MONTH_AMOUNT,
+    TPD.LAST_MONTH_AMOUNT AS LAST_MONTH_AMOUNT,
+    TPD.LAST_TWO_MONTHS_AVERAGE_AMOUNT AS LAST_TWO_MONTHS_AVERAGE_AMOUNT,
+    TPD.CURRENT_MONTH_AMOUNT AS CURRENT_MONTH_AMOUNT,
+    TPD.CURRENT_DU_DISCOUNT AS CURRENT_DU_DISCOUNT,
+    TPD.CURRENT_DD_DISCOUNT AS CURRENT_DD_DISCOUNT,
+    TPD.ACTIVE AS DISCOUNT_ACTIVE,
+    TPD.CREATE_TIME AS CREATE_TIME,
+    TPD.CREATE_USER_CODE AS CREATE_USER_CODE,
+    TPD.MODIFY_TIME AS MODIFY_TIME,
+    TPD.MODIFY_USER_CODE AS MODIFY_USER_CODE
+	</sql>
+	<!-- 查询越发越惠折扣数据 -->
+	<select id="queryDiscountCustomerByParam" resultMap="discountResultMap"
+	  parameterType="map">
+	  SELECT <include refid="discountFields"/>
+	  FROM T_PRIVILEGE_DISCOUNT TPD
+	  INNER JOIN T_CUSTOMER_CONTRACT TCC ON TPD.CONTRACT_CODE=TCC.CONTRACT_CODE AND TCC.ACTIVE='Y'
+	  WHERE
+        TCC.CUSTOMER_CODE=#{customerCode,jdbcType=VARCHAR}
+        AND <![CDATA[ TRUNC(RECORD_MONTH, 'MONTH')=TRUNC(#{recordMonth, jdbcType=TIMESTAMP}, 'MONTH') ]]>
+        AND TPD.ACTIVE='Y'
+	</select>
+
+
+</mapper>

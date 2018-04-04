@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.facade.server.dao.PriceAgingDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.PriceAgingResultEntity"
+		id="PriceAgingResultMap">
+		<id column="send_price_city" property="sendPriceCity" jdbcType="VARCHAR" />
+		<result column="arrive_price_city" property="arrivePriceCity" jdbcType="VARCHAR" />
+		<result column="trans_type_code" property="transTypeCode" jdbcType="VARCHAR" />
+		<result column="trans_type_name" property="transTypeName" jdbcType="VARCHAR" />
+		<result column="lowest_fee" property="lowestFee" jdbcType="DECIMAL" />
+		<result column="fuel_fee_section" property="fuelFeeSection" jdbcType="VARCHAR" />
+		<result column="weight_price" property="weightPrice" jdbcType="DECIMAL" />
+		<result column="volume_price" property="volumePrice" jdbcType="DECIMAL" />
+		<result column="pickup_prom_day" property="pickUpDay" jdbcType="VARCHAR" />
+		<result column="delivery_prom_day" property="deliveryDay" jdbcType="VARCHAR" />
+		<result column="freight_section_code" property="freightSectionCode" jdbcType="VARCHAR" />
+		<result column="add_section_code" property="addSectionCode" jdbcType="VARCHAR" />
+		<result column="event_code" property="priceEventCode" jdbcType="VARCHAR" />
+		<result column="event_name" property="priceEventName" jdbcType="VARCHAR" />
+		<result column="send_price_city_name" property="sendPriceCityName" jdbcType="VARCHAR" />
+		<result column="arrive_price_city_name" property="arrivePriceCityName" jdbcType="VARCHAR" />
+	</resultMap>	
+	<!-- 根据参数查询折扣数据  -->
+	<select id="queryPriceAgingListByParams" resultMap="PriceAgingResultMap" parameterType="com.hoau.miser.module.api.facade.shared.vo.PriceAgingConditionVo">
+		select send_price_city,
+       arrive_price_city,
+       trans_type_code,
+       trans_type_name,
+       lowest_fee,
+       fuel_fee_section,
+       weight_price,
+       volume_price,
+       pickup_prom_day,
+       delivery_prom_day,
+       freight_section_code,
+       add_section_code,
+       event_code,
+       event_name,
+       send_price_city_name,
+       arrive_price_city_name,
+       send_province_code,
+       send_city_code,
+       send_area_code,
+       arrive_province_code,
+       arrive_city_code,
+       arrive_area_code,
+       send_province_name,
+       send_city_name,
+       send_area_name,
+       arrive_province_name,
+       arrive_city_name,
+       arrive_area_name
+  from (select tps.send_price_city,
+               tps.arrive_price_city,
+               tps.trans_type_code,
+               tps.trans_type_name,
+               tps.lowest_fee,
+               tps.fuel_fee_section,
+               tps.weight_price,
+               tps.volume_price,
+               timestandard.pickup_prom_day,
+               timestandard.delivery_prom_day,
+               event.freight_section_code,
+               event.add_section_code,
+               event.event_code,
+               event.event_name,
+               event.channel_code,
+               pc_send_info.send_price_city_name,
+               pc_arrival_info.arrive_price_city_name,
+               pc_send_info.province_code as send_province_code,
+               pc_send_info.city_code as send_city_code,
+               pc_send_info.area_code as send_area_code,
+               pc_arrival_info.province_code as arrive_province_code,
+               pc_arrival_info.city_code as arrive_city_code,
+               pc_arrival_info.area_code as arrive_area_code,
+               pc_send_info.province_name as send_province_name,
+               pc_send_info.city_name as send_city_name,
+               pc_send_info.area_name as send_area_name,
+               pc_arrival_info.province_name as arrive_province_name,
+               pc_arrival_info.city_name as arrive_city_name,
+               pc_arrival_info.area_name as arrive_area_name
+          from t_price_standard tps
+          left join (select pc.code            as send_price_city,
+                           pc.name            as SEND_PRICE_CITY_NAME,
+                           prov.district_code as province_code,
+                           prov.district_name as province_name,
+                           city.district_code as city_code,
+                           city.district_name as city_name,
+                           area.district_code as area_code,
+                           area.district_name as area_name
+                      from t_price_city pc
+                      left join t_price_city_mapping_district pcmd on pc.code =
+                                                                      pcmd.price_city
+                      left join t_bse_district prov on pcmd.province_code =
+                                                       prov.district_code
+                      left join t_bse_district city on pcmd.city_code =
+                                                       city.district_code
+                      left join t_bse_district area on pcmd.area_code =
+                                                       area.district_code
+                     where pc.type = 'SEND'
+                       and pricecityscope = 'STANDARD') pc_send_info on tps.send_price_city =
+                                                                        pc_send_info.send_price_city
+          left join (select pc.code            as arrive_price_city,
+                           pc.name            as arrive_PRICE_CITY_NAME,
+                           prov.district_code as province_code,
+                           prov.district_name as province_name,
+                           city.district_code as city_code,
+                           city.district_name as city_name,
+                           area.district_code as area_code,
+                           area.district_name as area_name
+                      from t_price_city pc
+                      left join t_price_city_mapping_district pcmd on pc.code =
+                                                                      pcmd.price_city
+                      left join t_bse_district prov on pcmd.province_code =
+                                                       prov.district_code
+                      left join t_bse_district city on pcmd.city_code =
+                                                       city.district_code
+                      left join t_bse_district area on pcmd.area_code =
+                                                       area.district_code
+                     where pc.type = 'ARRIVAL'
+                       and pricecityscope = 'STANDARD') pc_arrival_info on tps.arrive_price_city =
+                                                                           pc_arrival_info.arrive_price_city
+          left join (select lowest_fee,
+                           weight_fee,
+                           volume_fee,
+                           province_code,
+                           city_code,
+                           area_code
+                      from t_price_outer_branch
+                     where active = 'Y') pob on pc_arrival_info.province_code =
+                                                pob.province_code
+                                            and pc_arrival_info.city_code =
+                                                pob.city_code
+                                            and pc_arrival_info.area_code =
+                                                pob.area_code
+          left join (select peds.freight_section_code,
+                           peds.add_section_code,
+                           pe.event_code,
+                           pe.event_name,
+                           peos.channel_code,
+                           pers.send_price_city,
+                           pers.arrival_price_city
+                      from t_price_event pe
+                      left join t_price_event_route_sub pers on pe.event_code =
+                                                                pers.event_code
+                      left join t_price_event_discount_sub peds on pe.event_code =
+                                                                   peds.event_code
+                      left join t_price_event_orderchannel_sub peos on pe.event_code =
+                                                                       peos.event_code
+                     where pe.active = 'Y'
+                       and is_FORCE_COLSE = 'N'
+                      <![CDATA[ and effective_time <= sysdate
+                       and (invalid_time > sysdate or invalid_time is null))]]> event on tps.send_price_city =
+                                                                                      event.send_price_city
+                                                                                  and tps.arrive_price_city =
+                                                                                      event.arrival_price_city
+          left join (select tts.pickup_prom_day,
+                           tts.delivery_prom_day,
+                           tts.trans_type_code,
+                           ttsend.send_time_city_code,
+                           ttsend.send_time_city_name,
+                           ttsend.province_code as send_province_code,
+                           ttsend.city_code as send_city_code,
+                           ttsend.area_code as send_area_code,
+                           ttarrive.arrive_time_city_code,
+                           ttarrive.province_code as arrive_province_code,
+                           ttarrive.city_code as arrive_city_code,
+                           ttarrive.area_code as arrive_area_code
+                      from t_time_standard tts
+                      left join (select ttc.code           as send_time_city_code,
+                                       ttc.name           as send_time_city_name,
+                                       ttcm.province_code as province_code,
+                                       ttcm.city_code     as city_code,
+                                       ttcm.area_code     as area_code
+                                  from t_time_city ttc
+                                  left join t_time_city_mapping_district ttcm on ttc.code =
+                                                                                 ttcm.time_city
+                                 where ttc.type = 'SEND'
+                                   and ttc.active = 'Y'
+                                   and ttcm.active = 'Y') ttsend on tts.send_time_city =
+                                                                    ttsend.send_time_city_code
+                      left join (select ttc.code           as arrive_time_city_code,
+                                       ttc.name           as arrive_time_city_name,
+                                       ttcm.province_code as province_code,
+                                       ttcm.city_code     as city_code,
+                                       ttcm.area_code     as area_code
+                                  from t_time_city ttc
+                                  left join t_time_city_mapping_district ttcm on ttc.code =
+                                                                                 ttcm.time_city
+                                 where ttc.type = 'ARRIVAL'
+                                   and ttc.active = 'Y'
+                                   and ttcm.active = 'Y') ttarrive on tts.arrive_time_city =
+                                                                      ttarrive.arrive_time_city_code
+                     where tts.active = 'Y'
+                       <![CDATA[and tts.effective_time <= sysdate
+                       and (tts.invalid_time > sysdate]]> or
+                           tts.invalid_time is null)) timestandard on pc_send_info.province_code =
+                                                                      timestandard.send_province_code
+                                                                  and pc_send_info.city_code =
+                                                                      timestandard.send_city_code
+                                                                  and pc_send_info.area_code =
+                                                                      timestandard.send_area_code
+                                                                  and pc_arrival_info.province_code =
+                                                                      timestandard.arrive_province_code
+                                                                  and pc_arrival_info.city_code =
+                                                                      timestandard.arrive_city_code
+                                                                  and pc_arrival_info.area_code =
+                                                                      timestandard.arrive_area_code
+                                                                  and timestandard.trans_type_code =
+                                                                      tps.trans_type_code
+         where tps.active = 'Y'
+          <![CDATA[ and tps.effective_time <= sysdate
+           and (invalid_time > sysdate or invalid_time is null)]]>
+        union
+        select tps.send_price_city,
+               tps.arrive_price_city,
+               '50000000000000000001' as trans_type_code,
+               '偏线' as trans_type_name,
+               nvl(pob.lowest_fee, 0) + tps.lowest_fee as lowest_fee,
+               tps.fuel_fee_section,
+               nvl(pob.weight_fee, 0) + tps.weight_price,
+               nvl(pob.volume_fee, 0) + tps.volume_price,
+               timestandard.pickup_prom_day,
+               timestandard.delivery_prom_day,
+               event.freight_section_code,
+               event.add_section_code,
+               event.event_code,
+               event.event_name,
+               event.channel_code,
+               pc_send_info.send_price_city_name,
+               pc_arrival_info.arrive_price_city_name,
+               pc_send_info.province_code as send_province_code,
+               pc_send_info.city_code as send_city_code,
+               pc_send_info.area_code as send_area_code,
+               pc_arrival_info.province_code as arrive_province_code,
+               pc_arrival_info.city_code as arrive_city_code,
+               pc_arrival_info.area_code as arrive_area_code,
+               pc_send_info.province_name as send_province_name,
+               pc_send_info.city_name as send_city_name,
+               pc_send_info.area_name as send_area_name,
+               pc_arrival_info.province_name as arrive_province_name,
+               pc_arrival_info.city_name as arrive_city_name,
+               pc_arrival_info.area_name as arrive_area_name
+          from t_price_standard tps
+          left join (select pc.code            as send_price_city,
+                            pc.name            as SEND_PRICE_CITY_NAME,
+                            prov.district_code as province_code,
+                            prov.district_name as province_name,
+                            city.district_code as city_code,
+                            city.district_name as city_name,
+                            area.district_code as area_code,
+                            area.district_name as area_name
+                       from t_price_city pc
+                       left join t_price_city_mapping_district pcmd on pc.code =
+                                                                       pcmd.price_city
+                       left join t_bse_district prov on pcmd.province_code =
+                                                        prov.district_code
+                       left join t_bse_district city on pcmd.city_code =
+                                                        city.district_code
+                       left join t_bse_district area on pcmd.area_code =
+                                                        area.district_code
+                      where pc.type = 'SEND'
+                        and pricecityscope = 'STANDARD') pc_send_info on tps.send_price_city =
+                                                                         pc_send_info.send_price_city
+          left join (select pc.code            as arrive_price_city,
+                            pc.name            as arrive_PRICE_CITY_NAME,
+                            prov.district_code as province_code,
+                            prov.district_name as province_name,
+                            city.district_code as city_code,
+                            city.district_name as city_name,
+                            area.district_code as area_code,
+                            area.district_name as area_name
+                       from t_price_city pc
+                       left join t_price_city_mapping_district pcmd on pc.code =
+                                                                       pcmd.price_city
+                       left join t_bse_district prov on pcmd.province_code =
+                                                        prov.district_code
+                       left join t_bse_district city on pcmd.city_code =
+                                                        city.district_code
+                       left join t_bse_district area on pcmd.area_code =
+                                                        area.district_code
+                      where pc.type = 'ARRIVAL'
+                        and pricecityscope = 'STANDARD') pc_arrival_info on tps.arrive_price_city =
+                                                                            pc_arrival_info.arrive_price_city
+          left join (select lowest_fee,
+                            weight_fee,
+                            volume_fee,
+                            province_code,
+                            city_code,
+                            area_code
+                       from t_price_outer_branch
+                      where active = 'Y') pob on pc_arrival_info.province_code =
+                                                 pob.province_code
+                                             and pc_arrival_info.city_code =
+                                                 pob.city_code
+                                             and pc_arrival_info.area_code =
+                                                 pob.area_code
+          left join (select peds.freight_section_code,
+                            peds.add_section_code,
+                            pe.event_code,
+                            pe.event_name,
+                            peos.channel_code,
+                            pers.send_price_city,
+                            pers.arrival_price_city
+                       from t_price_event pe
+                       left join t_price_event_route_sub pers on pe.event_code =
+                                                                 pers.event_code
+                       left join t_price_event_discount_sub peds on pe.event_code =
+                                                                    peds.event_code
+                       left join t_price_event_orderchannel_sub peos on pe.event_code =
+                                                                        peos.event_code
+                      where pe.active = 'Y'
+                        and is_FORCE_COLSE = 'N'
+                       <![CDATA[  and effective_time <= sysdate
+                        and (invalid_time > sysdate or invalid_time is null))]]> event on tps.send_price_city =
+                                                                                       event.send_price_city
+                                                                                   and tps.arrive_price_city =
+                                                                                       event.arrival_price_city
+          left join (select tts.pickup_prom_day,
+                            tts.delivery_prom_day,
+                            tts.trans_type_code,
+                            ttsend.send_time_city_code,
+                            ttsend.send_time_city_name,
+                            ttsend.province_code as send_province_code,
+                            ttsend.city_code as send_city_code,
+                            ttsend.area_code as send_area_code,
+                            ttarrive.arrive_time_city_code,
+                            ttarrive.province_code as arrive_province_code,
+                            ttarrive.city_code as arrive_city_code,
+                            ttarrive.area_code as arrive_area_code
+                       from t_time_standard tts
+                       left join (select ttc.code           as send_time_city_code,
+                                        ttc.name           as send_time_city_name,
+                                        ttcm.province_code as province_code,
+                                        ttcm.city_code     as city_code,
+                                        ttcm.area_code     as area_code
+                                   from t_time_city ttc
+                                   left join t_time_city_mapping_district ttcm on ttc.code =
+                                                                                  ttcm.time_city
+                                  where ttc.type = 'SEND'
+                                    and ttc.active = 'Y'
+                                    and ttcm.active = 'Y') ttsend on tts.send_time_city =
+                                                                     ttsend.send_time_city_code
+                       left join (select ttc.code           as arrive_time_city_code,
+                                        ttc.name           as arrive_time_city_name,
+                                        ttcm.province_code as province_code,
+                                        ttcm.city_code     as city_code,
+                                        ttcm.area_code     as area_code
+                                   from t_time_city ttc
+                                   left join t_time_city_mapping_district ttcm on ttc.code =
+                                                                                  ttcm.time_city
+                                  where ttc.type = 'ARRIVAL'
+                                    and ttc.active = 'Y'
+                                    and ttcm.active = 'Y') ttarrive on tts.arrive_time_city =
+                                                                       ttarrive.arrive_time_city_code
+                      where tts.active = 'Y'
+                       <![CDATA[  and tts.effective_time <= sysdate
+                        and (tts.invalid_time > sysdate or
+                            tts.invalid_time is null))]]> timestandard on pc_send_info.province_code =
+                                                                       timestandard.send_province_code
+                                                                   and pc_send_info.city_code =
+                                                                       timestandard.send_city_code
+                                                                   and pc_send_info.area_code =
+                                                                       timestandard.send_area_code
+                                                                   and pc_arrival_info.province_code =
+                                                                       timestandard.arrive_province_code
+                                                                   and pc_arrival_info.city_code =
+                                                                       timestandard.arrive_city_code
+                                                                   and pc_arrival_info.area_code =
+                                                                       timestandard.arrive_area_code
+                                                                   and timestandard.trans_type_code =
+                                                                       '50000000000000000001'
+        
+         where tps.active = 'Y'
+           and tps.trans_type_code = '30000000000000000001'
+           and pob.area_code is not null
+          <![CDATA[ and tps.effective_time <= sysdate
+           and (invalid_time > sysdate or invalid_time is null)]]>
+        
+        ) allprice
+ where 
+		<if test="sendProvinceCode != null and sendProvinceCode != ''">
+		send_province_code=#{sendProvinceCode}
+		</if>
+		<if test="sendCityCode != null and sendCityCode != ''">
+		and send_city_code=#{sendCityCode}
+		</if>
+		<if test="sendAreaCode != null and sendAreaCode != ''">
+		and send_area_code=#{sendAreaCode}
+		</if>
+		<if test="arriveProvinceCode != null and arriveProvinceCode != ''">
+		and arrive_province_code=#{arriveProvinceCode}
+		</if>
+		<if test="arriveCityCode != null and arriveCityCode != ''">
+		and arrive_city_code=#{arriveCityCode}
+		</if>
+		<if test="arriveAreaCode != null and arriveAreaCode != ''">
+		and arrive_area_code=#{arriveAreaCode}
+		</if>
+		<if test="sendProvinceName != null and sendProvinceName != '' and (sendProvinceCode==null or sendProvinceCode=='')">
+		send_province_name=#{sendProvinceName}
+		</if>
+		<if test="sendCityName != null and sendCityName != '' and (sendCityCode==null or sendCityCode=='')">
+		and send_city_name=#{sendCityName}
+		</if>
+		<if test="sendAreaName != null and sendAreaName != '' and (sendAreaCode==null or sendAreaCode=='')">
+		and send_area_name=#{sendAreaName}
+		</if>
+		<if test="arriveProvinceName != null and arriveProvinceName != '' and (arriveProvinceCode==null or arriveProvinceCode=='')">
+		and arrive_province_name=#{arriveProvinceName}
+		</if>
+		<if test="arriveCityName != null and arriveCityName != '' and (arriveCityCode==null or arriveCityCode=='')">
+		and arrive_city_name=#{arriveCityName}
+		</if>
+		<if test="arriveAreaName != null and arriveAreaName != '' and (arriveAreaCode==null or arriveAreaCode=='')">
+		and arrive_area_name=#{arriveAreaName}
+		</if>
+		<if test="transTypeName != null and transTypeName != ''">
+		and trans_type_name=#{transTypeName}
+		</if>
+		<if test="channelCode != null and channelCode != ''">
+		and channel_code=#{channelCode}
+		</if>	
+	</select>
+</mapper>

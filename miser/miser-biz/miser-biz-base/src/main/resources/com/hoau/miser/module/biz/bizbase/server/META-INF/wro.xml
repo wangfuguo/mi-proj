@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups xmlns="http://www.isdc.ro/wro"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
+ 
+	<group name="commonSelector">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js> 
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/print.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+	</group>
+	<group name="transtype">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/transtype.js</js>
+	</group>
+	<group name="priceCityMapping">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/priceCityMapping.js</js>
+	</group>
+	<group name="priceCityMappingCustomer">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/PriceCityMappingCustomer.js</js>
+	</group>
+	<group name="priceCity">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/priceCity.js</js>
+	</group>
+	<group name="agingCity">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/agingCity.js</js>
+	</group>
+	<group name="pricePackageFeeItems">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/pricePackageFeeItems.js</js>
+	</group>
+	<group name="priceAddvalueFeeItems">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/priceAddvalueFeeItems.js</js>
+	</group>
+	<group name="customer">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/customer.js</js>
+	</group>
+	<group name="priceCityCustomer">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/priceCityCustomer.js</js>
+	</group>
+	
+	<group name="outLine">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/outLine.js</js>
+	</group>
+	<!-- 城市类别 -->
+	<group name="cityType">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/cityType.js</js>
+	</group>
+	<!-- add by dengyin 2016-4-22 18:22:19 添加 价格时效查询 -->
+	<group name="priceTime">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/priceTime.js</js>
+	</group>
+	<!-- end by dengyin 2016-4-22 18:22:19 添加 价格时效查询 -->
+	
+	<!-- 时效城市定义 -->
+	<group name="timeCity">
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+		<js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+		<js>classpath:com/hoau/miser/module/biz/bizbase/server/META-INF/scripts/timeCity.js</js>
+	</group>
+	<!-- end 时效城市定义 -->
+	
+		
+</groups>

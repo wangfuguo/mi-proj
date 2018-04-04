@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.discount.server.dao.PriceEventOrderchannelSubDao">
+	
+	<!-- 增加一条优惠折扣 渠道-->
+	<insert id="insertPriceEventOrderchannelSub" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventOrderchannelSubEntity">
+	    INSERT INTO T_PRICE_EVENT_ORDERCHANNEL_SUB
+	     (	
+	    	ID,
+	    	EVENT_CODE,
+			CHANNEL_CODE,
+			remark,
+			active,
+			create_time,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{eventCode,jdbcType=VARCHAR},
+	    	#{channelCode,jdbcType=VARCHAR},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="updatePriceEventOrderchannelSub" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventOrderchannelSubEntity">
+	    UPDATE T_PRICE_EVENT_ORDERCHANNEL_SUB SET 
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE EVENT_CODE = #{eventCode,jdbcType=VARCHAR}
+	</update>
+</mapper>

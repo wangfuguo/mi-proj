@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.discount.server.dao.PriceEvnetDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEvnetEntity"
+		id="priceEvnetResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="EVENT_NAME" property="eventName" jdbcType="VARCHAR" />
+		<result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="IS_FORCE_COLSE" property="isForceColse" jdbcType="VARCHAR" />
+		<result column="active" property="active" jdbcType="VARCHAR" />
+		<result column="create_user_code" property="createUser" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<!-- 门店集合 -->
+		<collection property="priceEventCorpSubs" ofType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventCorpSubEntity">
+			<id column="CS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="CS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="CS_CORPTYPE" property="corpType" jdbcType="VARCHAR"/>
+			<result column="CS_ORGCODE" property="orgCode" jdbcType="VARCHAR"/>
+		</collection>
+		<!-- 明细集合 -->
+		<collection property="priceEventDiscountSubs" ofType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventDiscountSubEntity">
+			<id column="DS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="DS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="DS_TRANSTYPECODE" property="transTypeCode" jdbcType="VARCHAR"/>
+			<result column="DS_FREIGHTSECTIONCODE" property="freightSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_ADDSECTIONCODE" property="addSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_FUELSECTIONCODE" property="fuelSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_PICKUPSECTIONCODE" property="pickupSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_DELIVERYSECTIONCODE" property="deliverySectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_UPSTAIRSECTIONCODE" property="upstairSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_INSURANCERATESECTIONCODE" property="insuranceRateSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_INSURANCESECTIONCODE" property="insuranceSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_PAPERSECTIONCODE" property="paperSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_SMSSECTIONCODE" property="smsSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_COLLECTIONRATESECTIONCODE" property="collectionRateSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_COLLECTIONSECTIONCODE" property="collectionSectionCode" jdbcType="VARCHAR"/>
+		</collection>
+		<!-- 渠道明细集合 -->
+		<collection property="priceEventOrderchannelSubs" ofType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventOrderchannelSubEntity">
+			<id column="OS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="OS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="OS_CHANNELCODE" property="channelCode" jdbcType="VARCHAR"/>
+		</collection>
+		<!-- 线路明细集合 -->
+		<collection property="priceEventRouteSubs" ofType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventRouteSubEntity">
+			<id column="RS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="RS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="RS_SENDPRICECITY" property="sendPriceCity" jdbcType="VARCHAR"/>
+			<result column="RS_ARRIVALPRICECITY" property="arrivalPriceCity" jdbcType="VARCHAR"/>
+		</collection>
+		<!-- 客户集合 -->
+		<collection property="priceEventCustomerSubs" ofType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventCustomerSubEntity">
+			<id column="CUS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="CUS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="CUS_CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR"/>
+			<result column="CUS_CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR"/>
+		</collection>
+	</resultMap>
+
+	<sql id="query_mian_field">
+		MAIN.ID AS ID,
+		MAIN.EVENT_CODE AS EVENT_CODE,
+		MAIN.EVENT_NAME AS EVENT_NAME,
+		MAIN.effective_time AS effective_time,
+		MAIN.invalid_time AS invalid_time,
+		MAIN.remark AS remark,
+		MAIN.IS_FORCE_COLSE as IS_FORCE_COLSE,
+		MAIN.active AS active,
+		MAIN.create_user_code AS create_user_code,
+		MAIN.create_time AS create_time,
+		MAIN.modify_time AS modify_time,
+		MAIN.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		<![CDATA[
+		case when (MAIN.invalid_time<sysdate and MAIN.active='Y') then '1'
+ 			                     when (MAIN.effective_time<=sysdate and MAIN.active='Y') then '2'
+ 			                     when (MAIN.effective_time>sysdate and MAIN.active='Y') then '3'
+ 			                     when (MAIN.active='N' and MAIN.IS_FORCE_COLSE='N') then '4'
+ 			                     when (MAIN.active='N' and MAIN.IS_FORCE_COLSE='Y') then '5'
+                           else 
+                                ''
+        end as state
+        ]]>
+		
+	</sql>
+	<sql id="query_priceEventCorpSubs_field">
+		CS.ID AS CS_ID,
+		CS.EVENT_CODE AS CS_EVENTCODE,
+		CS.CORP_TYPE AS CS_CORPTYPE,
+		CS.ORG_CODE AS CS_ORGCODE
+	</sql>
+	
+	<sql id="query_priceEventDiscountSubs_field">
+		DS.ID AS DS_ID,
+		DS.event_Code	AS DS_EVENTCODE ,
+		DS.trans_Type_Code	AS DS_TRANSTYPECODE,
+		DS.freight_Section_Code	AS DS_FREIGHTSECTIONCODE,
+		DS.add_Section_Code	AS DS_ADDSECTIONCODE,
+		DS.fuel_Section_Code	AS DS_FUELSECTIONCODE,
+		DS.pickup_Section_Code	AS DS_PICKUPSECTIONCODE,
+		DS.delivery_Section_Code	AS DS_DELIVERYSECTIONCODE,
+		DS.upstair_Section_Code	AS DS_UPSTAIRSECTIONCODE,
+		DS.insurance_Rate_Section_Code	AS DS_INSURANCERATESECTIONCODE,
+		DS.insurance_Section_Code	AS DS_INSURANCESECTIONCODE,
+		DS.paper_Section_Code	AS DS_PAPERSECTIONCODE,
+		DS.sms_Section_Code	AS DS_SMSSECTIONCODE,
+		DS.collection_Rate_Section_Code	AS DS_COLLECTIONRATESECTIONCODE,
+		DS.collection_Section_Code	AS DS_COLLECTIONSECTIONCODE
+	</sql>
+	<sql id="query_priceEventOrderchannelSubs_field">
+		OS.ID AS OS_ID,
+		OS.EVENT_CODE AS OS_EVENTCODE,
+		OS.CHANNEL_CODE AS OS_CHANNELCODE
+	</sql>
+	<sql id="query_priceEventRouteSubs_field">
+		RS.ID AS RS_ID,
+		RS.EVENT_CODE AS RS_EVENTCODE,
+		RS.SEND_PRICE_CITY AS RS_SENDPRICECITY,
+		RS.ARRIVAL_PRICE_CITY AS RS_ARRIVALPRICECITY
+	</sql>
+	<sql id="query_priceEventCustomerSubs_field">
+		CUS.ID AS CUS_ID,
+		CUS.EVENT_CODE AS CUS_EVENTCODE,
+		CUS.CUSTOMER_CODE AS CUS_CUSTOMER_CODE,
+		CUS.CUSTOMER_NAME AS CUS_CUSTOMER_NAME
+	</sql>
+	
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			<if test="(eventName != null and eventName != '')">
+				and MAIN.EVENT_NAME LIKE CONCAT(CONCAT('%', #{eventName,jdbcType=VARCHAR}), '%')
+			</if>
+			<!-- 1:活动结束,2:活动中,3:待生效,4:未生效被作废,5:被强制取消  -->
+			<if test="state!=null and state!=''">
+				<choose>
+					<when test='state=="1"'>
+						<![CDATA[ and (sysdate>MAIN.invalid_time and MAIN.active='Y')]]>
+					</when>
+					<when test='state=="2"'>
+						<![CDATA[ 
+							and (
+								(sysdate>=MAIN.effective_time and MAIN.invalid_time is null and MAIN.active='Y')
+								or 
+								(sysdate>=MAIN.effective_time  and MAIN.invalid_time is not null and sysdate<MAIN.invalid_time and MAIN.active='Y')
+							)
+						]]>
+					</when>
+					<when test='state=="3"'>
+						<![CDATA[ and (sysdate<=MAIN.effective_time and MAIN.active='Y')]]>
+					</when>
+					<when test='state=="4"'>
+						<![CDATA[ and MAIN.active='N' and MAIN.IS_FORCE_COLSE='N']]>
+					</when>
+					<when test='state=="5"'>
+						<![CDATA[ and MAIN.active='N' and MAIN.IS_FORCE_COLSE='Y']]>
+					</when>
+					<otherwise>
+					</otherwise>
+				</choose>
+			</if>
+			<if test="id!=null and id!=''">
+				and MAIN.id=#{id,jdbcType=VARCHAR}
+			</if>
+			<if test="effectiveTime!=null and effectiveTime!=''">
+				<!-- and MAIN.effective_time>= #{effectiveTime,jdbcType=VARCHAR} -->
+				and (<![CDATA[MAIN.effective_time<=]]>TRUNC(#{effectiveTime,jdbcType=TIMESTAMP})+1-1/86400
+						and (<![CDATA[MAIN.invalid_time>]]>to_date(to_char(#{effectiveTime,jdbcType=VARCHAR},'dd/mm/yyyy'),'dd/mm/yyyy') or MAIN.invalid_time is null)
+					)
+				<!-- and <![CDATA[MAIN.effective_time>=to_date]]>(#{effectiveTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss') -->
+			</if>
+		</where> 
+
+	</sql>
+
+	<!-- 根据参数查询优惠折扣信息  -->
+	<select id="queryListByParam" resultMap="priceEvnetResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_field"></include>
+		FROM T_PRICE_EVENT MAIN
+		<include refid="queryCondition"></include>
+		ORDER BY MAIN.CREATE_TIME 
+	</select>
+	
+	
+	
+	<!-- 根据参数统计优惠折扣信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_EVENT MAIN
+		<include refid="queryCondition"></include>
+		ORDER BY MAIN.CREATE_TIME
+	</select>
+	
+	<!-- 根据参数统计优惠折扣详细细腻 -->
+	<select id="queryPriceEvnetById" resultMap="priceEvnetResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_field"></include>
+		,
+		<include refid="query_priceEventCorpSubs_field"></include>
+		,
+		<include refid="query_priceEventDiscountSubs_field"></include>
+		,
+		<include refid="query_priceEventOrderchannelSubs_field"></include>
+		,
+		<include refid="query_priceEventRouteSubs_field"></include>
+		,
+		<include refid="query_priceEventCustomerSubs_field"></include>
+		FROM T_PRICE_EVENT MAIN
+		Left join T_PRICE_EVENT_CORP_SUB CS  ON MAIN.EVENT_CODE=CS.EVENT_CODE AND CS.CORP_TYPE = '2'
+		Left join T_PRICE_EVENT_DISCOUNT_SUB DS ON MAIN.EVENT_CODE=DS.EVENT_CODE
+		Left join T_PRICE_EVENT_ORDERCHANNEL_SUB OS ON MAIN.EVENT_CODE=OS.EVENT_CODE
+		Left join T_PRICE_EVENT_ROUTE_SUB RS ON MAIN.EVENT_CODE=RS.EVENT_CODE
+		Left join T_PRICE_EVENT_CUSTOMER_SUB CUS ON MAIN.EVENT_CODE=CUS.EVENT_CODE
+		<include refid="queryCondition"></include>
+		ORDER BY MAIN.CREATE_TIME 
+	</select>
+	
+	<!-- 增加一条优惠折扣 -->
+	<insert id="insertPriceEvnet" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEvnetEntity">
+	    INSERT INTO T_PRICE_EVENT
+	     (	
+	    	ID,
+			EVENT_CODE,
+			EVENT_NAME,
+			effective_time,
+			invalid_time,
+			remark,
+			active,
+			create_time,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{eventCode,jdbcType=VARCHAR},
+	    	#{eventName,jdbcType=VARCHAR},
+	    	#{effectiveTime,jdbcType=TIMESTAMP},
+	    	#{invalidTime,jdbcType=TIMESTAMP},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="updatePriceEvnet" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEvnetEntity">
+	    UPDATE T_PRICE_EVENT SET 
+	    <if test="state=='setNullInvalidTime'">
+	    	<![CDATA[ INVALID_TIME=NULL,]]>
+	    </if>
+	    <if test="invalidTime!=null">
+	    	INVALID_TIME=#{invalidTime,jdbcType=VARCHAR},
+	    </if>
+	    IS_FORCE_COLSE =  #{isForceColse,jdbcType=VARCHAR},
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 活动组织相关 -->
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventOrgEntity"
+		id="priceEvnetOrgResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="parent_code" property="parentCode" jdbcType="VARCHAR" />
+		<result column="parent_name" property="parentName" jdbcType="VARCHAR" />
+		<result column="event_corpId" property="eventCorpId" jdbcType="VARCHAR" />
+		<result column="isCheck" property="isCheck" jdbcType="VARCHAR" />
+		<collection property="children" resultMap="orgChildResultMap"></collection>
+	</resultMap>
+	
+	<resultMap type="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventOrgEntity" id="orgChildResultMap">
+	    <id property="id" column="CHILD_ID" />
+	    <result property="code" column="CHILD_CODE"  jdbcType="VARCHAR" />
+		<result property="name" column="CHILD_NAME"  jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 根据参数查询组织信息  -->
+	<select id="queryOrgListByParam" resultMap="priceEvnetOrgResultMap"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventOrgEntity">
+		select a.id,a.code,a.name,a.parent_code,a.parent_name,CHILD.CODE AS CHILD_CODE,
+		CHILD.NAME AS CHILD_NAME,b.id as event_corpId,
+		<![CDATA[DECODE(b.org_code || c.org_code, NULL, 'N', '', 'N2', 'Y') as isCheck]]>
+		from t_bse_org a 
+		LEFT JOIN T_BSE_ORG CHILD ON (a.CODE = CHILD.PARENT_CODE AND CHILD.ACTIVE = 'Y')
+		left join T_PRICE_EVENT_CORP_SUB b ON A.code = b.org_code and b.EVENT_CODE=#{eventCode,jdbcType=VARCHAR} AND b.CORP_TYPE=#{corpType,jdbcType=VARCHAR}
+		LEFT JOIN T_PRICE_EVENT_CORP_IMPORT_TEMP c ON A.code = c.org_code AND c.CORP_TYPE=#{corpType,jdbcType=VARCHAR}
+		<where>
+			a.active='Y'
+			<if test="parentCode=='DP010000'"><!-- 查事业部以下 -->
+				and a.IS_DIVISION='Y'
+			</if>
+			<if test="parentCode != null and  parentCode!='DP010000'"><!-- 非事业部以下 -->
+				and a.IS_FLEET='N' and a.parent_code = #{parentCode,jdbcType=VARCHAR}
+				and (a.IS_BIG_REGION = 'Y' OR a.IS_ROAD_AREA = 'Y' OR a.IS_SALES_DEPARTMENT='Y' or a.IS_PLATFORM='Y' or a.IS_TRANSFER_CENTER='Y')
+			</if>
+			<if test="parentCode==null">
+				and a.IS_FLEET='N'
+				and (a.IS_BIG_REGION = 'Y' OR a.IS_ROAD_AREA = 'Y' OR a.IS_SALES_DEPARTMENT='Y' or a.IS_PLATFORM='Y' or a.IS_TRANSFER_CENTER='Y' or a.IS_DIVISION='Y')
+			</if>
+			<if test="name!=null and name!=''">
+				AND INSTR(a.NAME,#{name,jdbcType=VARCHAR}) > 0
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据参数统计组织信息 -->
+	<select id="queryOrgCountByParam" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		from t_bse_org a 
+	left join T_PRICE_EVENT_CORP_SUB b ON A.code = b.org_code and b.EVENT_CODE=#{eventCode,jdbcType=VARCHAR}
+		<where>
+			and a.active='Y'
+			
+			<if test="parentCode=='DP010000'"><!-- 查事业部以下 -->
+				and a.IS_DIVISION='Y'
+			</if>
+			<if test="parentCode!='DP010000'"><!-- 非事业部以下 -->
+				and a.IS_FLEET='N'
+				and (a.IS_BIG_REGION = 'Y' OR a.IS_ROAD_AREA = 'Y' OR a.IS_SALES_DEPARTMENT='Y' or a.IS_PLATFORM='Y' or a.IS_TRANSFER_CENTER='Y')
+			</if>
+			
+		</where>
+	</select>
+	<select id="getLeafOrgs" resultType="java.util.HashMap">
+	    select a.code from t_bse_org a
+		left join t_bse_org b on a.code=b.parent_code
+		where b.parent_code is null 
+  	</select>
+  	
+  	<insert id="tableImport" parameterType="map">
+		insert into T_PRICE_EVENT_CORP_IMPORT_TEMP
+		(
+		ID,
+		CORP_TYPE,
+		ORG_CODE
+		)
+		<foreach collection="columnValues" index="index" item="column" open="(" separator="union" close=")">
+		 select 
+			<foreach collection="column" index="index" item="item" separator=",">
+				#{item}
+			</foreach>
+		 from dual 
+		</foreach>
+	</insert>
+	
+	<!-- 清除重复数据 -->
+	<delete id="clearRepeatData">
+		<![CDATA[
+			DELETE FROM T_PRICE_EVENT_CORP_IMPORT_TEMP
+			WHERE ID NOT IN (SELECT MAX(ID) FROM T_PRICE_EVENT_CORP_IMPORT_TEMP GROUP BY CORP_TYPE,ORG_CODE
+			)
+		]]>
+	</delete>
+	
+	<delete id="deleteCorpImportTemp">
+		<![CDATA[
+			truncate table T_PRICE_EVENT_CORP_IMPORT_TEMP
+		]]>
+	</delete>
+</mapper>

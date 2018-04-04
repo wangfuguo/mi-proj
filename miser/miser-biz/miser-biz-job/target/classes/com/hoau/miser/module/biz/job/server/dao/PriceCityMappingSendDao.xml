@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.PriceCityMappingSendDao">
+
+	<resultMap type="com.hoau.eai.pc.vo.PriceCityMappingInfo" 
+		id="priceCityMappingResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="area_code" property="areaCode" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="price_city" property="priceCity" jdbcType="VARCHAR" />
+		<result column="active" property="active" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="queryCondition">
+		<where>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND t.MODIFY_TIME >= #{startTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND t.MODIFY_TIME < #{endTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+		</where>
+	</sql>
+	<sql id="queryCondition_failure">
+		<where>
+			<if test="lastSendTime != null and lastSendTime != ''">
+				<![CDATA[AND t.MODIFY_TIME >= #{lastSendTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+			<if test="sendTime != null and sendTime != ''">
+				<![CDATA[AND t.MODIFY_TIME < #{sendTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+		</where>
+	</sql>
+	<!-- 失败信息去重 -->
+	<update id="failureInfoUniq" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		update T_JOB_SEND_FAILURE A
+           SET A.ACTIVE = 'N'
+           where A.ACTIVE = 'Y'
+            and EXISTS(
+          select 1 from( select A.id,A.BUSINESS_ID,B.area_code,B.type btype,A.type,A.Active from T_JOB_SEND_FAILURE A 
+                   left join t_price_city_mapping_district B on B.id=A.Business_Id
+                  where A.type=#{type, jdbcType=VARCHAR} and A.active='Y') B
+                  where b.id=A.id
+                  and exists(
+                  	  select 1 from (
+                       SELECT *       
+                              FROM (SELECT ROW_NUMBER() OVER(PARTITION BY T.area_code,T.type ORDER BY t.MODIFY_TIME desc,t.CREATE_TIME DESC) rn,       
+                               t.area_code,t.MODIFY_TIME,t.type,t.id,t.PRICE_CITY,t.active      
+                                   FROM t_price_city_mapping_district t 
+                                   <include refid="queryCondition_failure"></include>
+                                   )
+                                   WHERE rn = 1) temp where  temp.area_code=b.area_code and temp.type=b.type
+                  )
+       )
+	</update>
+	
+	<!-- 查出所有要发的失败信息 -->
+	<select id="queryFailureData"  resultMap="priceCityMappingResultMap" 
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		select t.id,t.price_city,t.active,t.area_code,t.type from T_JOB_SEND_FAILURE A 
+                   left join t_price_city_mapping_district t on t.id=A.Business_Id
+                  where A.type=#{type, jdbcType=VARCHAR} and A.active='Y'
+	</select>
+	<!--查出本次要发送的信息 -->
+	<select id="queryNeedSendData" resultMap="priceCityMappingResultMap" 
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+		SELECT *       
+    	FROM (SELECT ROW_NUMBER() OVER(PARTITION BY T.area_code,T.type ORDER BY t.MODIFY_TIME desc,t.CREATE_TIME DESC) rn,       
+          t.area_code,t.MODIFY_TIME,t.type,t.id,t.price_city,t.active      
+          FROM t_price_city_mapping_district t 
+          <include refid="queryCondition"></include>
+          )
+          WHERE rn = 1
+		
+	</select>
+	
+</mapper>

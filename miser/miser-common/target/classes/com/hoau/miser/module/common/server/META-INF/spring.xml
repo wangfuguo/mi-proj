@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/jee 
+	http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供 -->
+	<bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${SENDMQ.URL}"/>
+	</bean>
+
+	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+		<property name="connectionFactory" ref="targetConnectionFactory"/>
+		<property name="maxConnections" value="5"/>
+	</bean>
+
+	<bean id="connectionFactory"
+		class="org.springframework.jms.connection.SingleConnectionFactory">
+		<property name="targetConnectionFactory" ref="pooledConnectionFactory"/>
+	</bean>
+
+	<!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<!-- 这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象 -->
+		<property name="connectionFactory" ref="connectionFactory"/>
+		<property name="deliveryMode" value="2"/>
+	</bean>
+
+	<!-- 价格城市队列 -->
+	<bean id="basicInfoTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.BASICINFO.NAME}"/>
+	</bean>
+	<!-- 费用分段队列 -->
+	<bean id="discountSectionTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.DISCOUNTSECTION.NAME}"/>
+	</bean>
+	<!-- 折扣队列 -->
+	<bean id="discountTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.DISCOUNT.NAME}"/>
+	</bean>
+	<!-- 附加费队列 -->
+	<bean id="extraTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.EXTRA.NAME}"/>
+	</bean>
+	<!-- 价格队列 -->
+	<bean id="pricecardTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRICECARD.NAME}"/>
+	</bean>
+	<!-- 越发越惠定义队列 -->
+	<bean id="privilegeTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRIVILEGE.PRIVILEGE.NAME}"/>
+	</bean>
+	<!-- 越发越惠合同队列 -->
+	<bean id="privilegeContractTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRIVILEGE.CONTRACT.NAME}"/>
+	</bean>
+	<!-- 越发越惠折扣队列 -->
+	<bean id="privilegeDiscountTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRIVILEGE.DISCOUNT.NAME}"/>
+	</bean>
+	<!-- 越发越惠返券队列 -->
+	<bean id="privilegeCouponTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRIVILEGE.COUPON.NAME}"/>
+	</bean>
+	<!-- 包装费定义 -->
+	<bean id="pricePackageFeeTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRICEPACKAGEFEE.NAME}"/>
+	</bean>
+	<!-- 价格包装费 -->
+	<bean id="pricePackageFeePcTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRICEPACKAGEFEEPC.NAME}"/>
+	</bean>
+
+	<!-- 送货费队列 -->
+	<bean id="priceDeliveryFeeTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRICEDELIVERYFEE.NAME}"/>
+	</bean>
+	<!-- 提货费队列 -->
+	<bean id="pricePickUpFeeTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRICEPICKUPFEE.NAME}"/>
+	</bean>
+	<!-- 价格城市映射关系队列 -->
+	<bean id="priceCityMappingTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.PRICECITYMAPPING.NAME}"/>
+	</bean>
+	<!-- 增值服务费队列 -->
+	<bean id="extrafeeAddValueFeeTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.EXTRAFEEADDVALUEFEE.NAME}"/>
+	</bean>
+
+	<!-- 增值服务费项目定义队列 -->
+	<bean id="extrafeeAddValueFeeItemsTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.EXTRAFEEADDVALUEFEEITEMS.NAME}"/>
+	</bean>
+
+	<!-- 外发偏线系数定义 -->
+	<bean id="outerBranchPriceTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.OuterBranchPrice.NAME}" />
+	</bean>
+
+	<!-- 活动队列 -->
+	<bean id="priceEventTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.EVENT.NAME}"/>
+	</bean>
+	<!-- 客户价格城市队列 -->
+	<bean id="custPriceCityMappingDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.CUSTPRICECITYMAPPING.NAME}" />
+	</bean>
+	<!-- 送货城市类型队列 -->
+	<bean id="deliveryCityLevelMappingDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${SENDMQ.DELEVERYCITYLEVELMAPPING.NAME}" />
+	</bean>
+	<!-- 消息监听器 
+		<bean id="pricecardCityConsumerMessageListener" 
+		class="com.hoau.miser.module.common.server.service.impl.ActiveMQPricecardCityConsumerMessageListener"/>
+		-->
+
+	<!-- 消息监听容器 
+		<bean id="jmsContainer"  
+			class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+			<property name="connectionFactory" ref="connectionFactory" />  
+			<property name="destination" ref="pricecardCityTopicDestination" />  
+			<property name="messageListener" ref="priceCityConsumerMessageListener" />  
+		</bean>  
+		-->
+</beans>

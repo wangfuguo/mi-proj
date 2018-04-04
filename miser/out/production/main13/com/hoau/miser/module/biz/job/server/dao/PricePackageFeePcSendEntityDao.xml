@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.PricePackageFeePcSendEntityDao">
+	<resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.job.shared.domain.PricePackageFeePcSendEntity">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="SENDID" jdbcType="VARCHAR" property="sendId" />
+		<result column="NAME" jdbcType="VARCHAR" property="name" />
+		<result column="PRICE_CITY" jdbcType="VARCHAR" property="priceCity" />
+		<result column="CODE" jdbcType="VARCHAR" property="code" />
+		<result column="TRANS_TYPE_CODE" jdbcType="VARCHAR" property="transTypeCode" />
+		<result column="CALCULATION_TYPE" jdbcType="VARCHAR" property="calculationType" />
+		<result column="MONEY" jdbcType="DECIMAL" property="money" />
+		<result column="RATE" jdbcType="DECIMAL" property="rate" />
+		<result column="MIN_MONEY" jdbcType="DECIMAL" property="minMoney" />
+		<result column="MAX_MONEY2" jdbcType="DECIMAL" property="maxMoney2" />
+		<result column="LOCK_TYPE" jdbcType="DECIMAL" property="lockType" />
+		<result column="EFFECTIVE_TIME" jdbcType="DATE" property="effectiveTime" />
+		<result column="INVALID_TIME" jdbcType="DATE" property="invalidTime" />
+		<result column="REMARK" jdbcType="VARCHAR" property="remark" />
+		<result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+		<result column="CREATE_USER_CODE" jdbcType="VARCHAR" property="createUserCode" />
+		<result column="MODIFY_TIME" jdbcType="DATE" property="modifyTime" />
+		<result column="MODIFY_USER_CODE" jdbcType="VARCHAR" property="modifyUserCode" />
+		<result column="ACTIVE" jdbcType="CHAR" property="active" />
+	</resultMap>  
+	<select id="searchPackageFeePcFailure" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+			SELECT BSETABLE.ID AS SENDID, 
+				BSETABLE.PRICE_CITY,BSETABLE.CODE, BSETABLE.TRANS_TYPE_CODE, BSETABLE.CALCULATION_TYPE, BSETABLE.RATE,
+				BSETABLE.MONEY, BSETABLE.MIN_MONEY, BSETABLE.LOCK_TYPE, BSETABLE.REMARK,
+				BSETABLE.ACTIVE, BSEITEM.NAME, BSETABLE.EFFECTIVE_TIME, BSETABLE.INVALID_TIME,
+				BSETABLE.RATE
+			FROM T_PRICE_PACKAGE_FEE_PC BSETABLE 
+			LEFT JOIN T_PRICE_PACKAGE_FEE_ITEMS BSEITEM 
+				ON BSETABLE.CODE=BSEITEM.CODE 
+			INNER JOIN 
+			(
+				SELECT PPC.PRICE_CITY, PPC.CODE, PPC.TRANS_TYPE_CODE, 
+					MAX(FAIL.MODIFY_TIME) AS MAXMODIFYTILE 
+					FROM T_PRICE_PACKAGE_FEE_PC PPC 
+				INNER JOIN T_JOB_SEND_FAILURE FAIL 
+					ON PPC.ID=FAIL.BUSINESS_ID
+			where
+		<if test="active != null and active !=''">
+			 FAIL.ACTIVE = #{active}
+		</if>
+		<if test="type != null and type !=''">
+			AND FAIL.TYPE = #{type}
+		</if>
+		
+					GROUP BY PPC.PRICE_CITY, PPC.CODE, PPC.TRANS_TYPE_CODE 
+			) MAXTABLE
+				ON MAXTABLE.PRICE_CITY=BSETABLE.PRICE_CITY AND MAXTABLE.CODE=BSETABLE.CODE 
+				AND MAXTABLE.TRANS_TYPE_CODE=BSETABLE.TRANS_TYPE_CODE  
+	</select>
+  
+	<select id="searchPackageFeePcNew" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+	  	SELECT BSETABLE.ID, LPAD(BSETABLE.PRICE_CITY, 4, '0') AS PRICE_CITY,LPAD(BSETABLE.CODE, 4, '0') AS CODE, BSETABLE.TRANS_TYPE_CODE, BSETABLE.CALCULATION_TYPE, BSETABLE.RATE,
+			BSETABLE.MONEY, BSETABLE.MIN_MONEY, BSETABLE.LOCK_TYPE, BSETABLE.REMARK,
+		<!-- 失效时间落在段内的结果都作为需要删除的记录，其他的作为需要新增或者修改的记录-->
+	<![CDATA[ CASE WHEN BSETABLE.ACTIVE='Y' AND BSETABLE.INVALID_TIME<=SYSDATE THEN 'N' ELSE BSETABLE.ACTIVE END AS ACTIVE,]]>
+			BSEITEM.NAME, BSETABLE.EFFECTIVE_TIME, BSETABLE.INVALID_TIME,
+			BSETABLE.RATE
+		FROM T_PRICE_PACKAGE_FEE_PC BSETABLE 
+		LEFT JOIN T_PRICE_PACKAGE_FEE_ITEMS BSEITEM 
+			ON BSETABLE.CODE=BSEITEM.CODE 
+		INNER JOIN 
+		<!-- 时间段内的新生效和失效记录按最大修改和最大生效时间排序-->
+		(
+			SELECT 
+	  			PACKFEE.PRICE_CITY,PACKFEE.CODE,  PACKFEE.TRANS_TYPE_CODE, 
+				MAX(PACKFEE.MODIFY_TIME) AS MAXMODIFYTIME, MAX(PACKFEE.CREATE_TIME) AS MAXCREATETIME 
+			FROM T_PRICE_PACKAGE_FEE_PC PACKFEE 
+			where
+		<!-- 生效记录-->
+			(
+		<if test="endTime != null and endTime != ''">
+		<![CDATA[ PACKFEE.EFFECTIVE_TIME< #{endTime, jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="startTime != null and startTime != ''">
+		<![CDATA[ AND PACKFEE.EFFECTIVE_TIME>= #{startTime, jdbcType=TIMESTAMP}]]>
+		</if> 
+		
+				AND PACKFEE.ACTIVE='Y'
+			) 
+		<!-- 失效和过期记录-->
+			OR 
+			(
+			(
+			(
+		<!-- 失效时间落在段内-->		
+		<if test="endTime != null and endTime != ''">
+		<![CDATA[ PACKFEE.INVALID_TIME<=#{endTime, jdbcType=TIMESTAMP}]]>
+		</if>	
+		<if test="startTime != null and startTime != ''">
+		<![CDATA[ AND PACKFEE.INVALID_TIME>=#{startTime, jdbcType=TIMESTAMP}]]>
+		</if>
+		)
+		OR 
+		(
+		<!-- 修改时间落在段内，状态=N-->
+		<if test="endTime != null and endTime != ''">
+		<![CDATA[  PACKFEE.MODIFY_TIME<=#{endTime, jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="startTime != null and startTime != ''">
+		<![CDATA[ AND PACKFEE.MODIFY_TIME>=#{startTime, jdbcType=TIMESTAMP}]]>
+		</if>
+				AND PACKFEE.ACTIVE='N' 
+		) 
+		)
+		<!-- 并且逻辑主键没有生效记录的-->
+		<!-- 两个条件判定逻辑主键需要删除-->
+				AND NOT EXISTS 
+				(
+					SELECT 1 FROM T_PRICE_PACKAGE_FEE_PC t 
+					WHERE t.PRICE_CITY=t.PRICE_CITY AND t.CODE=PACKFEE.CODE 
+						AND t.TRANS_TYPE_CODE=PACKFEE.TRANS_TYPE_CODE 
+						AND (
+		<if test="endTime != null and endTime != ''">
+		<![CDATA[(t.INVALID_TIME>#{endTime, jdbcType=TIMESTAMP}]]>
+								 OR t.INVALID_TIME IS NULL) 
+		<![CDATA[AND t.EFFECTIVE_TIME<=#{endTime, jdbcType=TIMESTAMP}]]>
+		</if>
+						AND t.ACTIVE='Y'
+				)
+			)
+	)
+	GROUP BY PACKFEE.PRICE_CITY, PACKFEE.CODE, PACKFEE.TRANS_TYPE_CODE 
+) MAXTABLE
+ON BSETABLE.PRICE_CITY=MAXTABLE.PRICE_CITY AND BSETABLE.CODE=MAXTABLE.CODE 
+AND BSETABLE.TRANS_TYPE_CODE=MAXTABLE.TRANS_TYPE_CODE  
+AND BSETABLE.MODIFY_TIME=MAXTABLE.MAXMODIFYTIME AND BSETABLE.CREATE_TIME=MAXTABLE.MAXCREATETIME
+	</select>  
+</mapper>

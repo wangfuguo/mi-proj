@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.discount.server.dao.PriceEventDiscountSubDao">
+	
+	<!-- 增加一条优惠折扣 门店-->
+	<insert id="insertPriceEventDiscountSub" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventDiscountSubEntity">
+	    INSERT INTO T_PRICE_EVENT_DISCOUNT_SUB
+	     (	
+	    	ID,
+			event_Code,
+			trans_Type_Code,
+			freight_Section_Code,
+			add_Section_Code,
+			fuel_Section_Code,
+			pickup_Section_Code,
+			delivery_Section_Code,
+			upstair_Section_Code,
+			insurance_Rate_Section_Code,
+			insurance_Section_Code,
+			paper_Section_Code,
+			sms_Section_Code,
+			collection_Rate_Section_Code,
+			collection_Section_Code,
+			remark,
+			active,
+			create_time,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{eventCode,jdbcType=VARCHAR},
+	    	#{transTypeCode,jdbcType=VARCHAR},
+			#{freightSectionCode,jdbcType=VARCHAR},
+			#{addSectionCode,jdbcType=VARCHAR},
+			#{fuelSectionCode,jdbcType=VARCHAR},
+			#{pickupSectionCode,jdbcType=VARCHAR},
+			#{deliverySectionCode,jdbcType=VARCHAR},
+			#{upstairSectionCode,jdbcType=VARCHAR},
+			#{insuranceRateSectionCode,jdbcType=VARCHAR},
+			#{insuranceSectionCode,jdbcType=VARCHAR},
+			#{paperSectionCode,jdbcType=VARCHAR},
+			#{smsSectionCode,jdbcType=VARCHAR},
+			#{collectionRateSectionCode,jdbcType=VARCHAR},
+			#{collectionSectionCode,jdbcType=VARCHAR},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="updatePriceEventDiscountSub" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventDiscountSubEntity">
+	    UPDATE T_PRICE_EVENT_DISCOUNT_SUB SET
+		    ACTIVE =  #{active,jdbcType=VARCHAR},
+		    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+		    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventDiscountSubEntity" >
+	    <id column="DS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="TRANSTYPECODE" property="transTypeCode" jdbcType="VARCHAR"/>
+			<result column="FREIGHTSECTIONCODE" property="freightSectionCode" jdbcType="VARCHAR"/>
+			<result column="ADDSECTIONCODE" property="addSectionCode" jdbcType="VARCHAR"/>
+			<result column="FUELSECTIONCODE" property="fuelSectionCode" jdbcType="VARCHAR"/>
+			<result column="PICKUPSECTIONCODE" property="pickupSectionCode" jdbcType="VARCHAR"/>
+			<result column="DELIVERYSECTIONCODE" property="deliverySectionCode" jdbcType="VARCHAR"/>
+			<result column="UPSTAIRSECTIONCODE" property="upstairSectionCode" jdbcType="VARCHAR"/>
+			<result column="INSURANCERATESECTIONCODE" property="insuranceRateSectionCode" jdbcType="VARCHAR"/>
+			<result column="INSURANCESECTIONCODE" property="insuranceSectionCode" jdbcType="VARCHAR"/>
+			<result column="PAPERSECTIONCODE" property="paperSectionCode" jdbcType="VARCHAR"/>
+			<result column="SMSSECTIONCODE" property="smsSectionCode" jdbcType="VARCHAR"/>
+			<result column="COLLECTIONRATESECTIONCODE" property="collectionRateSectionCode" jdbcType="VARCHAR"/>
+			<result column="COLLECTIONSECTIONCODE" property="collectionSectionCode" jdbcType="VARCHAR"/>
+			
+			<result column="TRANSTYPENAME" property="transTypeName" jdbcType="VARCHAR"/>
+			<result column="FREIGHTSECTIONNAME" property="freightSectionName" jdbcType="VARCHAR"/>
+			<result column="ADDSECTIONNAME" property="addSectionName" jdbcType="VARCHAR"/>
+			<result column="FUELSECTIONNAME" property="fuelSectionName" jdbcType="VARCHAR"/>
+			<result column="PICKUPSECTIONNAME" property="pickupSectionName" jdbcType="VARCHAR"/>
+			<result column="DELIVERYSECTIONNAME" property="deliverySectionName" jdbcType="VARCHAR"/>
+			<result column="UPSTAIRSECTIONNAME" property="upstairSectionName" jdbcType="VARCHAR"/>
+			<result column="INSURANCERATESECTIONNAME" property="insuranceRateSectionName" jdbcType="VARCHAR"/>
+			<result column="INSURANCESECTIONNAME" property="insuranceSectionName" jdbcType="VARCHAR"/>
+			<result column="PAPERSECTIONNAME" property="paperSectionName" jdbcType="VARCHAR"/>
+			<result column="SMSSECTIONNAME" property="smsSectionName" jdbcType="VARCHAR"/>
+			<result column="COLLECTIONRATESECTIONNAME" property="collectionRateSectionName" jdbcType="VARCHAR"/>
+			<result column="COLLECTIONSECTIONNAME" property="collectionSectionName" jdbcType="VARCHAR"/>
+	  </resultMap>
+	
+	
+	  <select id="selectPEDSubListByParam" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventDiscountSubEntity" >
+			select
+				customer.id as DS_ID,
+				customer.event_code as eventCode,
+				customer.TRANS_TYPE_CODE as TRANSTYPECODE,
+				btt.name AS TRANSTYPENAME,
+				customer.Freight_Section_Code as FreightSectionCode,
+				fsc.name as FreightSectionname,
+				customer.add_Section_Code as addSectionCode,
+				ascc.name as addSectionName,
+				customer.fuel_Section_Code as fuelSectionCode,
+				fscc.name as fuelSectionName,
+				customer.pickup_Section_Code as pickupSectionCode,
+				psc.name as pickupSectionName,
+				customer.delivery_Section_Code as deliverySectionCode,
+				dsc.name as deliverySectionName,
+				customer.UPSTAIR_SECTION_CODE as UPSTAIRSECTIONCODE,
+				usc.name as UPSTAIRSECTIONName,
+				customer.insurance_Rate_Section_Code as insuranceRateSectionCode,
+				irsc.name as insuranceRateSectionname,
+				customer.insurance_Section_Code as insuranceSectionCode,
+				isc.name as insuranceSectionName,
+				customer.collection_Rate_Section_Code as collectionRateSectionCode,
+				crsc.name as collectionRateSectionname,
+				customer.collection_Section_Code as collectionSectionCode,
+				csc.name as collectionSectionName,
+				customer.paper_Section_Code as paperSectionCode,
+				pscc.name as paperSectionName,
+				customer.sms_Section_Code as smsSectionCode,
+				ssc.name as smsSectionname
+			from T_PRICE_EVENT_DISCOUNT_SUB customer
+			left join T_BSE_TRANS_TYPE btt on btt.code = customer.trans_type_code and btt.active = 'Y'
+			left join T_PRICE_SECTION fsc on fsc.code = customer.Freight_Section_Code and fsc.active = 'Y'
+			left join T_PRICE_SECTION ascc on ascc.code = customer.add_Section_Code and ascc.active = 'Y'
+			left join T_PRICE_SECTION fscc on fscc.code = customer.fuel_Section_Code and fscc.active = 'Y'
+			left join T_PRICE_SECTION psc on psc.code = customer.pickup_Section_Code and psc.active = 'Y'
+			left join T_PRICE_SECTION dsc on dsc.code = customer.delivery_Section_Code and dsc.active = 'Y'
+			left join T_PRICE_SECTION usc on usc.code = customer.UPSTAIR_SECTION_CODE and usc.active = 'Y'
+			left join T_PRICE_SECTION irsc on irsc.code = customer.insurance_Rate_Section_Code and irsc.active = 'Y'
+			left join T_PRICE_SECTION isc on isc.code = customer.insurance_Section_Code and isc.active = 'Y'
+			left join T_PRICE_SECTION crsc on crsc.code = customer.collection_Rate_Section_Code and crsc.active = 'Y'
+			left join T_PRICE_SECTION csc on csc.code = customer.collection_Section_Code and csc.active = 'Y'
+			left join T_PRICE_SECTION pscc on pscc.code = customer.paper_Section_Code and pscc.active = 'Y'
+			left join T_PRICE_SECTION ssc on ssc.code = customer.sms_Section_Code and ssc.active = 'Y'
+			where 1=1
+	    <if test="eventCode != null and eventCode !='' ">
+	        and customer.event_code = #{eventCode,jdbcType=VARCHAR}
+	    </if>
+	    
+	    <if test="transTypeCode != null and transTypeCode !='' ">
+	        and customer.TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR}
+	    </if>
+	    
+	    order by customer.CREATE_TIME DESC
+	  </select>
+	  
+	  <!-- add by dengyin 2016-5-2 16：46：34 用于查询活动折扣 -->
+	  
+	  <resultMap id="eventRouteDiscountMap" type="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventRouteDiscountEntity" >
+	  	<result column="eventId" property="eventId" jdbcType="VARCHAR"/>
+	  	<result column="eventCode" property="eventCode" jdbcType="VARCHAR"/>
+	  	<result column="eventName" property="eventName" jdbcType="VARCHAR"/>
+	  	<result column="sendPriceCityCode" property="sendPriceCityCode" jdbcType="VARCHAR"/>
+	  	<result column="arrivalPriceCityCode" property="arrivalPriceCityCode" jdbcType="VARCHAR"/>
+	  	<result column="transTypeCode" property="transTypeCode" jdbcType="VARCHAR"/>
+	  </resultMap>
+	  
+	  
+	  <select id="queryEventRouteDiscount" resultMap="eventRouteDiscountMap"
+	  		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventRouteDiscountEntity">
+	  	SELECT 
+	  	   AA.ID AS eventId,
+	       AA.EVENT_CODE eventCode,
+	       AA.EVENT_NAME eventName,
+	       AB.SEND_PRICE_CITY    sendPriceCityCode,
+	       AB.ARRIVAL_PRICE_CITY arrivalPriceCityCode,
+	       AC.TRANS_TYPE_CODE    transTypeCode
+	  FROM T_PRICE_EVENT AA
+	 INNER JOIN (SELECT EVENT_CODE, SEND_PRICE_CITY, ARRIVAL_PRICE_CITY
+	               FROM T_PRICE_EVENT_ROUTE_SUB
+	              WHERE SEND_PRICE_CITY = #{sendPriceCityCode,jdbcType=VARCHAR}
+	                AND ARRIVAL_PRICE_CITY = #{arrivalPriceCityCode,jdbcType=VARCHAR}
+	                AND ACTIVE = 'Y') AB
+	    ON AA.EVENT_CODE = AB.EVENT_CODE
+	 INNER JOIN (SELECT EVENT_CODE, TRANS_TYPE_CODE
+	               FROM T_PRICE_EVENT_DISCOUNT_SUB
+	              WHERE ACTIVE = 'Y') AC
+	    ON AA.EVENT_CODE = AC.EVENT_CODE
+	  </select>
+	  <!-- end by dengyin 2016-5-2 16：46：34 用于查询活动折扣 -->
+	  
+</mapper>

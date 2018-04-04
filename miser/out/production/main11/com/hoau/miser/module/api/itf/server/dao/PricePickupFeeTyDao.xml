@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PricePickupFeeTyDao">
+
+    <resultMap type="com.hoau.miser.module.api.itf.api.shared.domain.PricePickupFeeTyEntity" id="PricePickupFeeTyMap">
+        <result column="PRICE_CITY_CODE" property="priceCityCode"  jdbcType="VARCHAR" />
+        <result column="WEIGHT_PRICE" property="weightPrice"  jdbcType="VARCHAR" />
+        <result column="VOLUMN_PRICE" property="volumnPrice"  jdbcType="VARCHAR" />
+        <result column="MIN_MONEY" property="minMoney"  jdbcType="VARCHAR" />
+        <result column="EFFECTIVE_TIME" property="effectiveTime"  jdbcType="TIMESTAMP" />
+        <result column="INVALID_TIME" property="invalidTime"  jdbcType="TIMESTAMP" />
+        <result column="TRANS_TYPE_CODE" property="transportType"  jdbcType="VARCHAR" />
+      	<result column="CREATE_TIME" property="createDate"  jdbcType="TIMESTAMP" />
+        <result column="CREATE_USER_CODE" property="createUser"  jdbcType="VARCHAR" />
+        <result column="MODIFY_TIME" property="modifyDate"  jdbcType="TIMESTAMP" />
+        <result column="MODIFY_USER_CODE" property="modifyUser"  jdbcType="VARCHAR" />
+    </resultMap>
+
+
+
+    <sql id="query_ppfitems_param_export">
+        T.PRICE_CITY_CODE AS PRICE_CITY_CODE,/** 出发价格城市**/
+        T.WEIGHT_PRICE AS WEIGHT_PRICE,/** 重货单价**/
+        T.VOLUMN_PRICE AS VOLUMN_PRICE,/** 体积单价*/
+        T.MIN_MONEY AS MIN_MONEY,/**最低收费*/
+        T.TRANS_TYPE_CODE AS TRANS_TYPE_CODE,/**运输类型code*/
+        T.EFFECTIVE_TIME AS EFFECTIVE_TIME,/**生效时间*/
+        T.INVALID_TIME AS INVALID_TIME,/**时效时间*/
+        T.CREATE_TIME AS CREATE_TIME,/**创建时间**/
+	   	T.CREATE_USER_CODE AS CREATE_USER_CODE,/**创建人**/
+	    T.MODIFY_TIME AS MODIFY_TIME, /**更新时间**/
+	    T.MODIFY_USER_CODE AS MODIFY_USER_CODE /**更新人**/
+    </sql>
+
+	<!-- 根据参数查询提货费信息 -->
+    <select id="queryPricePickupFeeByParamInSide" parameterType="map"
+            resultMap="PricePickupFeeTyMap">
+        SELECT
+        <include refid="query_ppfitems_param_export"></include>
+        FROM T_PRICE_PICKUP_FEE_PC  T
+   		<where>
+			T.PRICE_CITY_CODE=#{sendPriceCityCode,jdbcType=VARCHAR}
+			AND T.TRANS_TYPE_CODE=#{baseTyParam.transTypeCode,jdbcType=VARCHAR}
+			AND (<![CDATA[T.effective_time<=#{baseTyParam.billTime, jdbcType=TIMESTAMP}]]>
+			and (<![CDATA[nvl(T.invalid_time,to_date('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss'))>#{baseTyParam.billTime, jdbcType=TIMESTAMP}]]>
+			)
+			)
+		</where>
+       ORDER BY T.MODIFY_TIME
+    </select>
+
+
+
+
+
+
+</mapper>

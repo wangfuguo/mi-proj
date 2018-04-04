@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceCustSectionTyDao">
+
+	<resultMap type="com.hoau.miser.module.api.itf.api.shared.domain.PriceCustSectionTyEntity"
+		id="custPriceSectionResultMap">
+		<id column="MainID" property="id" jdbcType="VARCHAR" />
+		<result column="customer_code" property="customerCode" jdbcType="VARCHAR" />
+		<result column="create_user_code" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<!-- 明细表 -->
+		<association property="priceCustSubSectionTyEntity" javaType="com.hoau.miser.module.api.itf.api.shared.domain.PriceCustSubSectionTyEntity">
+			<id column="ID" property="id" jdbcType="VARCHAR" />
+			<result column="trans_type_code" property="transTypeCode" jdbcType="VARCHAR" />
+			<result column="SEND_PRICE_CITY" property="sendPriceCityCode" jdbcType="VARCHAR" />
+			<result column="ARRIVE_PRICE_CITY" property="arrivePriceCityCode" jdbcType="VARCHAR" />
+			<result column="FIRST_WEIGHT" property="firstWeight" jdbcType="DECIMAL" />
+			<result column="FIRST_WEIGHT_PRICE" property="firstWeightPrice" jdbcType="DECIMAL" />
+			<result column="FIRST_ADD_WEIGHT_PRICE" property="firstAddWeightPrice" jdbcType="DECIMAL" />
+			<result column="SECOND_WEIGHT" property="secondWeight" jdbcType="DECIMAL" />
+			<result column="SECOND_WEIGHT_PRICE" property="secondWeightPrice" jdbcType="DECIMAL" />
+			<result column="SECOND_ADD_WEIGHT_PRICE" property="secondAddWeightPrice" jdbcType="DECIMAL" />
+			<result column="THIRD_WEIGHT" property="thirdWeight" jdbcType="DECIMAL" />
+			<result column="THIRD_WEIGHT_PRICE" property="thirdWeightPrice" jdbcType="DECIMAL" />
+			<result column="THIRD_ADD_WEIGHT_PRICE" property="thirdAddWeightPrice" jdbcType="DECIMAL" />
+			<result column="FREIGHT_SECTION_CODE" property="freightSectionCode" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+
+	<select id="queryPriceCustSectionTyByParamInSide" parameterType="com.hoau.miser.module.api.itf.server.param.PriceSectionQueryParamInSide" resultMap="custPriceSectionResultMap">
+				SELECT
+		 				t.id mainID,
+                         t.customer_code,
+                         t.ACTIVE,
+                         t.EFFECTIVE_TIME,
+                         t.CREATE_TIME,
+                         t.MODIFY_TIME,
+                         t.remark,
+                         t.customer_name,
+                         t.INVALID_TIME
+						,TPCS.ID
+						,TPCS.TRANS_TYPE_CODE
+						,TPCS.ARRIVE_PRICE_CITY,
+						TPCS.First_Weight,
+						TPCS.FIRST_WEIGHT_PRICE,
+						TPCS.FIRST_ADD_WEIGHT_PRICE,
+						TPCS.SECOND_WEIGHT,
+						TPCS.SECOND_WEIGHT_PRICE,
+						TPCS.SECOND_ADD_WEIGHT_PRICE,
+						TPCS.THIRD_WEIGHT,
+						TPCS.THIRD_WEIGHT_PRICE,
+						TPCS.THIRD_ADD_WEIGHT_PRICE,
+						TPCS.FREIGHT_SECTION_CODE,
+						TPCS.SEND_PRICE_CITY
+                    FROM T_PRICE_CUSTOMER_SECTION t
+                LEFT JOIN T_PRICE_CUSTOMER_SECTION_SUB TPCS on t.id=TPCS.PARENT_ID
+                <where>
+					T.CUSTOMER_CODE = #{baseTyParam.custNo, jdbcType=VARCHAR}
+					AND TPCS.SEND_PRICE_CITY =#{sendPriceCityCode,jdbcType=VARCHAR}
+					AND TPCS.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR}
+
+					<![CDATA[ and T.active='Y']]>
+					and TPCS.trans_type_code=#{baseTyParam.transTypeCode,jdbcType=VARCHAR}
+					and (<![CDATA[T.effective_time<=]]>#{baseTyParam.billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(T.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=]]>#{baseTyParam.billTime,jdbcType=TIMESTAMP})
+					)
+				</where>
+	</select>
+</mapper>

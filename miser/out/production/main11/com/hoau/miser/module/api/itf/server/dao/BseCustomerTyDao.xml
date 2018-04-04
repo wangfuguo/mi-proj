@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.BseCustomerTyDao" >
+
+	<resultMap id="BseCustomerResultMap" type="com.hoau.miser.module.api.itf.api.shared.domain.BseCustomerTyEntity" >
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="CONTRACT_START_TIME" property="contractStartTime" jdbcType="TIMESTAMP" />
+		<result column="CONTRACT_END_TIME" property="contractEndTime" jdbcType="TIMESTAMP" />
+		<result column="PC_START_TIME" property="pcStartTime" jdbcType="TIMESTAMP" />
+		<result column="PC_END_TIME" property="pcEndTime" jdbcType="TIMESTAMP" />
+		<result column="USE_CUSTOMER_PC" property="useCustomerPc" jdbcType="VARCHAR" />
+		<result column="USE_CUSTOMER_DISCOUNT" property="useCustomerDiscount" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="CHAR" />
+		<result column="YDJ_USE_DRD" property="useTingriEasyHome" jdbcType="CHAR" />
+		<!--<result column="ROAD_AREA_CODE" property="roadAreaCode" jdbcType="VARCHAR" />-->
+		<!--<result column="BIG_REGION_CODE" property="bigRegionCode" jdbcType="VARCHAR" />-->
+		<!--<result column="DIVISION_CODE" property="divisionCode" jdbcType="VARCHAR" />-->
+		<!--<result column="DIVISION_NAME" property="divisionName" jdbcType="VARCHAR" />-->
+		<!--<result column="BIGREGION_NAME" property="bigRegionName" jdbcType="VARCHAR" />
+		<result column="ROADAREA_NAME" property="roadAreaName" jdbcType="VARCHAR" />-->
+		<!--<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />-->
+	</resultMap>
+
+
+	<sql id="Base_Column_List" >
+    T.ID, T.CODE, T.NAME, T.ORG_CODE, T.CONTRACT_START_TIME, T.CONTRACT_END_TIME, T.PC_START_TIME,
+    T.PC_END_TIME, T.USE_CUSTOMER_PC, T.USE_CUSTOMER_DISCOUNT, T.REMARK, T.CREATE_TIME, T.CREATE_USER_CODE,
+    T.MODIFY_TIME, T.MODIFY_USER_CODE, T.ACTIVE, O.PARENT_CODE as ROAD_AREA_CODE, O.BIG_REGION_CODE, O.DIVISION_CODE,
+    DIVI.NAME AS DIVISION_NAME, BIGREGION.NAME AS BIGREGION_NAME, O.PARENT_NAME AS ROADAREA_NAME, O.NAME AS ORG_NAME, T.YDJ_USE_DRD
+	</sql>
+
+	<select id="queryBseCustomerTyByCustNo"  parameterType="string"   resultMap="BseCustomerResultMap">
+      select
+		<include refid="Base_Column_List" />
+       from T_BSE_CUSTOMER T
+       left join T_BSE_ORG O
+    	on T.ORG_CODE=O.CODE and O.ACTIVE='Y'
+    	LEFT JOIN T_BSE_ORG DIVI
+    		ON O.DIVISION_CODE=DIVI.CODE AND DIVI.ACTIVE='Y'
+    	LEFT JOIN T_BSE_ORG BIGREGION
+    		ON O.BIG_REGION_CODE=BIGREGION.CODE AND BIGREGION.ACTIVE='Y'
+       where T.ACTIVE = 'Y'
+        and T.CODE = #{custNo,jdbcType=VARCHAR}
+	</select>
+</mapper>

@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hoau.miser.module.sys.job.server.dao.OuterBranchSyncDao">
+
+	<resultMap
+		type="com.hoau.miser.module.sys.job.shared.domain.OutBranchEntity"
+		id="outBranchResultMap">
+		<result property="id" column="ID" jdbcType="VARCHAR" />
+		<result property="code" column="CODE" jdbcType="VARCHAR" />
+		<result property="name" column="NAME" jdbcType="VARCHAR" />
+		<result property="logistCode" column="LOGIST_CODE" jdbcType="VARCHAR" />
+		<result property="province" column="PROVINCE" jdbcType="VARCHAR" />
+		<result property="provinceCode" column="PROVINCE_CODE"
+			jdbcType="VARCHAR" />
+		<result property="city" column="CITY" jdbcType="VARCHAR" />
+		<result property="cityCode" column="CITY_CODE" jdbcType="VARCHAR" />
+		<result property="county" column="COUNTY" jdbcType="VARCHAR" />
+		<result property="countyCode" column="COUNTY_CODE" jdbcType="VARCHAR" />
+		<result property="areaCode" column="AREA_CODE" jdbcType="VARCHAR" />
+		<result property="phone" column="PHONE" jdbcType="VARCHAR" />
+		<result property="fax" column="FAX" jdbcType="VARCHAR" />
+		<result property="addressDetail" column="ADDRESS_DETAIL"
+			jdbcType="VARCHAR" />
+		<result property="lng" column="LNG" jdbcType="NUMERIC" />
+		<result property="lat" column="LAT" jdbcType="NUMERIC" />
+		<result property="isSpecifiedTime" column="IS_SPECIFIED_TIME"
+			jdbcType="CHAR" />
+		<result property="isShipment" column="IS_SHIPMENT" jdbcType="CHAR" />
+		<result property="isDelivery" column="IS_DELIVERY" jdbcType="CHAR" />
+		<result property="isPickUp" column="IS_PICK_UP" jdbcType="CHAR" />
+		<result property="active" column="ACTIVE" jdbcType="CHAR" />
+
+	</resultMap>
+
+	<sql id="query_outBrach_param">
+		ID AS ID,
+		CODE AS CODE,
+		NAME AS NAME,
+		LOGIST_CODE AS LOGIST_CODE,
+		PROVINCE AS PROVINCE,
+		PROVINCE_CODE AS PROVINCE_CODE,
+		CITY AS CITY,
+		CITY_CODE AS CITY_CODE,
+		COUNTY AS COUNTY,
+		COUNTY_CODE AS COUNTY_CODE,
+		AREA_CODE AS AREA_CODE,
+		PHONE AS PHONE,
+		FAX AS FAX,
+		ADDRESS_DETAIL AS ADDRESS_DETAIL,
+		LNG AS LNG,
+		LAT AS LAT,
+		IS_SPECIFIED_TIME AS IS_SPECIFIED_TIME,
+		IS_SHIPMENT AS IS_SHIPMENT,
+		IS_DELIVERY AS IS_DELIVERY,
+		IS_PICK_UP AS IS_PICK_UP,
+		ACTIVE AS ACTIVE
+	</sql>
+
+
+	<!-- 获取上词更新的最大时间截 -->
+	<select id="getLastUpdateTime" resultType="long">
+		SELECT MAX(VERSION_NO) FROM T_BSE_OUTER_BRANCH_MDM
+	</select>
+
+	<select id="queryMdmCountByCode" parameterType="String"
+		resultType="long">
+		SELECT COUNT(1) FROM T_BSE_OUTER_BRANCH_MDM WHERE
+		CODE=#{code,jdbcType=VARCHAR}
+	</select>
+
+
+	<insert id="addOuterBranchMdm"
+		parameterType="com.hoau.miser.module.sys.job.shared.domain.OutBranchEntity">
+		INSERT /** **/
+		INTO T_BSE_OUTER_BRANCH_MDM (
+		ID,
+		CODE,
+		NAME,
+		PROVINCE_CODE,
+		CITY_CODE,
+		COUNTY_CODE,
+		LNG,
+		LAT,
+		ACTIVE,
+		LOGIST_CODE,
+		PROVINCE,
+		CITY,
+		COUNTY,
+		DELIVERY_DEPEND_LOGIST_CODE,
+		FAX,
+		IS_SPECIFIED_TIME,
+		TAKE_SELF_DEPEND_LOGIST_CODE,
+		AREA_CODE,
+		PHONE,
+		ADDRESS_DETAIL,
+		IS_SHIPMENT,
+		IS_DELIVERY,
+		IS_PICK_UP,
+		VERSION_NO,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+		) VALUES (
+		#{id,jdbcType=VARCHAR},
+		#{code,jdbcType=VARCHAR},
+
+		#{name,jdbcType=VARCHAR},
+		#{provinceCode,jdbcType=VARCHAR},
+		#{cityCode,jdbcType=VARCHAR},
+
+		#{countyCode,jdbcType=VARCHAR},
+		#{lng,jdbcType=NUMERIC},
+
+		#{lat,jdbcType=NUMERIC},
+		#{active,jdbcType=CHAR},
+
+		#{logistCode,jdbcType=VARCHAR},
+		#{province,jdbcType=VARCHAR},
+
+		#{city,jdbcType=VARCHAR},
+		#{county,jdbcType=VARCHAR},
+
+		#{deliveryDependLogistCode,jdbcType=VARCHAR},
+		#{fax,jdbcType=VARCHAR},
+
+		#{isSpecifiedTime,jdbcType=CHAR},
+		#{takeSelfDependLogistCode,jdbcType=VARCHAR},
+
+		#{areaCode,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR},
+
+		#{addressDetail,jdbcType=VARCHAR},
+		#{isShipment,jdbcType=CHAR},
+
+		#{isDelivery,jdbcType=CHAR},
+		#{isPickUp,jdbcType=CHAR},
+
+		#{versionNo,jdbcType=NUMERIC},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{modifyDate,jdbcType=TIMESTAMP},
+		#{modifyUser,jdbcType=VARCHAR})
+
+	</insert>
+
+
+
+	<update id="updateOuterBranchMdm"
+		parameterType="com.hoau.miser.module.sys.job.shared.domain.OutBranchEntity">
+		UPDATE
+		T_BSE_OUTER_BRANCH_MDM SET
+		CODE = #{code,jdbcType=VARCHAR},
+		NAME = #{name,jdbcType=VARCHAR},
+		PROVINCE_CODE=#{provinceCode,jdbcType=VARCHAR},
+		CITY_CODE=#{cityCode,jdbcType=VARCHAR},
+		COUNTY_CODE=#{countyCode,jdbcType=VARCHAR},
+		LNG=#{lng,jdbcType=NUMERIC},
+		LAT=#{lat,jdbcType=NUMERIC},
+		ACTIVE=#{active,jdbcType=CHAR},
+		LOGIST_CODE=#{logistCode,jdbcType=VARCHAR},
+		PROVINCE=#{province,jdbcType=VARCHAR},
+		CITY=#{city,jdbcType=VARCHAR},
+		COUNTY=#{county,jdbcType=VARCHAR},
+		DELIVERY_DEPEND_LOGIST_CODE=#{deliveryDependLogistCode,jdbcType=VARCHAR},
+		FAX=#{fax,jdbcType=VARCHAR},
+		IS_SPECIFIED_TIME=#{isSpecifiedTime,jdbcType=CHAR},
+		TAKE_SELF_DEPEND_LOGIST_CODE=#{takeSelfDependLogistCode,jdbcType=VARCHAR},
+		AREA_CODE=#{areaCode,jdbcType=VARCHAR},
+		PHONE=#{phone,jdbcType=VARCHAR},
+		ADDRESS_DETAIL=#{addressDetail,jdbcType=VARCHAR},
+		IS_SHIPMENT=#{isShipment,jdbcType=CHAR},
+		IS_DELIVERY=#{isDelivery,jdbcType=CHAR},
+		IS_PICK_UP=#{isPickUp,jdbcType=CHAR},
+		VERSION_NO=#{versionNo,jdbcType=NUMERIC},
+		CREATE_TIME=#{createDate,jdbcType=TIMESTAMP},
+		CREATE_USER_CODE=#{createDate,jdbcType=TIMESTAMP},
+		MODIFY_TIME=#{modifyDate,jdbcType=TIMESTAMP},
+		MODIFY_USER_CODE=#{modifyUser,jdbcType=VARCHAR}
+		WHERE
+		CODE=#{code,jdbcType=NUMERIC}
+	</update>
+
+	<update id="updateOuterBranch">
+		MERGE INTO T_BSE_OUTER_BRANCH BU
+		USING (SELECT ID,
+		              CODE,
+		              NAME,
+		              LOGIST_CODE,
+		              PROVINCE,
+		              PROVINCE_CODE,
+		              CITY,
+		              CITY_CODE,
+		              COUNTY,
+		              COUNTY_CODE,
+		              AREA_CODE,
+		              PHONE,
+		              FAX,
+		              ADDRESS_DETAIL,
+		              LNG,
+		              LAT,
+		              IS_SPECIFIED_TIME,
+		              IS_SHIPMENT,
+		              IS_DELIVERY,
+		              IS_PICK_UP,
+		              ACTIVE,
+		              DELIVERY_DEPEND_LOGIST_CODE,
+		              TAKE_SELF_DEPEND_LOGIST_CODE
+		         FROM T_BSE_OUTER_BRANCH_MDM
+		       MINUS
+		       SELECT ID,
+		              CODE,
+		              NAME,
+		              LOGIST_CODE,
+		              PROVINCE,
+		              PROVINCE_CODE,
+		              CITY,
+		              CITY_CODE,
+		              COUNTY,
+		              COUNTY_CODE,
+		              AREA_CODE,
+		              PHONE,
+		              FAX,
+		              ADDRESS_DETAIL,
+		              LNG,
+		              LAT,
+		              IS_SPECIFIED_TIME,
+		              IS_SHIPMENT,
+		              IS_DELIVERY,
+		              IS_PICK_UP,
+		              ACTIVE,
+		              DELIVERY_DEPEND_LOGIST_CODE,
+		              TAKE_SELF_DEPEND_LOGIST_CODE
+		         FROM T_BSE_OUTER_BRANCH) MU
+		ON (BU.CODE = MU.CODE)
+		WHEN MATCHED THEN
+		  UPDATE
+		     SET BU.ID                           = MU.ID,
+		         BU.NAME                         = MU.NAME,
+		         BU.LOGIST_CODE                  = MU.LOGIST_CODE,
+		         BU.PROVINCE                     = MU.PROVINCE,
+		         BU.PROVINCE_CODE                = MU.PROVINCE_CODE,
+		         BU.CITY                         = MU.CITY,
+		         BU.CITY_CODE                    = MU.CITY_CODE,
+		         BU.COUNTY                       = MU.COUNTY,
+		         BU.COUNTY_CODE                  = MU.COUNTY_CODE,
+		         BU.AREA_CODE                    = MU.AREA_CODE,
+		         BU.PHONE                        = MU.PHONE,
+		         BU.FAX                          = MU.FAX,
+		         BU.ADDRESS_DETAIL               = MU.ADDRESS_DETAIL,
+		         BU.LNG                          = MU.LNG,
+		         BU.LAT                          = MU.LAT,
+		         BU.IS_SPECIFIED_TIME            = MU.IS_SPECIFIED_TIME,
+		         BU.IS_SHIPMENT                  = MU.IS_SHIPMENT,
+		         BU.IS_DELIVERY                  = MU.IS_DELIVERY,
+		         BU.IS_PICK_UP                   = MU.IS_PICK_UP,
+		         BU.DELIVERY_DEPEND_LOGIST_CODE  = MU.DELIVERY_DEPEND_LOGIST_CODE,
+		         BU.TAKE_SELF_DEPEND_LOGIST_CODE = MU.TAKE_SELF_DEPEND_LOGIST_CODE,
+		         BU.ACTIVE                       = MU.ACTIVE,
+		         BU.VERSION_NO                   = #{versionNo,jdbcType=NUMERIC},
+		         BU.MODIFY_TIME                  = #{date,jdbcType=TIMESTAMP},
+		         BU.MODIFY_USER_CODE             = 'JOB'
+		WHEN NOT MATCHED THEN
+		  INSERT
+		    (BU.ID,
+		     BU.CODE,
+		     BU.NAME,
+		     BU.LOGIST_CODE,
+		     BU.PROVINCE,
+		     BU.PROVINCE_CODE,
+		     BU.CITY,
+		     BU.CITY_CODE,
+		     BU.COUNTY,
+		     BU.COUNTY_CODE,
+		     BU.AREA_CODE,
+		     BU.PHONE,
+		     BU.FAX,
+		     BU.ADDRESS_DETAIL,
+		     BU.LNG,
+		     BU.LAT,
+		     BU.IS_SPECIFIED_TIME,
+		     BU.IS_SHIPMENT,
+		     BU.IS_DELIVERY,
+		     BU.IS_PICK_UP,
+		     BU.DELIVERY_DEPEND_LOGIST_CODE,
+		     BU.TAKE_SELF_DEPEND_LOGIST_CODE,
+		     BU.VERSION_NO,
+		     BU.ACTIVE,
+		     BU.MODIFY_TIME,
+		     BU.MODIFY_USER_CODE,
+		     BU.CREATE_TIME,
+		     BU.CREATE_USER_CODE)
+		  VALUES
+		    (MU.ID,
+		     MU.CODE,
+		     MU.NAME,
+		     MU.LOGIST_CODE,
+		     MU.PROVINCE,
+		     MU.PROVINCE_CODE,
+		     MU.CITY,
+		     MU.CITY_CODE,
+		     MU.COUNTY,
+		     MU.COUNTY_CODE,
+		     MU.AREA_CODE,
+		     MU.PHONE,
+		     MU.FAX,
+		     MU.ADDRESS_DETAIL,
+		     MU.LNG,
+		     MU.LAT,
+		     MU.IS_SPECIFIED_TIME,
+		     MU.IS_SHIPMENT,
+		     MU.IS_DELIVERY,
+		     MU.IS_PICK_UP,
+		     MU.DELIVERY_DEPEND_LOGIST_CODE,
+		     MU.TAKE_SELF_DEPEND_LOGIST_CODE,
+		     #{versionNo,jdbcType=NUMERIC},
+		     MU.ACTIVE,
+		     #{date,jdbcType=TIMESTAMP},
+		     'JOB',
+		     #{date,jdbcType=TIMESTAMP},
+		     'JOB')
+	</update>
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups xmlns="http://www.isdc.ro/wro"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
+    
+  <group name="discountCorp">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+  	    <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/discountCorp.js</js>
+  </group>
+  
+  <group name="discountCustomer">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+  	    <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/discountCustomer.js</js>
+  </group>
+  	
+  	<group name="discountPrivilege">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+  	    <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/discountPrivilege.js</js>
+  	</group>
+  	<group name="privilegeContract">
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/privilegeContract.js</js>
+    </group>
+    <group name="privilegeStateQuery">
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/importImgFile.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/privilegeStateQuery.js</js>
+    </group>
+
+    <group name="privilegeCouponCheck">
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/importImgFile.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/privilegeCouponCheck.js</js>
+    </group>
+    
+    <group name="priceEvnet">
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/PriceEvnetList/controller/PriceEvnet.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/PriceEvnetList/model/PriceEvnet.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/PriceEvnetList/store/PriceEvnet.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/PriceEvnetList/view/priceEvnet/List.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/PriceEvnetList/view/priceEvnet/Search.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/PriceEvnetList/view/Viewport.js</js>
+        <js>classpath:com/hoau/miser/module/biz/discount/server/META-INF/scripts/PriceEvnetList/PriceEvnetList.js</js>
+    </group>
+    
+    <group name="priceEvnetAdd">
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+        <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+    </group>
+
+</groups>

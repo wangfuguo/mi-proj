@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="miser-api-web:war">
+    <output-path>$PROJECT_DIR$/miser-api/miser-api-web/target</output-path>
+    <root id="archive" name="miser-api-web-0.0.1-SNAPSHOT.war">
+      <element id="artifact" artifact-name="miser-api-web:war exploded" />
+    </root>
+  </artifact>
+</component>

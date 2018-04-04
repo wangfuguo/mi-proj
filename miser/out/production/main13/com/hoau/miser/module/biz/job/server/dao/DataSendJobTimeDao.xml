@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.DataSendJobTimeDao" >
+
+  <resultMap id="dataSendJobTimeMap" type="com.hoau.miser.module.biz.job.shared.domain.DataSendJobTimeEntity" >
+	<id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="JOB_CODE" property="jobCode" jdbcType="VARCHAR" />
+    <result column="JOB_NAME" property="jobName" jdbcType="VARCHAR" />
+    <result column="LAST_SEND_TIME" property="lastSendTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, JOB_CODE, JOB_NAME, LAST_SEND_TIME, REMARK, CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, 
+    MODIFY_USER_CODE, ACTIVE
+  </sql>
+  
+  <insert id="insertLastSendTime" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobTimeEntity" >
+    insert into T_JOB_LAST_SEND_TIME (ID, JOB_CODE, JOB_NAME, 
+      LAST_SEND_TIME, REMARK, CREATE_TIME, 
+      CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, 
+      ACTIVE)
+    values (#{id,jdbcType=VARCHAR}, #{jobCode,jdbcType=VARCHAR}, #{jobName,jdbcType=VARCHAR}, 
+      #{lastSendTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{modifyDate,jdbcType=TIMESTAMP}, #{modifyUser,jdbcType=VARCHAR}, 
+      #{active,jdbcType=CHAR})
+  </insert>
+  
+  <update id="updateLastSendTime" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobTimeEntity" >
+    update T_JOB_LAST_SEND_TIME
+    <set>
+        ACTIVE = 'N'
+    </set>
+    where JOB_CODE = #{jobCode,jdbcType=VARCHAR}
+    AND ACTIVE = 'Y'
+  </update>
+  
+  <select id="getLastSendTime" resultMap="dataSendJobTimeMap" 
+  	parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobTimeEntity" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_JOB_LAST_SEND_TIME
+    where JOB_CODE = #{jobCode,jdbcType=VARCHAR}
+    AND ACTIVE = #{active, jdbcType=VARCHAR}
+  </select>
+  
+  
+</mapper>

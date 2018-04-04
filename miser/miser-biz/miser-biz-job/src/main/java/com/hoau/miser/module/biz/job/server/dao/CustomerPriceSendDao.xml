@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.CustomerPriceSendDao">
+
+	<resultMap type="com.hoau.miser.module.biz.job.shared.domain.CustomerPriceSendEntity" 
+		id="customerPriceResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="standardId" property="standardId" jdbcType="VARCHAR" />
+		<result column="effectiveDate" property="effectiveDate" jdbcType="TIMESTAMP" />
+		<result column="invalidDate" property="invalidDate" jdbcType="TIMESTAMP" />
+		<result column="transportType" property="transportType" jdbcType="VARCHAR" />
+		<result column="arriveCityName" property="arriveCityName" jdbcType="VARCHAR" />
+		<result column="sendCity" property="sendCity" jdbcType="VARCHAR" />
+		<result column="startPrice" property="startPrice" jdbcType="DOUBLE" />
+		<result column="weightPrice" property="weightPrice" jdbcType="DOUBLE" />
+		<result column="volumePrice" property="volumePrice" jdbcType="DOUBLE" />
+		<result column="extraChargePrice" property="extraChargePrice" jdbcType="DOUBLE" />
+		<result column="lightDiscount" property="lightDiscount" jdbcType="DOUBLE" />
+		<result column="heavyDiscount" property="heavyDiscount" jdbcType="DOUBLE" />
+		<result column="recStatus" property="recStatus" jdbcType="VARCHAR" />
+		<result column="fuelSubchargeId" property="fuelSubchargeId" jdbcType="VARCHAR" />
+		<result column="sectionId" property="sectionId" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	
+	<sql id="queryCondition_priceCustomer">
+		<where>
+			<if test="endTime != null">
+					
+					<![CDATA[
+						((
+							T.INVALID_TIME < #{endTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+					<if test="startTime != null">
+						<![CDATA[
+							AND T.INVALID_TIME >= #{startTime, jdbcType=TIMESTAMP}
+						]]>
+					</if>
+					<![CDATA[
+						and t.id not in (select temp.id from
+                       			T_PRICE_CUSTOMER temp
+                       			where t.CUSTOMER_CODE=temp.CUSTOMER_CODE
+                       			and(
+                       				(sysdate>=temp.effective_time and nvl(temp.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>sysdate and temp.active='Y')
+                       			)
+						))
+					]]>
+					
+					<![CDATA[
+						or
+					]]>
+					<![CDATA[
+						(
+							T.EFFECTIVE_TIME < #{endTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+						<if test="startTime != null">
+							<![CDATA[
+								AND T.EFFECTIVE_TIME >= #{startTime, jdbcType=TIMESTAMP }
+							]]>
+						</if>
+					<![CDATA[
+							and T.active='Y'
+						)
+					]]>
+					<![CDATA[
+						
+						)
+					]]>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 失败客户价格信息查询条件 -->
+	<sql id="queryCondition_priceCustomer_fail">
+		<where>
+			<if test="sendTime != null">
+					
+					<![CDATA[
+						((
+							T.INVALID_TIME < #{sendTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+					<if test="lastSendTime != null">
+						<![CDATA[
+							AND T.INVALID_TIME >= #{lastSendTime, jdbcType=TIMESTAMP}
+						]]>
+					</if>
+					<![CDATA[
+						and t.id not in (select temp.id from
+                       			T_PRICE_CUSTOMER temp
+                       			where t.CUSTOMER_CODE=temp.CUSTOMER_CODE
+                       			and(
+                       				(sysdate>=temp.effective_time and nvl(temp.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>sysdate and temp.active='Y')
+                       			)
+						))
+					]]>
+					
+					<![CDATA[
+						or
+					]]>
+					<![CDATA[
+						(
+							T.EFFECTIVE_TIME < #{sendTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+						<if test="lastSendTime != null">
+							<![CDATA[
+								AND T.EFFECTIVE_TIME >= #{lastSendTime, jdbcType=TIMESTAMP }
+							]]>
+						</if>
+					<![CDATA[
+							and T.active='Y'
+						)
+					]]>
+					<![CDATA[
+						
+						)
+					]]>
+			</if>
+		</where>
+	</sql>
+	
+	
+	
+	
+	
+	
+	<sql id="queryCondition_discardDeal_fail">
+		<where>
+			<if test="sendTime != null">
+					
+					<![CDATA[
+						((
+							T.INVALID_TIME < #{sendTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+					<if test="lastSendTime != null">
+						<![CDATA[
+							AND T.INVALID_TIME >= #{lastSendTime, jdbcType=TIMESTAMP}
+						]]>
+					</if>
+					<![CDATA[
+             			and t.id not in(
+             				select temp.id from
+                       			T_DISCOUNT_CUSTOMER temp
+                       			where temp.CUSTOMER_CODE = t.CUSTOMER_CODE and temp.TRANS_TYPE_CODE=t.TRANS_TYPE_CODE
+			                 	and (temp.effective_time <= sysdate and
+                              (nvl(temp.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>sysdate))
+                       			and temp.active = 'Y'
+             			)
+						)
+					]]>
+					<![CDATA[
+						or
+					]]>
+					<![CDATA[
+						(
+							T.EFFECTIVE_TIME < #{sendTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+						<if test="lastSendTime != null">
+							<![CDATA[
+								AND T.EFFECTIVE_TIME >= #{lastSendTime, jdbcType=TIMESTAMP }
+							]]>
+						</if>
+					<![CDATA[
+							and T.active='Y'
+						)
+					]]>
+					<![CDATA[
+						)
+					]]>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="queryCondition_discardDeal_discount">
+		<where>
+			<if test="endTime != null">
+					
+					<![CDATA[
+						((
+							T.INVALID_TIME < #{endTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+					<if test="startTime != null">
+						<![CDATA[
+							AND T.INVALID_TIME >= #{startTime, jdbcType=TIMESTAMP}
+						]]>
+					</if>
+					<![CDATA[
+             			and t.id not in(
+             				select temp.id from
+                       			T_DISCOUNT_CUSTOMER temp
+                       			where temp.CUSTOMER_CODE = t.CUSTOMER_CODE and temp.TRANS_TYPE_CODE=t.TRANS_TYPE_CODE
+			                 	and (temp.effective_time <= sysdate and
+                              (nvl(temp.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>sysdate))
+                       			and temp.active = 'Y'
+             			)
+						)
+					]]>
+					<![CDATA[
+						or
+					]]>
+					<![CDATA[
+						(
+							T.EFFECTIVE_TIME < #{endTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+						<if test="startTime != null">
+							<![CDATA[
+								AND T.EFFECTIVE_TIME >= #{startTime, jdbcType=TIMESTAMP }
+							]]>
+						</if>
+					<![CDATA[
+							and T.active='Y'
+						)
+					]]>
+					<![CDATA[
+						)
+					]]>
+			</if>
+		</where>
+	</sql>
+		
+	
+	
+	
+	
+	<!-- 新修改的逻辑 -->
+	
+	<!-- 拿到有效客户对应的标准价格城市 -->
+	<select id="queryCustomerPriceCitysSandardBycustomerNos" parameterType="java.util.Map" resultType="java.util.Map">
+			select tbc.code,trcmd.price_city from T_BSE_CUSTOMER tbc 
+           	left join T_BSE_ORG tbo on tbc.org_code=tbo.code
+            left join T_PRICE_CITY_MAPPING_DISTRICT trcmd on trcmd.area_code=tbo.county_code and trcmd.active='Y'and trcmd.type='SEND'
+            where tbc.active='Y'
+            <if test="customerNos!=null and customerNos!=''">
+ 				and tbc.code in
+ 				<foreach collection="customerNos"  index="index" item="customerNo"  open="(" separator="," close=")">  
+	            	#{customerNo} 
+	        	</foreach>
+ 			</if>
+ 			
+	</select>
+	<!-- 拿到有效客户对应的客户价格城市 -->
+	<select id="queryCustomerPriceCityCustBycustomerNos" parameterType="java.util.Map" resultType="java.util.Map">
+			select tbc.code,trcmd.price_city from T_BSE_CUSTOMER tbc 
+           	left join T_BSE_ORG tbo on tbc.org_code=tbo.code
+            left join T_PRICE_CITY_MAPPING_CUSTOMER trcmd on trcmd.area_code=tbo.county_code and trcmd.active='Y'and trcmd.type='SEND'
+            where tbc.active='Y'
+            <if test="customerNos!=null and customerNos!=''">
+ 				and tbc.code in
+ 				<foreach collection="customerNos"  index="index" item="customerNo"  open="(" separator="," close=")">  
+	            	#{customerNo} 
+	        	</foreach>
+ 			</if>
+ 			
+	</select>
+	
+	<!-- 查询客户价格-->
+	<select id="queryCusomerPriceData" parameterType="java.util.Map" resultType="java.util.Map">
+		select T.*
+			from (
+                   select 
+                    TPCS.Id as ID
+                    ,T.mainID as mainID
+                    ,T.CUSTOMER_CODE standardId
+                    ,T.EFFECTIVE_TIME effectiveDate
+                    ,T.INVALID_TIME invalidDate
+                    ,t.remark
+                    ,t.CUSTOMERTYPE
+                    ,TPCS.TRANS_TYPE_CODE transportType
+                    ,TPCS.ARRIVE_PRICE_CITY arriveCityName
+                    ,TPCS.LOWEST_FEE startPrice
+                    ,TPCS.WEIGHT_PRICE weightPrice
+                    ,TPCS.VOLUME_PRICE volumePrice
+                    ,TPCS.ADD_FEE extraChargePrice
+                    ,TPCS.VOLUME_DISCOUNT lightDiscount
+                    ,TPCS.WEIGHT_DISCOUNT heavyDiscount
+                    ,TPCS.FUEL_FEE_SECTION fuelSubchargeId
+                    ,TPCS.FREIGHT_FEE_SECTION sectionId
+                    ,TPCS.SEND_PRICE_CITY sendCity
+                    ,case when T.ACTIVE='Y' then TPCS.ACTIVE
+                        ELSE 'N' end as ACTIVE
+                          from (
+                    SELECT * from(
+                  SELECT ROW_NUMBER() OVER(PARTITION BY T.customer_code ORDER BY t.MODIFY_TIME desc, t.CREATE_TIME DESC) rn,
+                         t.id mainID,
+                         t.customer_code,
+                         t.ACTIVE,
+                         t.EFFECTIVE_TIME,
+                         t.CREATE_TIME,
+                         t.MODIFY_TIME,
+                         t.remark,
+                         t.CUSTOMERTYPE,
+                         t.INVALID_TIME
+                    FROM T_PRICE_CUSTOMER t 
+                      <include refid="queryCondition_priceCustomer"></include>
+                    ) WHERE rn = 1
+                  ) T
+                   LEFT JOIN T_PRICE_CUSTOMER_SUB TPCS on t.mainID=TPCS.PARENT_ID
+           )  T
+	</select>
+	
+	<!-- 客户价格失败信息的去重 -->
+	<update id="failureInfoUniqByCustPrice" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		update T_JOB_SEND_FAILURE A
+		     SET A.ACTIVE = 'N'
+		     where A.ACTIVE = 'Y'
+		           and EXISTS(
+		             select 1 from (
+		                       select * from(
+		                          select 
+		                                 A.id
+		                                ,B.TRANS_TYPE_CODE
+		                                ,B.ARRIVE_PRICE_CITY 
+		                                ,B.SEND_PRICE_CITY 
+		                                ,C.CUSTOMER_CODE
+		                                
+		                                FROM T_JOB_SEND_FAILURE A
+		                                join T_PRICE_CUSTOMER_SUB B on A.BUSINESS_ID = B.ID
+		                                join T_PRICE_CUSTOMER C on C.id=B.PARENT_ID
+		                             	where A.active='Y'
+		                             	AND A.TYPE = #{type, jdbcType=VARCHAR}
+		                        ) T      
+		                          where 
+		                             exists(
+		                                 select 1 from (
+		                                      select 
+		                                        TPCS.Id as ID
+		                                        ,t.mainId
+		                                        ,T.CUSTOMER_CODE 
+		                                        ,TPCS.TRANS_TYPE_CODE 
+		                                        ,TPCS.ARRIVE_PRICE_CITY 
+		                                        ,TPCS.SEND_PRICE_CITY 
+		                                      from (
+		                                        SELECT * from(
+		                                      SELECT ROW_NUMBER() OVER(PARTITION BY T.customer_code ORDER BY t.MODIFY_TIME desc, t.CREATE_TIME DESC) rn, 
+		                                             t.id mainId,                  
+		                                             t.customer_code,
+		                                             t.INVALID_TIME,
+       												 t.effective_time
+		                                             
+		                                        FROM T_PRICE_CUSTOMER t 
+		                                          <include refid="queryCondition_priceCustomer_fail"></include>
+		                                        ) WHERE rn = 1
+		                                      ) T
+		                                       LEFT JOIN T_PRICE_CUSTOMER_SUB TPCS on t.mainID=TPCS.PARENT_ID
+		                                   ) temp 
+		                                    where t.CUSTOMER_CODE=temp.CUSTOMER_CODE and t.TRANS_TYPE_CODE=temp.TRANS_TYPE_CODE
+                                       		and t.ARRIVE_PRICE_CITY=temp.ARRIVE_PRICE_CITY and t.SEND_PRICE_CITY=temp.SEND_PRICE_CITY
+		                             )
+		               
+		               ) temp where temp.id=a.id
+		          )
+	</update>
+	
+	<!-- 失败客户价格信息-->
+	<select id="queryFailCustPriceData" parameterType="java.util.Map" resultType="java.util.Map">
+		select * from(
+		                          select 
+		                           B.Id as ID
+                                  ,C.id as mainID
+                                  ,C.CUSTOMER_CODE standardId
+                                  ,C.EFFECTIVE_TIME effectiveDate
+                                  ,C.INVALID_TIME invalidDate
+                                  ,c.remark
+                                  ,c.CUSTOMERTYPE
+                                  ,B.TRANS_TYPE_CODE transportType
+                                  ,B.ARRIVE_PRICE_CITY arriveCityName
+                                  ,B.LOWEST_FEE startPrice
+                                  ,B.WEIGHT_PRICE weightPrice
+                                  ,B.VOLUME_PRICE volumePrice
+                                  ,B.ADD_FEE extraChargePrice
+                                  ,B.VOLUME_DISCOUNT lightDiscount
+                                  ,B.WEIGHT_DISCOUNT heavyDiscount
+                                  ,B.FUEL_FEE_SECTION fuelSubchargeId
+                                  ,B.FREIGHT_FEE_SECTION sectionId
+                                  ,B.SEND_PRICE_CITY sendCity
+                                  ,case when C.ACTIVE='Y' then B.ACTIVE
+                                      ELSE 'N' end as ACTIVE
+		                                
+		                                FROM T_JOB_SEND_FAILURE A
+		                                join T_PRICE_CUSTOMER_SUB B on A.BUSINESS_ID = B.ID
+		                                join T_PRICE_CUSTOMER C on C.id=B.PARENT_ID
+		                             	where A.active='Y'
+		                             	AND A.TYPE = #{type, jdbcType=VARCHAR}
+		                      ) T
+	</select>
+	
+	
+	<!-- 拿到本次符合条件的客户折扣信息 -->
+	<select id="queryNeedDiscountCustomerData" parameterType="java.util.Map" resultType="java.util.Map">
+					select A.*,trcmd.PRICE_CITY,tbc.PC_START_TIME,tbc.PC_END_TIME from(
+					SELECT * from(SELECT ROW_NUMBER() OVER(PARTITION BY T.customer_code,T.TRANS_TYPE_CODE ORDER BY t.MODIFY_TIME desc,t.CREATE_TIME DESC) rn,       
+                        t.id,t.customer_code,t.HEAVY_FLOAT_PRICE,t.LIGHT_FLOAT_PRICE,t.FLOAT_PERCENTAGE,t.trans_type_code,t.DISCOUNT_ACCODING_PC_TIME,t.DISCOUNT_PRIORITY_TYPE,t.FREIGHT_SECTION_CODE,t.FUEL_SECTION_CODE, t.ACTIVE,t.EFFECTIVE_TIME,t.CREATE_TIME,t.INVALID_TIME,t.remark      
+                				FROM T_DISCOUNT_CUSTOMER t <include refid="queryCondition_discardDeal_discount"></include>
+	          					 		 )WHERE rn = 1 ) A
+	        left join T_BSE_CUSTOMER tbc on tbc.code=A.customer_code
+           	left join T_BSE_ORG tbo on tbc.org_code=tbo.code
+		    left join T_PRICE_CITY_MAPPING_DISTRICT trcmd on trcmd.area_code=tbo.county_code and trcmd.active='Y'and trcmd.type='SEND'
+		    where A.DISCOUNT_ACCODING_PC_TIME is not null
+	</select>
+	
+	<!-- 根据参数拿到要发送的信息(排除掉跟当前生效的客户价格相同的数据) -->
+	<select id="querySendDataByParam" resultMap="customerPriceResultMap" parameterType="java.util.Map">
+		 
+		select t.id,t.TRANS_TYPE_CODE transportType,t.EFFECTIVE_TIME effectiveDate,t.INVALID_TIME invalidDate,t.ARRIVE_PRICE_CITY arriveCityName,t.MODIFY_TIME ,t.WEIGHT_PRICE weightPrice,t.VOLUME_PRICE volumePrice,t.ADD_FEE extraChargePrice,t.LOWEST_FEE startPrice,t.FUEL_FEE_SECTION fuelSubchargeId,t.ACTIVE 
+		from T_PRICE_STANDARD t
+ 		where t.SEND_PRICE_CITY=#{sendPriceCity,jdbcType=VARCHAR}
+ 		and t.active='Y'
+ 		<if test="pcTime!=null">
+ 			<![CDATA[and (
+ 				(t.effective_time<=]]>#{pcTime, jdbcType=TIMESTAMP}) and 
+ 				<![CDATA[((nvl(t.invalid_time,to_date('2999-12-31 23:59:59','yyyy-mm-dd hh24:mi:ss'))>]]>#{pcTime,jdbcType=TIMESTAMP}))
+			)
+ 		</if>
+ 		<if test="transTypeCode!=null and transTypeCode!=''">
+ 			AND t.TRANS_TYPE_CODE = #{transTypeCode, jdbcType=VARCHAR}
+ 		</if>
+ 		 and not exists(
+               select 
+                     1
+                    from  T_PRICE_CUSTOMER X
+                    left join T_PRICE_CUSTOMER_SUB TPCS on x.id=tpcs.PARENT_ID
+                    where <![CDATA[(x.EFFECTIVE_TIME<=sysdate and nvl(x.invalid_time,to_date('2999-12-31 23:59:59','yyyy-mm-dd hh24:mi:ss'))>sysdate) ]]>
+                          and x.active='Y'
+                          and t.TRANS_TYPE_CODE=tpcs.TRANS_TYPE_CODE and t.SEND_PRICE_CITY=tpcs.SEND_PRICE_CITY
+                          and t.ARRIVE_PRICE_CITY=tpcs.ARRIVE_PRICE_CITY
+    	)
+ 		
+	</select>
+	<sql id="failurequeryCondition_discardDeal_fail">
+		<where>
+			<if test="sendTime != null">
+					
+					<![CDATA[
+						((
+							T.INVALID_TIME < #{sendTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+					<if test="lastSendTime != null">
+						<![CDATA[
+							AND T.INVALID_TIME >= #{lastSendTime, jdbcType=TIMESTAMP}
+						]]>
+					</if>
+					<![CDATA[
+             			and t.id not in(
+             				select temp.id from
+                       			T_DISCOUNT_CUSTOMER temp
+                       			where temp.CUSTOMER_CODE = t.CUSTOMER_CODE and temp.TRANS_TYPE_CODE=t.TRANS_TYPE_CODE
+			                 	and (temp.effective_time <= sysdate and
+                              (nvl(temp.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>sysdate))
+                       			and temp.active = 'Y'
+             			)
+						)
+					]]>
+					<![CDATA[
+						or
+					]]>
+					<![CDATA[
+						(
+							T.EFFECTIVE_TIME < #{sendTime, jdbcType=TIMESTAMP}
+							
+					]]> 
+						<if test="lastSendTime != null">
+							<![CDATA[
+								AND T.EFFECTIVE_TIME >= #{lastSendTime, jdbcType=TIMESTAMP }
+							]]>
+						</if>
+					<![CDATA[
+							and T.active='Y'
+						)
+					]]>
+					<![CDATA[
+						)
+					]]>
+			</if>
+		</where>
+	</sql>
+	<!-- 客户折扣失败信息去重 -->
+	<select id="failureInfoUniqByCustDiscount" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		 update T_JOB_SEND_FAILURE A
+     SET A.ACTIVE = 'N'
+     where A.ACTIVE = 'Y'
+           and EXISTS(
+               select 1 from (
+                      select A.id,
+                      B.TRANS_TYPE_CODE,
+                      B.CUSTOMER_CODE
+                      FROM T_JOB_SEND_FAILURE A
+                      join T_DISCOUNT_CUSTOMER B on A.BUSINESS_ID = B.ID
+                      where exists(
+                            select 1 from (
+                                  select * from (
+                                  SELECT ROW_NUMBER() OVER(PARTITION BY T.customer_code,T.TRANS_TYPE_CODE ORDER BY t.MODIFY_TIME desc,t.CREATE_TIME DESC) rn,       
+                                    t.id,t.HEAVY_FLOAT_PRICE,t.LIGHT_FLOAT_PRICE,t.FLOAT_PERCENTAGE, t.customer_code,t.trans_type_code,t.DISCOUNT_ACCODING_PC_TIME,t.DISCOUNT_PRIORITY_TYPE,t.FREIGHT_SECTION_CODE,t.FUEL_SECTION_CODE, t.ACTIVE,t.EFFECTIVE_TIME,t.CREATE_TIME,t.INVALID_TIME     
+                                    FROM T_DISCOUNT_CUSTOMER t <include refid="failurequeryCondition_discardDeal_fail"></include>
+                                       )WHERE rn = 1 
+                               ) temp where temp.customer_code=B.CUSTOMER_CODE and temp.trans_type_code=B.trans_type_code and  temp.HEAVY_FLOAT_PRICE=B.HEAVY_FLOAT_PRICE and  temp.LIGHT_FLOAT_PRICE=B.LIGHT_FLOAT_PRICE and temp.FLOAT_PERCENTAGE=b.FLOAT_PERCENTAGE
+                      )
+               ) temp2 where temp2.id=A.id
+           )
+	</select>
+	<!--  -->
+	<!-- 失败客户折扣信息-->
+	<select id="queryFailCustDiscountData" parameterType="java.util.Map" resultType="java.util.Map">
+		select t.id,t.HEAVY_FLOAT_PRICE,t.LIGHT_FLOAT_PRICE,t.FLOAT_PERCENTAGE,t.customer_code,t.trans_type_code,t.DISCOUNT_ACCODING_PC_TIME,t.DISCOUNT_PRIORITY_TYPE,t.FREIGHT_SECTION_CODE,t.FUEL_SECTION_CODE, t.ACTIVE,t.EFFECTIVE_TIME,t.CREATE_TIME,t.INVALID_TIME     
+             ,trcmd.PRICE_CITY,tbc.PC_START_TIME,tbc.PC_END_TIME,t.remark  				
+ 		FROM T_JOB_SEND_FAILURE A
+     join T_DISCOUNT_CUSTOMER t on A.BUSINESS_ID=T.id
+    
+        left join T_BSE_CUSTOMER tbc on tbc.code=T.customer_code
+        left join T_BSE_ORG tbo on tbc.org_code=tbo.code
+		    left join T_PRICE_CITY_MAPPING_DISTRICT trcmd on trcmd.area_code=tbo.county_code and trcmd.active='Y'and trcmd.type='SEND'
+        
+        where A.active='Y'
+        AND A.TYPE = #{type, jdbcType=VARCHAR}
+	</select>
+</mapper>

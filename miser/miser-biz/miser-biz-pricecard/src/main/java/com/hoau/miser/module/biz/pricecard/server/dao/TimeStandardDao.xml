@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoau.miser.module.biz.pricecard.server.dao.TimeStandardDao" >
+  <resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.pricecard.api.shared.domain.TimeStandardEntity" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+    <result column="SEND_TIME_CITY" property="sendTimeCity" jdbcType="VARCHAR" />
+    <result column="ARRIVE_TIME_CITY" property="arriveTimeCity" jdbcType="VARCHAR" />
+    <result column="SEND_TIME_CITY_NAME" property="sendTimeCityName" jdbcType="VARCHAR" />
+    <result column="ARRIVE_TIME_CITY_NAME" property="arriveTimeCityName" jdbcType="VARCHAR" />
+    <result column="MIN_NOTIFY_DAY" property="minNotifyDay" jdbcType="DECIMAL" />
+    <result column="MAX_NOTIFY_DAY" property="maxNotifyDay" jdbcType="DECIMAL" />
+    <result column="PICKUP_PROM_DAY" property="pickupPromDay" jdbcType="VARCHAR" />
+    <result column="DELIVERY_PROM_DAY" property="deliveryPromDay" jdbcType="DECIMAL" />
+    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.util.HashMap" id="mapList"></resultMap>
+  <sql id="Base_Column_List" >
+    ID, TRANS_TYPE_CODE, TRANS_TYPE_NAME, SEND_TIME_CITY, ARRIVE_TIME_CITY, MIN_NOTIFY_DAY, 
+    MAX_NOTIFY_DAY, PICKUP_PROM_DAY, DELIVERY_PROM_DAY, EFFECTIVE_TIME, INVALID_TIME, 
+    REMARK, CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, ACTIVE
+  </sql>
+  
+  <sql id="Extend_Column_List" >
+    PSE.ID, PSE.TRANS_TYPE_CODE, PSE.TRANS_TYPE_NAME,STC.CODE AS SEND_TIME_CITY, STC.NAME AS SEND_TIME_CITY_NAME,ATC.CODE AS ARRIVE_TIME_CITY, ATC.NAME AS ARRIVE_TIME_CITY_NAME, 
+    PSE.MIN_NOTIFY_DAY, PSE.MAX_NOTIFY_DAY, PSE.PICKUP_PROM_DAY, PSE.DELIVERY_PROM_DAY, 
+    PSE.EFFECTIVE_TIME, PSE.INVALID_TIME, PSE.REMARK, PSE.CREATE_TIME, 
+    (PSE.CREATE_USER_CODE || ' ' || C.EMP_NAME) AS CREATE_USER_CODE, 
+    PSE.MODIFY_TIME, (PSE.MODIFY_USER_CODE || ' ' || M.EMP_NAME) AS MODIFY_USER_CODE, PSE.ACTIVE
+  </sql>
+  
+  <sql id="queryListSql">
+  	 select * from (
+  	select 	 <include refid="Extend_Column_List" />,
+  	<![CDATA[
+  	 CASE WHEN (PSE.INVALID_TIME<SYSDATE AND PSE.ACTIVE='Y') THEN 'PASSED'
+ 			                     WHEN (PSE.EFFECTIVE_TIME<=SYSDATE AND PSE.ACTIVE='Y') THEN 'EFFECTIVE'
+ 			                     WHEN (PSE.EFFECTIVE_TIME>SYSDATE AND PSE.ACTIVE='Y') THEN 'WAIT'
+ 			                     WHEN (PSE.ACTIVE='N') THEN 'DELETED'
+    	ELSE '' END AS STATE
+     ]]>
+    FROM T_TIME_STANDARD  PSE
+    INNER JOIN (SELECT DISTINCT TI.CODE,NAME FROM T_TIME_CITY TI
+				INNER JOIN T_TIME_CITY_MAPPING_DISTRICT DIS 
+				ON DIS.TIME_CITY = TI.CODE  
+				WHERE DIS.ACTIVE = 'Y' AND TI.ACTIVE = 'Y' AND TI.TYPE = 'SEND'
+				<if test="(sendProvinceCode !=null) and (sendProvinceCode != '')">
+					and dis.province_code = #{sendProvinceCode,jdbcType=VARCHAR}
+				</if>
+				<if test="sendCityCode != null and sendCityCode != ''">
+					and CITY_CODE=#{sendCityCode,jdbcType=VARCHAR}
+				</if>
+				<if test="sendAreaCode != null and sendAreaCode != ''">
+					and AREA_CODE=#{sendAreaCode,jdbcType=VARCHAR}
+				</if>
+			) STC
+    ON PSE.SEND_TIME_CITY = STC.CODE
+    INNER JOIN (SELECT DISTINCT TI.CODE,NAME FROM T_TIME_CITY TI
+				INNER JOIN T_TIME_CITY_MAPPING_DISTRICT DIS 
+				ON DIS.TIME_CITY = TI.CODE  
+				WHERE DIS.ACTIVE = 'Y' AND TI.ACTIVE = 'Y' AND TI.TYPE = 'ARRIVAL'
+				<if test="(arriveProvinceCode !=null) and (arriveProvinceCode != '')">
+					and dis.province_code = #{arriveProvinceCode,jdbcType=VARCHAR}
+				</if>
+				<if test="arriveCityCode != null and arriveCityCode != ''">
+					and CITY_CODE=#{arriveCityCode,jdbcType=VARCHAR}
+				</if>
+				<if test="arriveAreaCode != null and arriveAreaCode != ''">
+					and AREA_CODE=#{arriveAreaCode,jdbcType=VARCHAR}
+				</if>
+			)  ATC
+    ON PSE.ARRIVE_TIME_CITY = ATC.CODE
+    LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') C
+    ON C.USER_NAME = PSE.CREATE_USER_CODE
+    LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') M
+    ON M.USER_NAME = PSE.CREATE_USER_CODE
+    
+    WHERE 1 = 1
+    <if test="(effectiveTime != null) and (effectiveTime !='')">
+    	and (<![CDATA[PSE.effective_time<=to_date]]>(#{effectiveTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+						and (<![CDATA[nvl(PSE.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=to_date]]>(#{effectiveTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'))
+			)
+    </if>
+    <if test="timeStandardEntity.sendTimeCity != null and timeStandardEntity.sendTimeCity !=''">
+		AND PSE.SEND_TIME_CITY = #{timeStandardEntity.sendTimeCity,jdbcType=VARCHAR}
+	</if>
+	<if test="timeStandardEntity.arriveTimeCity != null and timeStandardEntity.arriveTimeCity !=''">
+		AND PSE.ARRIVE_TIME_CITY = #{timeStandardEntity.arriveTimeCity,jdbcType=VARCHAR}
+	</if>
+	<if test="timeStandardEntity.transTypeCode !=null and timeStandardEntity.transTypeCode !=''">
+		AND PSE.TRANS_TYPE_CODE = #{timeStandardEntity.transTypeCode,jdbcType=VARCHAR}
+	</if>
+	<if test="timeStandardEntity.id !=null and timeStandardEntity.id !=''">
+		AND PSE.ID =  #{timeStandardEntity.id,jdbcType=VARCHAR}
+	</if>
+		ORDER BY PSE.MODIFY_TIME DESC
+	<if test="order!=null and order!=''">
+			 #{order,jdbcType=VARCHAR}
+	</if>
+	 )
+    where 1 = 1
+    <if test="timeStandardEntity.state != null and timeStandardEntity.state!=''">
+    	and STATE = #{timeStandardEntity.state,jdbcType=VARCHAR}
+    </if>
+  </sql>
+  
+  <select id="queryListByParam" resultMap="BaseResultMap" parameterType="map">
+  	<include refid="queryListSql"/>
+  </select>
+  
+  <select id = "queryCountByParam" resultType="Long" parameterType="map">
+  	select count(1) from (
+  		<include refid="queryListSql"/>
+  	)
+  </select>
+  <select id="queryTimeCity" resultMap="mapList" parameterType="map" >
+  		select distinct CODE,NAME from t_time_city
+  		where active = 'Y'
+  		<if test="type !=null and type !='' ">
+  			and type = #{type,jdbcType=VARCHAR}
+  		</if>
+  		<if test="name!=null and name!=''">
+  			and name = #{name,jdbcType=VARCHAR}
+  		</if>
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TIME_STANDARD
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TIME_STANDARD
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.TimeStandardEntity" >
+    insert into T_TIME_STANDARD (ID, TRANS_TYPE_CODE, TRANS_TYPE_NAME, 
+      SEND_TIME_CITY, ARRIVE_TIME_CITY, MIN_NOTIFY_DAY, 
+      MAX_NOTIFY_DAY, PICKUP_PROM_DAY, DELIVERY_PROM_DAY, 
+      EFFECTIVE_TIME, INVALID_TIME, REMARK, 
+      CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, 
+      MODIFY_USER_CODE, ACTIVE)
+    values (#{id,jdbcType=VARCHAR}, #{transTypeCode,jdbcType=VARCHAR}, #{transTypeName,jdbcType=VARCHAR}, 
+      #{sendTimeCity,jdbcType=VARCHAR}, #{arriveTimeCity,jdbcType=VARCHAR}, #{minNotifyDay,jdbcType=DECIMAL}, 
+      #{maxNotifyDay,jdbcType=DECIMAL}, #{pickupPromDay,jdbcType=VARCHAR}, #{deliveryPromDay,jdbcType=DECIMAL}, 
+      #{effectiveTime,jdbcType=TIMESTAMP}, #{invalidTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUserCode,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}, 
+      #{modifyUserCode,jdbcType=VARCHAR}, #{active,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.TimeStandardEntity" >
+    insert into T_TIME_STANDARD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="transTypeCode != null" >
+        TRANS_TYPE_CODE,
+      </if>
+      <if test="transTypeName != null" >
+        TRANS_TYPE_NAME,
+      </if>
+      <if test="sendTimeCity != null" >
+        SEND_TIME_CITY,
+      </if>
+      <if test="arriveTimeCity != null" >
+        ARRIVE_TIME_CITY,
+      </if>
+      <if test="minNotifyDay != null" >
+        MIN_NOTIFY_DAY,
+      </if>
+      <if test="maxNotifyDay != null" >
+        MAX_NOTIFY_DAY,
+      </if>
+      <if test="pickupPromDay != null" >
+        PICKUP_PROM_DAY,
+      </if>
+      <if test="deliveryPromDay != null" >
+        DELIVERY_PROM_DAY,
+      </if>
+      <if test="effectiveTime != null" >
+        EFFECTIVE_TIME,
+      </if>
+      <if test="invalidTime != null" >
+        INVALID_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="createUserCode != null" >
+        CREATE_USER_CODE,
+      </if>
+      <if test="modifyTime != null" >
+        MODIFY_TIME,
+      </if>
+      <if test="modifyUserCode != null" >
+        MODIFY_USER_CODE,
+      </if>
+      <if test="active != null" >
+        ACTIVE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="transTypeCode != null" >
+        #{transTypeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="transTypeName != null" >
+        #{transTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTimeCity != null" >
+        #{sendTimeCity,jdbcType=VARCHAR},
+      </if>
+      <if test="arriveTimeCity != null" >
+        #{arriveTimeCity,jdbcType=VARCHAR},
+      </if>
+      <if test="minNotifyDay != null" >
+        #{minNotifyDay,jdbcType=DECIMAL},
+      </if>
+      <if test="maxNotifyDay != null" >
+        #{maxNotifyDay,jdbcType=DECIMAL},
+      </if>
+      <if test="pickupPromDay != null" >
+        #{pickupPromDay,jdbcType=VARCHAR},
+      </if>
+      <if test="deliveryPromDay != null" >
+        #{deliveryPromDay,jdbcType=DECIMAL},
+      </if>
+      <if test="effectiveTime != null" >
+        #{effectiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="invalidTime != null" >
+        #{invalidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserCode != null" >
+        #{createUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUserCode != null" >
+        #{modifyUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="active != null" >
+        #{active,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.TimeStandardEntity" >
+    update T_TIME_STANDARD
+    <set >
+      <if test="transTypeCode != null" >
+        TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="transTypeName != null" >
+        TRANS_TYPE_NAME = #{transTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTimeCity != null" >
+        SEND_TIME_CITY = #{sendTimeCity,jdbcType=VARCHAR},
+      </if>
+      <if test="arriveTimeCity != null" >
+        ARRIVE_TIME_CITY = #{arriveTimeCity,jdbcType=VARCHAR},
+      </if>
+      <if test="minNotifyDay != null" >
+        MIN_NOTIFY_DAY = #{minNotifyDay,jdbcType=DECIMAL},
+      </if>
+      <if test="maxNotifyDay != null" >
+        MAX_NOTIFY_DAY = #{maxNotifyDay,jdbcType=DECIMAL},
+      </if>
+      <if test="pickupPromDay != null" >
+        PICKUP_PROM_DAY = #{pickupPromDay,jdbcType=VARCHAR},
+      </if>
+      <if test="deliveryPromDay != null" >
+        DELIVERY_PROM_DAY = #{deliveryPromDay,jdbcType=DECIMAL},
+      </if>
+      <if test="effectiveTime != null" >
+        EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="invalidTime != null" >
+        INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserCode != null" >
+        CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        MODIFY_TIME = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUserCode != null" >
+        MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="active != null" >
+        ACTIVE = #{active,jdbcType=CHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.TimeStandardEntity" >
+    update T_TIME_STANDARD
+    set TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR},
+      TRANS_TYPE_NAME = #{transTypeName,jdbcType=VARCHAR},
+      SEND_TIME_CITY = #{sendTimeCity,jdbcType=VARCHAR},
+      ARRIVE_TIME_CITY = #{arriveTimeCity,jdbcType=VARCHAR},
+      MIN_NOTIFY_DAY = #{minNotifyDay,jdbcType=DECIMAL},
+      MAX_NOTIFY_DAY = #{maxNotifyDay,jdbcType=DECIMAL},
+      PICKUP_PROM_DAY = #{pickupPromDay,jdbcType=VARCHAR},
+      DELIVERY_PROM_DAY = #{deliveryPromDay,jdbcType=DECIMAL},
+      EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+      INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+      MODIFY_TIME = #{modifyTime,jdbcType=TIMESTAMP},
+      MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+      ACTIVE = #{active,jdbcType=CHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="searchCurrentDateTime" resultType="java.util.Date">
+  	select sysdate from dual
+  </select>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="extrafee" namespace="/extrafee"
+		extends="miser-default">
+		<action name="index" class="loginAction" method="index">
+			<result name="success">extrafee.jsp</result>
+		</action>
+		<action name="queryUser" class="loginAction" method="queryUser">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>		    
+		</action>
+		
+		<!-- 提货费管理 -->
+		<action name="pricePickupFee" class="pricePickupFeeAction">
+			<result name="index">pricePickupFee.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+		<!-- Added By Chenyl @20160105 上楼费 -->
+		<action name="priceUpstairsAction" class="priceUpstairsAction">
+			<result name="index">priceUpstairs.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		<!-- 标准附加费-->
+		<action name="priceExtrafeeStandard" class="priceExtrafeeStandardAction">
+			<result name="index">priceExtrafeeStandard.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<!-- wm增值费-->
+		<action name="extrafeeAddValueFee" class="extrafeeAddValueFeeAction">
+			<result name="index">extrafeeAddValueFee.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<!-- lwq20160104_add 增加送货费 -->
+		<action name="priceDeliveryFeeCityType" class="priceDeliveryFeeCityTypeAction">
+			<result name="index">priceDeliveryFeeCityType.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<!-- lwq20151228_add 增加标准包装费 -->
+		<action name="ppFeeStandard" class="pricePackageFeeStandardAction">
+			<result name="index">ppFeeStandard.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<action name="ppFeePc" class="pricePackageFeePcAction">
+			<result name="index">ppFeePc.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		<!-- add by dengyin 2016-7-6 14:47:27 配送费管理 -->
+		<action name="priceDeliveryFeeAction" class="priceDeliveryFeeAction">
+			<result name="index">priceDeliveryFee.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>		
+		<!-- end by dengyin 2016-7-6 14:47:27 配送费管理 -->
+		
+		<!-- add by dengyin 2016-7-7 21:25:35 代收货款手续费管理 -->
+		<action name="priceCollectDeliveryFeeAction" class="priceCollectDeliveryFeeAction">
+			<result name="index">priceCollectDeliveryFee.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>		
+		<!-- end by dengyin 2016-7-7 21:25:35 代收货款手续费管理 -->
+		
+				
+	</package>
+</struts>

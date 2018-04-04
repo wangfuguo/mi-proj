@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups xmlns="http://www.isdc.ro/wro"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
+    <group name="user">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/user.js</js>
+  	</group>
+    <group name="role">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/role.js</js>
+  	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/roleResourceTree.js</js>
+  	</group>
+  	<group name="dataDictionary">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/dataDictionary.js</js>
+  	</group>
+
+  	<group name="resource">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/resource.js</js>
+  	</group>
+  	<group name="userOrgDataAut">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+   	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/userOrgDataAut.js</js> 
+ 	</group>
+ 
+  	<group name="commonSelector">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js> 
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/print.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTimePicker.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/datetime/DateTime.js</js>
+  	</group>
+ 
+ <group name="orgAdministrative">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/orgAdministrative.js</js>
+  	</group>
+  	<group name="employee">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/employee.js</js>
+ 	</group>
+ 	
+  	<group name="outerBranch">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/outerBranch.js</js>
+ 	</group>
+  <group name="district">
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/ext-hoau.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/miser-util.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/commonSelector.js</js>
+  	    <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/common.js</js>
+  	    <!-- <js>classpath:com/hoau/miser/module/common/server/META-INF/scripts/district_1.js</js> -->
+  	     <js>classpath:com/hoau/miser/module/sys/base/server/META-INF/scripts/district.js</js>
+  	</group>
+</groups>

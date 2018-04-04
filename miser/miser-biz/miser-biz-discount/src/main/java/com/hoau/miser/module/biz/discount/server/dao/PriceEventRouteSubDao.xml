@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.discount.server.dao.PriceEventRouteSubDao">
+	
+	<!-- 增加一条优惠折扣 线路-->
+	<insert id="insertPriceEventRouteSub" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventRouteSubEntity">
+	    INSERT INTO T_PRICE_EVENT_ROUTE_SUB
+	     (	
+	    	ID,
+	    	EVENT_CODE,
+			send_Price_City,
+			arrival_Price_City,
+			remark,
+			active,
+			create_time,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{eventCode,jdbcType=VARCHAR},
+	    	#{sendPriceCity,jdbcType=VARCHAR},
+	    	#{arrivalPriceCity,jdbcType=VARCHAR},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="updatePriceEventRouteSub" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventRouteSubEntity">
+	    UPDATE T_PRICE_EVENT_ROUTE_SUB SET 
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventRouteSubEntity" >
+	    <id column="RS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="RS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="RS_SENDPRICECITY" property="sendPriceCity" jdbcType="VARCHAR"/>
+			<result column="RS_ARRIVALPRICECITY" property="arrivalPriceCity" jdbcType="VARCHAR"/>
+			<result column="RS_SENDPRICECITY_NAME" property="sendPriceCityName" jdbcType="VARCHAR"/>
+			<result column="RS_ARRIVALPRICECITY_NAME" property="arrivalPriceCityName" jdbcType="VARCHAR"/>
+	  </resultMap>
+	<!-- 根据父id查询线路 -->
+	  <select id="selectLineSubListByParam" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PriceEventRouteSubEntity" >
+			SELECT ROUTE.ID                 AS RS_ID,
+		       ROUTE.EVENT_CODE         AS RS_EVENTCODE,
+		       ROUTE.SEND_PRICE_CITY    AS RS_SENDPRICECITY,
+		       ROUTE.ARRIVAL_PRICE_CITY AS RS_ARRIVALPRICECITY,
+		       SEND.NAME                AS RS_SENDPRICECITY_NAME,
+		       ARRIVAL.NAME             AS RS_ARRIVALPRICECITY_NAME
+		  FROM T_PRICE_EVENT_ROUTE_SUB ROUTE
+		  LEFT JOIN T_PRICE_CITY SEND
+		    ON SEND.CODE = ROUTE.SEND_PRICE_CITY
+		   AND SEND.ACTIVE = 'Y'
+		   AND SEND.TYPE = 'SEND'
+		  LEFT JOIN T_PRICE_CITY ARRIVAL
+		    ON ARRIVAL.CODE = ROUTE.ARRIVAL_PRICE_CITY
+		   AND ARRIVAL.ACTIVE = 'Y'
+		   AND ARRIVAL.TYPE = 'ARRIVAL'
+		WHERE 1=1
+	    <if test="eventCode != null and eventCode !='' ">
+	        and ROUTE.EVENT_CODE = #{eventCode,jdbcType=VARCHAR}
+	    </if>
+	    order by ROUTE.CREATE_TIME DESC
+	  </select>
+</mapper>

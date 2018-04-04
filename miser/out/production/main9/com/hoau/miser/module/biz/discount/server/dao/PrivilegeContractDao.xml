@@ -1,0 +1,1046 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hoau.miser.module.biz.discount.server.dao.PrivilegeContractDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeContractEntity"
+		id="PrivilegeContractResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+		<result column="CONTRACT_CODE" property="contractCode" jdbcType="VARCHAR" />
+		<result column="NAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="CONTACT_NAME" property="contactName" jdbcType="VARCHAR" />
+		<result column="CONTACT_PHONE" property="contactPhone" jdbcType="VARCHAR" />
+		<result column="CONTRACT_START_TIME" property="contractStartTime" jdbcType="TIMESTAMP" />
+		<result column="CONTRACT_END_TIME" property="contractEndTime" jdbcType="TIMESTAMP" />
+		<result column="PRIVILEGE_START_TIME" property="privilegeStartTime" jdbcType="TIMESTAMP" />
+		<result column="PRIVILEGE_END_TIME" property="privilegeEndTime" jdbcType="TIMESTAMP" />
+		<result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="COMMITMENT_PRODUCT" property="commitmentProduct" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeContractDetailEntity"
+		id="PrivilegeContractDetailResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_CONTRACT_ID" property="customerContractId"
+			jdbcType="VARCHAR" />
+		<result column="START_AMOUNT" property="startAmount" jdbcType="DOUBLE" />
+		<result column="END_AMOUNT" property="endAmount" jdbcType="DOUBLE" />
+		<result column="DD_MIN_FREIGHT_DISCOUNT" property="ddMinFreightDiscount"
+			jdbcType="DOUBLE" />
+		<result column="DU_MIN_FREIGHT_DISCOUNT" property="duMinFreightDiscount"
+			jdbcType="DOUBLE" />
+		<result column="MAX_COUPON_SCALE" property="maxCouponScale"
+			jdbcType="DOUBLE" />
+		<result column="DATA_ORIGN" property="dataOrign" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeDiscountEntity"
+		id="PrivilegeDiscountResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CONTRACT_CODE" property="contractCode" jdbcType="VARCHAR" />
+		<result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+		<result column="LAST_LAST_MONTH_AMOUNT" property="lastLastMonthAmount"
+			jdbcType="DOUBLE" />
+		<result column="LAST_MONTH_AMOUNT" property="lastMonthAmount"
+			jdbcType="DOUBLE" />
+		<result column="LAST_TWO_MONTHS_AVERAGE_AMOUNT" property="lastTwoMonthsAverageAmount"
+			jdbcType="DOUBLE" />
+		<result column="CURRENT_MONTH_AMOUNT" property="currentMonthAmount"
+			jdbcType="DOUBLE" />
+		<result column="CURRENT_DU_DISCOUNT" property="currentDuDiscount"
+			jdbcType="DOUBLE" />
+		<result column="CURRENT_DD_DISCOUNT" property="currentDdDiscount"
+			jdbcType="DOUBLE" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeCouponEntity"
+		id="PrivilegeCouponResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CONTRACT_CODE" property="contractCode" jdbcType="VARCHAR" />
+		<result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+		<result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+		<result column="COUPON_SCALE" property="couponScale" jdbcType="DOUBLE" />
+		<result column="COUPON_AMOUNT" property="couponAmount"
+			jdbcType="DOUBLE" />
+		<result column="COUPON_STATE" property="couponState" jdbcType="VARCHAR" />
+		<result column="COUPON_ACCEPTOR_ID" property="couponAcceptorId"
+			jdbcType="VARCHAR" />
+		<result column="CHECK_TIME" property="checkTime" jdbcType="TIMESTAMP" />
+		<result column="SHOULD_PAY_AMOUNT_SUM" property="shouldPayAmountSum"
+			jdbcType="DOUBLE" />
+		<result column="CHECK_REMARK" property="checkRemark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="COUPON_REMARK" property="couponRemark" jdbcType="VARCHAR" />
+    <result column="COUPON_TIME" property="couponTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.domain.CouponAcceptorEntity"
+		id="CouponAcceptorResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="acceptor_name" property="acceptorName"
+			jdbcType="VARCHAR" />
+		<result column="acceptor_phone" property="acceptorPhone"
+			jdbcType="VARCHAR" />
+		<result column="identity_card_no" property="identityCardNo"
+			jdbcType="VARCHAR" />
+		<result column="bank_name" property="bankName" jdbcType="VARCHAR" />
+		<result column="SUBBRANCH_NAME" property="subbranchName" jdbcType="VARCHAR" />
+		<result column="credit_card_no" property="creditCardNo"
+			jdbcType="VARCHAR" />
+		<result column="relationship_with_customer" property="relationshipWithCustomer"
+			jdbcType="VARCHAR" />
+		<result column="ALIPAY_ACCOUNT" property="alipayAccount"
+			jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.vo.PrivilegeStateQueryVo"
+		id="PrivilegeStateQueryResultMap">
+		<id column="ID" property="htid" jdbcType="VARCHAR" />
+		<result column="CONTRACT_CODE" property="contractCode" jdbcType="VARCHAR"/>
+		<result column="CUSTOMER_CODE" property="customerCode"
+			jdbcType="VARCHAR" />
+		<result column="CUSTOMER_NAME" property="customerName"
+			jdbcType="VARCHAR" />
+		<result column="CONTACT_NAME" property="contactName" jdbcType="VARCHAR" />
+		<result column="CONTACT_PHONE" property="contactPhone"
+			jdbcType="VARCHAR" />
+		<result column="PRIVILEGE_START_TIME" property="privilegeStartTime"
+			jdbcType="TIMESTAMP" />
+		<result column="PRIVILEGE_END_TIME" property="privilegeEndTime"
+			jdbcType="TIMESTAMP" />
+		<result column="TPD_ID" property="tpdId" jdbcType="VARCHAR" />
+		<result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+		<result column="LAST_LAST_MONTH_AMOUNT" property="lastLastMonthAmount"
+			jdbcType="DOUBLE" />
+		<result column="LAST_MONTH_AMOUNT" property="lastMonthAmount"
+			jdbcType="DOUBLE" />
+		<result column="LAST_TWO_MONTHS_AVERAGE_AMOUNT" property="lastTwoMonthsAverageAmount"
+			jdbcType="DOUBLE" />
+		<result column="CURRENT_MONTH_AMOUNT" property="currentMonthAmount"
+			jdbcType="DOUBLE" />
+		<result column="CURRENT_DU_DISCOUNT" property="currentDuDiscount"
+			jdbcType="DOUBLE" />
+		<result column="CURRENT_DD_DISCOUNT" property="currentDdDiscount"
+			jdbcType="DOUBLE" />
+		<result column="TPC_ID" property="tpcId" jdbcType="VARCHAR" />
+		<result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+		<result column="COUPON_SCALE" property="couponScale" jdbcType="DOUBLE" />
+		<result column="COUPON_AMOUNT" property="couponAmount"
+			jdbcType="DOUBLE" />
+		<result column="SHOULD_PAY_AMOUNT_SUM" property="shouldPayAmountSum" jdbcType="DOUBLE" />
+		<result column="COUPON_STATE" property="couponState" jdbcType="VARCHAR" />
+		<result column="CHECK_REMARK" property="checkRemark" jdbcType="VARCHAR" />
+		<result column="CHECK_TIME" property="checkTime" jdbcType="TIMESTAMP" />
+		<result column="COUPON_REMARK" property="couponRemark" jdbcType="VARCHAR" />
+		<result column="COUPON_TIME" property="couponTime" jdbcType="TIMESTAMP" />
+		<result column="NAME4" property="seaSalesdepartment" jdbcType="VARCHAR" />
+		<result column="NAME3" property="seaRoadarea" jdbcType="VARCHAR" />
+		<result column="NAME2" property="seaBigregion" jdbcType="VARCHAR" />
+		<result column="NAME1" property="seaDivision" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.vo.PrivilegeCouponCheckVo"
+		id="CouponCheckResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CONTRACT_CODE" property="contractCode" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="CONTACT_NAME" property="contactName" jdbcType="VARCHAR" />
+		<result column="CONTACT_PHONE" property="contactPhone" jdbcType="VARCHAR" />
+		<result column="PRIVILEGE_START_TIME" property="privilegeStartTime" jdbcType="TIMESTAMP" />
+		<result column="PRIVILEGE_END_TIME" property="privilegeEndTime" jdbcType="TIMESTAMP" />
+		<result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+		<result column="CURRENT_MONTH_AMOUNT" property="currentMonthAmount" jdbcType="DOUBLE" />
+		<result column="COUPON_ID" property="couponId" jdbcType="VARCHAR" />
+		<result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+		<result column="COUPON_SCALE" property="couponScale" jdbcType="DOUBLE" />
+		<result column="COUPON_AMOUNT" property="couponAmount" jdbcType="DOUBLE" />
+		<result column="COUPON_STATE" property="couponState" jdbcType="VARCHAR" />
+		<result column="CHECK_REMARK" property="checkRemark" jdbcType="VARCHAR" />
+		<result column="SALES_DEPARTMENT" property="seaSalesdepartment" jdbcType="VARCHAR" />
+		<result column="ROAD_AREA" property="seaRoadarea" jdbcType="VARCHAR" />
+		<result column="BIG_REGION" property="seaBigregion" jdbcType="VARCHAR" />
+		<result column="DIVISION" property="seaDivision" jdbcType="VARCHAR" />
+		<result column="ACCEPTOR_NAME" property="acceptorName" jdbcType="VARCHAR" />
+		<result column="ACCEPTOR_PHONE" property="acceptorPhone" jdbcType="VARCHAR" />
+		<result column="IDENTITY_CARD_NO" property="identityCardNo" jdbcType="VARCHAR" />
+		<result column="BANK_NAME" property="bankName" jdbcType="VARCHAR" />
+		<result column="SUBBRANCH_NAME" property="subbranchName" jdbcType="VARCHAR" />
+		<result column="CREDIT_CARD_NO" property="creditCardNo" jdbcType="VARCHAR" />
+		<result column="RELATIONSHIP_WITH_CUSTOMER" property="relationshipWithCustomer" jdbcType="VARCHAR" />
+		<result column="ALIPAY_ACCOUNT" property="alipayAccount" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="query_coupon_check_param">
+		tcc.ID AS ID,
+		tcc.CONTRACT_CODE AS CONTRACT_CODE,
+		tcc.CUSTOMER_CODE AS CUSTOMER_CODE,
+		tbc.NAME AS CUSTOMER_NAME,
+		tcc.CONTACT_NAME AS CONTACT_NAME,
+		tcc.CONTACT_PHONE AS CONTACT_PHONE,
+		tcc.PRIVILEGE_START_TIME AS PRIVILEGE_START_TIME,
+		tcc.PRIVILEGE_END_TIME AS PRIVILEGE_END_TIME,
+		tpd.RECORD_MONTH AS RECORD_MONTH,
+		tpd.CURRENT_MONTH_AMOUNT AS CURRENT_MONTH_AMOUNT,
+		tpc.ID AS COUPON_ID,
+		tpc.HAS_COUPON AS HAS_COUPON,
+		tpc.COUPON_SCALE AS COUPON_SCALE,
+		tpc.COUPON_AMOUNT AS COUPON_AMOUNT,
+		tpc.COUPON_STATE AS COUPON_STATE,
+		tpc.CHECK_REMARK AS CHECK_REMARK,
+		org4.NAME AS SALES_DEPARTMENT,
+		org3.NAME AS ROAD_AREA,
+		org2.NAME AS BIG_REGION,
+		org1.NAME AS DIVISION,
+		tca.ACCEPTOR_NAME AS ACCEPTOR_NAME,
+		tca.ACCEPTOR_PHONE AS ACCEPTOR_PHONE,
+		tca.IDENTITY_CARD_NO AS IDENTITY_CARD_NO,
+		tca.BANK_NAME AS BANK_NAME,
+		tca.SUBBRANCH_NAME AS SUBBRANCH_NAME,
+		tca.CREDIT_CARD_NO AS CREDIT_CARD_NO,
+		tca.RELATIONSHIP_WITH_CUSTOMER AS RELATIONSHIP_WITH_CUSTOMER,
+		tca.ALIPAY_ACCOUNT AS ALIPAY_ACCOUNT
+	</sql>
+	<sql id="query_state_param">
+		tcc.id as htid,
+		tcc.customer_code as customer_code,
+		tcc.CONTRACT_CODE AS CONTRACT_CODE,
+		tcc.CONTRACT_START_TIME as CONTRACT_START_TIME,
+		tcc.CONTRACT_END_TIME as CONTRACT_END_TIME,
+		tbc.NAME as CUSTOMER_NAME,
+		tcc.contact_name as contactName,
+		tcc.contact_phone as contactPhone,
+		tcc.privilege_start_time as privilege_start_time,
+		tcc.privilege_end_time as privilege_end_time,
+		tpd.id as tpd_id,
+		tpd.record_month as record_month,
+		tpd.last_last_month_amount as last_last_month_amount,
+		tpd.last_month_amount as last_month_amount,
+		tpd.last_two_months_average_amount as last_two_months_average_amount,
+		tpd.current_month_amount as current_month_amount,
+		tpd.current_du_discount as current_du_discount,
+		tpd.current_dd_discount as current_dd_discount,
+		tpc.id as tpc_id,
+		tpc.has_coupon as has_coupon,
+		tpc.coupon_scale as coupon_scale,
+		tpc.coupon_amount as coupon_amount,
+		tpc.should_pay_amount_sum as should_pay_amount_sum,
+		tpc.coupon_state as coupon_state,
+		tpc.check_remark as check_remark,
+		tpc.CHECK_TIME as CHECK_TIME,
+		tpc.COUPON_REMARK as COUPON_REMARK,
+		tpc.COUPON_TIME as COUPON_TIME,
+		org4.name as name4,
+		org3.name as name3,
+		org2.name as name2,
+		org1.name as name1
+	</sql>
+	<sql id="queryStateCondition">
+		<where>
+			<if test="customerCode!=null and customerCode!=''">
+				and tcc.CUSTOMER_CODE=#{customerCode,jdbcType=VARCHAR}
+			</if>
+			<if test="customerName!=null and customerName!=''">
+				and tbc.NAME LIKE CONCAT(#{customerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="hasCoupon!=null and hasCoupon!=''">
+				and tpc.HAS_COUPON=#{hasCoupon,jdbcType=VARCHAR}
+			</if>
+			<choose>
+				<when test="couponState==null or couponState=='NONE_APPLICATION'">
+					and (tpc.COUPON_STATE is null and (tpc.HAS_COUPON ='N' or tpc.SHOULD_PAY_AMOUNT_SUM>0)) 
+				</when>
+				<when test="couponState=='COUPON_FAIL'">
+					and tpc.COUPON_STATE='COUPON_FAIL'
+				</when>
+				<when test="couponState=='CHECK_SUCCESS'">
+					and tpc.COUPON_STATE='CHECK_SUCCESS'
+				</when>
+				<when test="couponState=='CHECK_REJECT'">
+					and tpc.COUPON_STATE='CHECK_REJECT'
+				</when>
+				<when test="couponState=='PENDING_CHECK'">
+		          and tpc.COUPON_STATE='PENDING_CHECK'
+		        </when>
+		        <when test="couponState=='PENDING_APPLICATION'">
+		         and tpc.COUPON_STATE is null and tpc.HAS_COUPON ='Y' and tpc.SHOULD_PAY_AMOUNT_SUM=0
+		        </when>
+			</choose>
+			<if test="recordMonth!=null and recordMonth!=''">
+		        <![CDATA[
+		        and tpd.RECORD_MONTH=#{recordMonth,jdbcType=TIMESTAMP}
+		        ]]>
+
+			</if>
+			and tcc.ACTIVE='Y'
+			<choose>
+				<when test="seaSalesdepartment!=null and seaSalesdepartment!=''">
+					and ORG1.CODE=#{seaSalesdepartment,jdbcType=VARCHAR}
+				</when>
+				<when test="seaRoadarea!=null and seaRoadarea!=''">
+					and ORG2.CODE=#{seaRoadarea,jdbcType=VARCHAR}
+				</when>
+				<when test="seaBigregion!=null and seaBigregion!=''">
+					and ORG3.CODE=#{seaBigregion,jdbcType=VARCHAR}
+				</when>
+				<when test="seaDivision!=null and seaDivision!=''">
+					and ORG4.CODE=#{seaDivision,jdbcType=VARCHAR}
+				</when>
+			</choose>
+		</where>
+	</sql>
+	<sql id="queryCouponCheckCondition">
+		<where>
+			<if test="customerCode!=null and customerCode!=''">
+				and tcc.CUSTOMER_CODE=#{customerCode,jdbcType=VARCHAR}
+			</if>
+			<if test="customerName!=null and customerName!=''">
+				and tbc.NAME LIKE CONCAT(#{customerName,jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="recordMonth!=null and recordMonth!=''">
+            <![CDATA[
+            and tpd.RECORD_MONTH=#{recordMonth,jdbcType=TIMESTAMP}
+            ]]>
+
+			</if>
+			<if test="active==null or active==''">
+				and tcc.ACTIVE='Y'
+			</if>
+			<if test="active!=null and active!=''">
+				and tcc.ACTIVE=#{active,jdbcType=VARCHAR}
+			</if>
+			<choose>
+				<when test="checkState=='CHECK_SUCCESS'">
+					and tpc.COUPON_STATE='CHECK_SUCCESS'
+				</when>
+				<when test="checkState=='CHECK_REJECT'">
+					and tpc.COUPON_STATE='CHECK_REJECT'
+				</when>
+				<when test="checkState=='PENDING_CHECK'">
+          and tpc.COUPON_STATE='PENDING_CHECK'
+        </when>
+				<otherwise>
+				  and tpc.COUPON_STATE IS NOT NULL
+				</otherwise>
+			</choose>
+			<choose>
+			  <!-- 顺序不能变，门店、路区、大区、事业部 -->
+				<when test="seaSalesdepartment!=null and seaSalesdepartment!=''">
+					and ORG1.CODE=#{seaSalesdepartment,jdbcType=VARCHAR}
+				</when>
+				<when test="seaRoadarea!=null and seaRoadarea!=''">
+					and ORG2.CODE=#{seaRoadarea,jdbcType=VARCHAR}
+				</when>
+				<when test="seaBigregion!=null and seaBigregion!=''">
+					and ORG3.CODE=#{seaBigregion,jdbcType=VARCHAR}
+				</when>
+				<when test="seaDivision!=null and seaDivision!=''">
+					and ORG4.CODE=#{seaDivision,jdbcType=VARCHAR}
+				</when>
+			</choose>
+		</where>
+	</sql>
+	<select id="queryListByParamForStateQuery" resultMap="PrivilegeStateQueryResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_state_param"></include>
+		from T_CUSTOMER_CONTRACT tcc
+		left join T_BSE_CUSTOMER tbc on tcc.customer_code=tbc.code and
+		tbc.active='Y'
+		LEFT JOIN T_BSE_ORG ORG1 ON tbc.ORG_CODE=ORG1.CODE AND
+		ORG1.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG2 ON ORG1.PARENT_CODE=ORG2.CODE
+		AND ORG2.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG3 ON
+		ORG2.PARENT_CODE=ORG3.CODE AND ORG3.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG4
+		ON ORG3.PARENT_CODE=ORG4.CODE AND ORG4.ACTIVE='Y'
+		left join
+		T_PRIVILEGE_DISCOUNT tpd on tpd.CONTRACT_CODE=tcc.CONTRACT_CODE AND tpd.ACTIVE='Y' 
+		left join
+		T_PRIVILEGE_COUPON tpc on tpd.record_month=tpc.record_month and
+		tpc.CONTRACT_CODE=tpd.CONTRACT_CODE AND tpc.ACTIVE='Y' 
+		<include refid="queryStateCondition"></include>
+		ORDER BY tcc.CREATE_TIME
+	</select>
+	<select id="queryCountByParamForStateQuery" resultType="java.lang.Long" parameterType="map">
+	  SELECT COUNT(1)
+	  from T_CUSTOMER_CONTRACT tcc
+    left join T_BSE_CUSTOMER tbc on tcc.customer_code=tbc.code and
+    tbc.active='Y'
+    LEFT JOIN T_BSE_ORG ORG1 ON tbc.ORG_CODE=ORG1.CODE AND
+    ORG1.ACTIVE='Y'
+    LEFT JOIN T_BSE_ORG ORG2 ON ORG1.PARENT_CODE=ORG2.CODE
+    AND ORG2.ACTIVE='Y'
+    LEFT JOIN T_BSE_ORG ORG3 ON
+    ORG2.PARENT_CODE=ORG3.CODE AND ORG3.ACTIVE='Y'
+    LEFT JOIN T_BSE_ORG ORG4
+    ON ORG3.PARENT_CODE=ORG4.CODE AND ORG4.ACTIVE='Y'
+    left join
+    T_PRIVILEGE_DISCOUNT tpd on tpd.CONTRACT_CODE=tcc.CONTRACT_CODE AND tpd.ACTIVE='Y' 
+    left join
+    T_PRIVILEGE_COUPON tpc on tpd.record_month=tpc.record_month and
+    tpc.CONTRACT_CODE=tpd.CONTRACT_CODE AND tpc.ACTIVE='Y' 
+    <include refid="queryStateCondition"></include> 
+	</select>
+
+	<sql id="query_PrivilegeDiscount_param">
+		tpd.id as id,
+		tpd.CONTRACT_CODE as CONTRACT_CODE,
+		tpd.record_month as record_month,
+		tpd.last_last_month_amount as last_last_month_amount,
+		tpd.last_month_amount as last_month_amount,
+		tpd.last_two_months_average_amount as last_two_months_average_amount,
+		tpd.current_month_amount as current_month_amount,
+		tpd.current_du_discount as current_du_discount,
+		tpd.current_dd_discount as current_dd_discount,
+		tpd.ACTIVE AS active,
+		tpd.CREATE_TIME AS createDate,
+		tpd.CREATE_USER_CODE AS createUser,
+		tpd.MODIFY_TIME AS modifyDate,
+		tpd.MODIFY_USER_CODE AS modifyUser
+	</sql>
+	<sql id="PrivilegeDiscountCondition">
+		<where>
+			<if test="id!=null and id!=''">
+				and tpd.ID=#{id,jdbcType=VARCHAR}
+			</if>
+			<if test="contractCode!=null and contractCode!=''">
+				and tpd.CONTRACT_CODE=#{contractCode,jdbcType=VARCHAR}
+			</if>
+			<if test="recordMonth!=null and recordMonth!=''">
+        <![CDATA[
+        and tpd.RECORD_MONTH=#{recordMonth,jdbcType=TIMESTAMP}
+        ]]>
+			</if>
+			and tpd.ACTIVE='Y'
+		</where>
+	</sql>
+	<sql id="query_PrivilegeCoupon_param">
+		tpc.id as ID,
+		tpc.CONTRACT_CODE as CONTRACT_CODE,
+		tpc.RECORD_MONTH as RECORD_MONTH,
+		tpc.HAS_COUPON as HAS_COUPON,
+		tpc.COUPON_SCALE as COUPON_SCALE,
+		tpc.COUPON_AMOUNT as COUPON_AMOUNT,
+		tpc.COUPON_STATE as COUPON_STATE,
+		tpc.CHECK_TIME as CHECK_TIME,
+		tpc.COUPON_ACCEPTOR_ID as COUPON_ACCEPTOR_ID,
+		tpc.SHOULD_PAY_AMOUNT_SUM as SHOULD_PAY_AMOUNT_SUM,
+		tpc.CHECK_REMARK as CHECK_REMARK,
+		tpc.ACTIVE AS ACTIVE,
+		tpc.CREATE_TIME AS CREATE_TIME,
+		tpc.CREATE_USER_CODE AS CREATE_USER_CODE,
+		tpc.MODIFY_TIME AS MODIFY_TIME,
+		tpc.MODIFY_USER_CODE AS MODIFY_USER_CODE
+	</sql>
+	<sql id="PrivilegeCouponCondition">
+		<where>
+			<if test="contractCode!=null and contractCode!=''">
+				and
+				tpc.CONTRACT_CODE=#{contractCode,jdbcType=VARCHAR}
+			</if>
+			<if test="recordMonth!=null and recordMonth!=''">
+		        <![CDATA[
+		        and tpc.RECORD_MONTH=#{recordMonth,jdbcType=TIMESTAMP}
+		        ]]>
+			</if>
+			and tpc.ACTIVE='Y'
+		</where>
+	</sql>
+	<select id="queryPrivilegeCouponList" resultMap="PrivilegeCouponResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_PrivilegeCoupon_param"></include>
+		FROM T_PRIVILEGE_COUPON tpc
+		<include refid="PrivilegeCouponCondition"></include>
+		ORDER BY tpc.CREATE_TIME
+	</select>
+	<update id="updatePrivilegeCoupon"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeCouponEntity">
+		UPDATE T_PRIVILEGE_COUPON
+		<set>
+			<if test="couponState!=null and couponState!=''">
+				COUPON_STATE = #{couponState,jdbcType=VARCHAR},
+			</if>
+			<if test="checkTime!=null and checkTime!=''">
+        CHECK_TIME = #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkRemark!=null and checkRemark!=''">
+        CHECK_REMARK = #{checkRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="couponTime!=null and couponTime!=''">
+        COUPON_TIME = #{couponTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="couponRemark!=null and couponRemark!=''">
+        COUPON_REMARK = #{couponRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="couponAcceptorId!=null and couponAcceptorId!=''">
+        COUPON_ACCEPTOR_ID = #{couponAcceptorId,jdbcType=VARCHAR},
+      </if>
+			<if test="modifyDate!=null and modifyDate!=''">
+				MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUser!=null and modifyUser!=''">
+				MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE ACTIVE='Y' AND CONTRACT_CODE = #{contractCode,jdbcType=VARCHAR} 
+		AND RECORD_MONTH = #{recordMonth,jdbcType=VARCHAR} 
+	</update>
+
+	<insert id="addPrivilegeCoupon"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeCouponEntity">
+
+		INSERT INTO T_PRIVILEGE_COUPON
+		(
+		ID,
+		CONTRACT_CODE,
+		RECORD_MONTH,
+		HAS_COUPON,
+		COUPON_SCALE,
+		COUPON_AMOUNT,
+		COUPON_STATE,
+		COUPON_ACCEPTOR_ID,
+		CHECK_TIME,
+		CHECK_REMARK,
+		COUPON_REMARK,
+		COUPON_TIME,
+		SHOULD_PAY_AMOUNT_SUM,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+		)
+		VALUES(
+		#{id,jdbcType=VARCHAR},
+		#{contractCode,jdbcType=VARCHAR},
+		#{recordMonth,jdbcType=TIMESTAMP},
+		#{hasCoupon,jdbcType=VARCHAR},
+		#{couponScale,jdbcType=DOUBLE},
+		#{couponAmount,jdbcType=DOUBLE},
+		#{couponState,jdbcType=VARCHAR},
+		#{couponAcceptorId,jdbcType=VARCHAR},
+		#{checkTime,jdbcType=TIMESTAMP},
+		#{checkRemark,jdbcType=VARCHAR},
+		#{couponRemark,jdbcType=VARCHAR},
+		#{couponTime,jdbcType=TIMESTAMP},
+		#{shouldPayAmountSum,jdbcType=DOUBLE},
+		#{active,jdbcType=VARCHAR},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{modifyDate,jdbcType=TIMESTAMP},
+		#{modifyUser,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<sql id="query_CouponAcceptor_param">
+		tca.id as id,
+		tca.acceptor_name as acceptor_name,
+		tca.acceptor_phone as acceptor_phone,
+		tca.identity_card_no as identity_card_no,
+		tca.bank_name as bank_name,
+		tca.SUBBRANCH_NAME as SUBBRANCH_NAME,
+		tca.credit_card_no as credit_card_no,
+		tca.relationship_with_customer as relationship_with_customer,
+		tca.ALIPAY_ACCOUNT as ALIPAY_ACCOUNT,
+		tca.ACTIVE AS active,
+		tca.CREATE_TIME AS createDate,
+		tca.CREATE_USER_CODE AS createUser,
+		tca.MODIFY_TIME AS modifyDate,
+		tca.MODIFY_USER_CODE AS modifyUser
+	</sql>
+	<sql id="CouponAcceptorCondition">
+		<where>
+			<if test="id!=null and id!=''">
+				and tca.ID=#{id,jdbcType=VARCHAR}
+			</if>
+			<if test="active!=null and active!=''">
+				and tca.ACTIVE=#{active,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	<select id="queryListByParamForCouponAcceptor" resultMap="CouponAcceptorResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_CouponAcceptor_param"></include>
+		from T_COUPON_ACCEPTOR tca
+		<include refid="CouponAcceptorCondition"></include>
+		ORDER BY tca.CREATE_TIME
+	</select>
+	<select id="queryListByParamForCheck" resultMap="CouponCheckResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_coupon_check_param"></include>
+		from T_CUSTOMER_CONTRACT tcc
+		left join T_BSE_CUSTOMER tbc on tcc.customer_code=tbc.code and
+		tbc.active='Y'
+		LEFT JOIN T_BSE_ORG ORG1 ON tbc.ORG_CODE=ORG1.CODE AND ORG1.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG2 ON ORG1.PARENT_CODE=ORG2.CODE AND
+		ORG2.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG3 ON ORG2.PARENT_CODE=ORG3.CODE AND ORG3.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG4 ON ORG3.PARENT_CODE=ORG4.CODE AND
+		ORG4.ACTIVE='Y'
+		left join T_PRIVILEGE_DISCOUNT tpd on tpd.CONTRACT_CODE=tcc.CONTRACT_CODE and
+		tpd.active='Y'
+		left join T_PRIVILEGE_COUPON tpc on tpd.record_month=tpc.record_month and
+		tpc.CONTRACT_CODE=tcc.CONTRACT_CODE and tpc.active='Y'
+		LEFT JOIN T_COUPON_ACCEPTOR tca ON tca.ID=tpc.COUPON_ACCEPTOR_ID
+		<include refid="queryCouponCheckCondition"></include>
+		ORDER BY tcc.CREATE_TIME
+	</select>
+
+	<select id="queryCountByParamForCheck" resultType="Long"
+		parameterType="map">
+		SELECT COUNT(1)
+		from T_CUSTOMER_CONTRACT tcc
+		left join T_BSE_CUSTOMER tbc on tcc.customer_code=tbc.code and
+		tbc.active='Y'
+		LEFT JOIN T_BSE_ORG ORG1 ON tbc.ORG_CODE=ORG1.CODE AND ORG1.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG2 ON ORG1.PARENT_CODE=ORG2.CODE AND
+		ORG2.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG3 ON ORG2.PARENT_CODE=ORG3.CODE AND ORG3.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG4 ON ORG3.PARENT_CODE=ORG4.CODE AND
+		ORG4.ACTIVE='Y'
+		left join T_PRIVILEGE_DISCOUNT tpd on tpd.CONTRACT_CODE=tcc.CONTRACT_CODE and
+		tpd.active='Y'
+		left join T_PRIVILEGE_COUPON tpc on tpd.record_month=tpc.record_month and
+		tpc.CONTRACT_CODE=tcc.CONTRACT_CODE and tpc.active='Y'
+		LEFT JOIN T_COUPON_ACCEPTOR tca ON tca.ID=tpc.COUPON_ACCEPTOR_ID
+		<include refid="queryCouponCheckCondition"></include>
+		ORDER BY tcc.CREATE_TIME
+	</select>
+
+	<sql id="query_main_param">
+		PSE.ID AS id,
+		PSE.CUSTOMER_CODE AS customerCode,
+		CUSTOMER.NAME AS
+		customerName,
+		PSE.CONTRACT_CODE AS CONTRACT_CODE,
+		PSE.CONTACT_NAME AS contactName,
+		PSE.CONTACT_PHONE AS
+		contactPhone,
+		PSE.CONTRACT_START_TIME AS contractStartTime,
+		PSE.CONTRACT_END_TIME AS contractEndTime,
+		PSE.PRIVILEGE_START_TIME AS
+		privilegeStartTime,
+		PSE.PRIVILEGE_END_TIME AS privilegeEndTime,
+		PSE.HAS_COUPON AS hasCoupon,
+		PSE.REMARK AS remark,
+		PSE.COMMITMENT_PRODUCT AS commitmentProduct,
+		PSE.ACTIVE AS active,
+		PSE.CREATE_TIME AS createDate,
+		PSE.CREATE_USER_CODE AS createUser,
+		PSE.MODIFY_TIME AS modifyDate,
+		PSE.MODIFY_USER_CODE AS modifyUser,
+		<![CDATA[
+    case when (PSE.PRIVILEGE_END_TIME<sysdate and PSE.ACTIVE='Y') then 'PASSED'
+                           when (
+                              (sysdate>=PSE.PRIVILEGE_START_TIME and PSE.PRIVILEGE_END_TIME is null and PSE.active='Y')
+                              or 
+                              (sysdate>=PSE.PRIVILEGE_START_TIME  and PSE.PRIVILEGE_END_TIME is not null and sysdate<PSE.PRIVILEGE_END_TIME and PSE.active='Y')
+                           ) then 'EFFECTIVE'
+                           when (PSE.PRIVILEGE_START_TIME>sysdate and PSE.ACTIVE='Y') then 'WAIT'
+                           when (PSE.ACTIVE='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+	</sql>
+	<sql id="query_main_paramDetail">
+		PSE.ID AS id,
+		PSE.CUSTOMER_CONTRACT_ID AS
+		customerContractId,
+		PSE.START_AMOUNT AS startAmount,
+		PSE.END_AMOUNT AS
+		endAmount,
+		PSE.DD_MIN_FREIGHT_DISCOUNT AS ddMinFreightDiscount,
+		PSE.DU_MIN_FREIGHT_DISCOUNT AS duMinFreightDiscount,
+		PSE.MAX_COUPON_SCALE AS maxCouponScale,
+		PSE.DATA_ORIGN AS dataOrign,
+		PSE.REMARK AS remark,
+		PSE.ACTIVE AS active,
+		PSE.CREATE_TIME AS
+		createDate,
+		PSE.CREATE_USER_CODE AS createUser,
+		PSE.MODIFY_TIME AS
+		modifyDate,
+		PSE.MODIFY_USER_CODE AS modifyUser
+	</sql>
+	<!-- 客户合同查询条件 -->
+	<sql id="queryContractCondition">
+		<where>
+		  <choose>
+		    <when test="id!=null and id!=''">
+          and PSE.ID=#{id,jdbcType=VARCHAR}
+            </when>
+        <otherwise>
+              <if test="customerCode!=null and customerCode!=''">
+		        and PSE.CUSTOMER_CODE=#{customerCode,jdbcType=VARCHAR}
+		      </if>
+		      <if test="customerName!=null and customerName!=''">
+		        and CUSTOMER.NAME LIKE
+		        CONCAT(#{customerName,jdbcType=VARCHAR}, '%')
+		      </if>
+		      <if test="hasCoupon!=null and hasCoupon!=''">
+		        and PSE.HAS_COUPON=#{hasCoupon,jdbcType=VARCHAR}
+		      </if>
+		      <if test="privilegeStartAndEndTime!=null and privilegeStartAndEndTime!=''">
+		        <![CDATA[
+		        and PSE.PRIVILEGE_START_TIME<=#{privilegeStartAndEndTime,jdbcType=TIMESTAMP}
+		        and PSE.PRIVILEGE_END_TIME>=#{privilegeStartAndEndTime,jdbcType=TIMESTAMP}
+		        ]]>
+		      </if>
+		      <choose>
+		        <when test="seaSalesdepartment!=null and seaSalesdepartment!=''">
+		          and ORG1.CODE=#{seaSalesdepartment,jdbcType=VARCHAR}
+		        </when>
+		        <when test="seaRoadarea!=null and seaRoadarea!=''">
+		          and ORG2.CODE=#{seaRoadarea,jdbcType=VARCHAR}
+		        </when>
+		        <when test="seaBigregion!=null and seaBigregion!=''">
+		          and ORG3.CODE=#{seaBigregion,jdbcType=VARCHAR}
+		        </when>
+		        <when test="seaDivision!=null and seaDivision!=''">
+		          and ORG4.CODE=#{seaDivision,jdbcType=VARCHAR}
+		        </when>
+		      </choose>
+		      <if test="state==null or state==''">
+		       <!-- and PSE.ACTIVE='Y' -->
+		       and 1=1
+		      </if>
+		      <if test="state!=null and state!=''">
+		        <choose>
+		          <when test='state=="PASSED"'>
+		            <![CDATA[ and (sysdate>PSE.PRIVILEGE_END_TIME and PSE.active='Y')]]>
+		          </when>
+		          <when test='state=="EFFECTIVE"'>
+		            <![CDATA[ 
+		              and (
+		                (sysdate>=PSE.PRIVILEGE_START_TIME and PSE.PRIVILEGE_END_TIME is null and PSE.active='Y')
+		                or 
+		                (sysdate>=PSE.PRIVILEGE_START_TIME  and PSE.PRIVILEGE_END_TIME is not null and sysdate<PSE.PRIVILEGE_END_TIME and PSE.active='Y')
+		              )
+		            ]]>
+		          </when>
+		          <when test='state=="WAIT"'>
+		            <![CDATA[ and (sysdate<=PSE.PRIVILEGE_START_TIME and PSE.active='Y')]]>
+		          </when>
+		          <when test='state=="DELETED"'>
+		            <![CDATA[ and PSE.active='N']]>
+		          </when>
+		          <otherwise>
+		          </otherwise>
+		        </choose>
+		      </if>
+        </otherwise>
+		  </choose>
+		</where>
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="queryConditionDetail">
+		<where>
+			<if test="customerContractId!=null and customerContractId!=''">
+				and
+				PSE.CUSTOMER_CONTRACT_ID=#{customerContractId,jdbcType=VARCHAR}
+			</if>
+			<if test="id!=null and id!=''">
+				and PSE.ID=#{id,jdbcType=VARCHAR}
+			</if>
+			<choose>
+				<when test="active!=null and active!=''">
+					and PSE.ACTIVE=#{active,jdbcType=VARCHAR}
+				</when>
+				<!--  <otherwise>
+					and PSE.ACTIVE='Y'
+				</otherwise>-->
+			</choose>
+		</where>
+	</sql>
+	<!-- 根据参数查询越发越惠客户合同信息 -->
+	<select id="queryContractList" resultMap="PrivilegeContractResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_main_param"></include>
+		FROM T_CUSTOMER_CONTRACT PSE
+		LEFT JOIN T_BSE_CUSTOMER CUSTOMER ON
+		PSE.CUSTOMER_CODE=CUSTOMER.CODE AND CUSTOMER.ACTIVE='Y'
+		LEFT JOIN
+		T_BSE_ORG ORG1 ON CUSTOMER.ORG_CODE=ORG1.CODE AND ORG1.ACTIVE='Y'
+		LEFT
+		JOIN T_BSE_ORG ORG2 ON ORG1.PARENT_CODE=ORG2.CODE AND ORG2.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG3 ON ORG2.PARENT_CODE=ORG3.CODE AND
+		ORG3.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG4 ON ORG3.PARENT_CODE=ORG4.CODE
+		AND ORG4.ACTIVE='Y'
+		<include refid="queryContractCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+
+	<!-- 根据参数统计越发越惠客户合同数量 -->
+	<select id="queryContractCount" resultType="Long" parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_CUSTOMER_CONTRACT PSE
+		LEFT JOIN T_BSE_CUSTOMER CUSTOMER ON PSE.CUSTOMER_CODE=CUSTOMER.CODE AND
+		CUSTOMER.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG1 ON CUSTOMER.ORG_CODE=ORG1.CODE AND
+		ORG1.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG2 ON ORG1.PARENT_CODE=ORG2.CODE AND ORG2.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG3 ON ORG2.PARENT_CODE=ORG3.CODE AND
+		ORG3.ACTIVE='Y'
+		LEFT JOIN T_BSE_ORG ORG4 ON ORG3.PARENT_CODE=ORG4.CODE AND ORG4.ACTIVE='Y'
+		<include refid="queryContractCondition"></include>
+	</select>
+	<!-- 增加一条越发越惠客户合同 -->
+	<insert id="addPrivilegeContract"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeContractEntity">
+		INSERT INTO T_CUSTOMER_CONTRACT
+		(
+		ID,
+		CUSTOMER_CODE,
+		CONTRACT_CODE,
+		CONTACT_NAME,
+		CONTACT_PHONE,
+		CONTRACT_START_TIME,
+		CONTRACT_END_TIME,
+		PRIVILEGE_START_TIME,
+		PRIVILEGE_END_TIME,
+		HAS_COUPON,
+		REMARK,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE,
+		COMMITMENT_PRODUCT
+		)
+		VALUES(
+		#{id,jdbcType=VARCHAR},
+		#{customerCode,jdbcType=VARCHAR},
+		#{contractCode,jdbcType=VARCHAR},
+		#{contactName,jdbcType=VARCHAR},
+		#{contactPhone,jdbcType=VARCHAR},
+		#{contractStartTime,jdbcType=TIMESTAMP},
+		#{contractEndTime,jdbcType=TIMESTAMP},
+		#{privilegeStartTime,jdbcType=TIMESTAMP},
+		#{privilegeEndTime,jdbcType=TIMESTAMP},
+		#{hasCoupon,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{active,jdbcType=VARCHAR},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{modifyDate,jdbcType=TIMESTAMP},
+		#{modifyUser,jdbcType=VARCHAR},
+		#{commitmentProduct,jdbcType=DOUBLE}
+		)
+	</insert>
+	<!-- 修改和删除都用这个 -->
+	<update id="delPrivilegeContract"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeContractEntity">
+		UPDATE T_CUSTOMER_CONTRACT SET
+		ACTIVE = #{active,jdbcType=VARCHAR},
+		MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+		MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<!-- 增加一条越发越惠客户合同明细 -->
+	<insert id="addPrivilegeContractDetail"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeContractDetailEntity">
+		INSERT INTO T_CUSTOMER_CONTRACT_DETAIL
+		(
+		ID,
+		CUSTOMER_CONTRACT_ID,
+		START_AMOUNT,
+		END_AMOUNT,
+		DD_MIN_FREIGHT_DISCOUNT,
+		DU_MIN_FREIGHT_DISCOUNT,
+		MAX_COUPON_SCALE,
+		DATA_ORIGN,
+		REMARK,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+		)
+		VALUES(
+		#{id,jdbcType=VARCHAR},
+		#{customerContractId,jdbcType=VARCHAR},
+		#{startAmount,jdbcType=DOUBLE},
+		#{endAmount,jdbcType=DOUBLE},
+		#{ddMinFreightDiscount,jdbcType=DOUBLE},
+		#{duMinFreightDiscount,jdbcType=DOUBLE},
+		#{maxCouponScale,jdbcType=DOUBLE},
+		#{dataOrign,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{active,jdbcType=VARCHAR},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{modifyDate,jdbcType=TIMESTAMP},
+		#{modifyUser,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!-- 修改和删除都用这个 -->
+	<update id="delPrivilegeContractDetail"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeContractDetailEntity">
+		UPDATE T_CUSTOMER_CONTRACT_DETAIL SET
+		ACTIVE = #{active,jdbcType=VARCHAR},
+		MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+		MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updatePrivilegeContractDetail">
+		UPDATE T_CUSTOMER_CONTRACT_DETAIL TBR SET
+		TBR.START_AMOUNT = #{startAmount,jdbcType=DOUBLE},
+		TBR.END_AMOUNT = #{endAmount,jdbcType=DOUBLE},
+		TBR.DD_MIN_FREIGHT_DISCOUNT = #{ddMinFreightDiscount,jdbcType=DOUBLE},
+		TBR.DU_MIN_FREIGHT_DISCOUNT = #{duMinFreightDiscount,jdbcType=DOUBLE},
+		TBR.MAX_COUPON_SCALE = #{maxCouponScale,jdbcType=DOUBLE},
+		TBR.DATA_ORIGN = #{dataOrign,jdbcType=VARCHAR},
+		TBR.REMARK = #{remark,jdbcType=VARCHAR},
+		TBR.ACTIVE = #{active,jdbcType=VARCHAR},
+		TBR.MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+		TBR.MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+		WHERE
+		TBR.ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<!-- 根据参数查询越发越惠客户合同信息 -->
+	<select id="queryContractDetailList" resultMap="PrivilegeContractDetailResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_main_paramDetail"></include>
+		FROM T_CUSTOMER_CONTRACT_DETAIL PSE
+		<include refid="queryConditionDetail"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+
+	<!-- 根据参数统计越发越惠客户合同信息 -->
+	<select id="queryContractDetailCount" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_CUSTOMER_CONTRACT_DETAIL PSE
+		<include refid="queryConditionDetail"></include>
+	</select>
+	<insert id="addCouponAcceptor"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.CouponAcceptorEntity">
+		INSERT INTO T_COUPON_ACCEPTOR
+		(
+		ID,
+		ACCEPTOR_NAME,
+		ACCEPTOR_PHONE,
+		IDENTITY_CARD_NO,
+		BANK_NAME,
+    SUBBRANCH_NAME,		
+		CREDIT_CARD_NO,
+		RELATIONSHIP_WITH_CUSTOMER,
+		ALIPAY_ACCOUNT,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+		)
+		VALUES(
+		#{id,jdbcType=VARCHAR},
+		#{acceptorName,jdbcType=VARCHAR},
+		#{acceptorPhone,jdbcType=VARCHAR},
+		#{identityCardNo,jdbcType=VARCHAR},
+		#{bankName,jdbcType=VARCHAR},
+		#{subbranchName,jdbcType=VARCHAR},
+		#{creditCardNo,jdbcType=VARCHAR},
+		#{relationshipWithCustomer,jdbcType=VARCHAR},
+		#{alipayAccount,jdbcType=VARCHAR},
+		#{active,jdbcType=VARCHAR},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{modifyDate,jdbcType=TIMESTAMP},
+		#{modifyUser,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="updateCouponAcceptor"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.CouponAcceptorEntity">
+		UPDATE T_COUPON_ACCEPTOR SET
+		ACCEPTOR_NAME=#{acceptorName,jdbcType=VARCHAR},
+		ACCEPTOR_PHONE=#{acceptorPhone,jdbcType=VARCHAR},
+		IDENTITY_CARD_NO=#{identityCardNo,jdbcType=VARCHAR},
+		BANK_NAME=#{bankName,jdbcType=VARCHAR},
+		SUBBRANCH_NAME=#{subbranchName,jdbcType=VARCHAR},
+		CREDIT_CARD_NO=#{creditCardNo,jdbcType=VARCHAR},
+		RELATIONSHIP_WITH_CUSTOMER=#{relationshipWithCustomer,jdbcType=VARCHAR},
+		ALIPAY_ACCOUNT=#{alipayAccount,jdbcType=VARCHAR},
+		MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+		MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<!-- 修改和删除都用这个 -->
+	<update id="delCouponAcceptor"
+		parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.CouponAcceptorEntity">
+		UPDATE T_COUPON_ACCEPTOR SET
+		ACTIVE = #{active,jdbcType=VARCHAR},
+		MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+		MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<!-- 根据客户CODE查询合同，合同开始结束时间 -->
+  <select id="findPrivilegeContract" 
+    parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeContractEntity" 
+    resultMap="PrivilegeContractResultMap">
+    <![CDATA[
+      SELECT ID FROM T_CUSTOMER_CONTRACT WHERE CUSTOMER_CODE=#{customerCode,jdbcType=VARCHAR} 
+      AND CONTRACT_START_TIME<=#{contractEndTime,jdbcType=TIMESTAMP} 
+      AND CONTRACT_END_TIME>=#{contractStartTime,jdbcType=TIMESTAMP}
+      AND ACTIVE='Y' 
+    ]]>
+  </select>
+  <update id="delPrivilegeCoupon" 
+    parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.PrivilegeCouponEntity">
+    UPDATE T_PRIVILEGE_COUPON SET
+    ACTIVE = #{active,jdbcType=VARCHAR},
+    MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+    WHERE ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

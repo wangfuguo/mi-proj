@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.extrafee.server.dao.PriceDeliveryFeeDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.extrafee.shared.domain.PriceDeliveryFeeEntity"
+		id="priceDeliveryFeeResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="CITY_TYPE" property="cityType" jdbcType="VARCHAR" />
+		<id column="CITYTYPENAME" property="cityTypeName" jdbcType="VARCHAR" />
+		<id column="SECTION_ITEM_CODE" property="sectionItemCode" jdbcType="VARCHAR" />
+		<id column="SECTION_ITEM_NAME" property="sectionItemName" jdbcType="VARCHAR" />
+		<id column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<id column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<id column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+		<id column="CREATEUSERNAME" property="createUserName" jdbcType="VARCHAR" />
+		<id column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<id column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<id column="MODIFYUSERNAME" property="modifyUserName" jdbcType="VARCHAR" />
+		<id column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<id column="STATE" property="state" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<id column="TRANSTYPENAME" property="transTypeName" jdbcType="VARCHAR" />
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	
+
+	<sql id="mainSqlBody">
+	SELECT Z.ID,
+	       Z.CITY_TYPE,
+	       Z.SECTION_ITEM_CODE,
+	       Z.SECTION_ITEM_NAME,
+	       Z.EFFECTIVE_TIME,
+	       Z.INVALID_TIME,
+	       Z.REMARK,
+	       Z.ACTIVE,
+	       Z.TRANS_TYPE_CODE,
+	       Z.TRANSTYPENAME,
+	       Z.STATE,
+	       Z.CREATE_TIME,
+	       Z.CREATE_USER_CODE,
+	       Z.MODIFY_TIME,
+	       Z.MODIFY_USER_CODE
+	  FROM (        
+	        SELECT T.ID,
+	                T.CITY_TYPE,
+	                T.SECTION_ITEM_CODE,
+	                A.NAME SECTION_ITEM_NAME,
+	                T.EFFECTIVE_TIME,
+	                T.INVALID_TIME,
+	                T.REMARK,
+	                T.ACTIVE,
+	                T.TRANS_TYPE_CODE,
+	                B.NAME TRANSTYPENAME,
+	                <![CDATA[
+	                CASE
+	                  WHEN T.ACTIVE = 'N' THEN
+	                   'DELETED'
+	                  WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN
+	                   'PASSED'
+	                  WHEN T.EFFECTIVE_TIME > SYSDATE THEN
+	                   'WAIT'
+	                  ELSE
+	                   'EFFECTIVE'
+	                END AS STATE,
+	                ]]>
+	                T.CREATE_TIME,
+	                T.CREATE_USER_CODE || F.CREATE_USER_NAME CREATE_USER_CODE,
+	                T.MODIFY_TIME,
+	                T.MODIFY_USER_CODE || H.MODIFY_USER_NAME MODIFY_USER_CODE
+	          FROM T_PRICE_DELIVERY_FEE T
+	         INNER JOIN (SELECT CODE, NAME
+	                       FROM T_PRICE_SECTION
+	                      WHERE SECTIONED_ITEM = 'DISTRIBUTION'
+	                        AND ACTIVE = 'Y') A
+	            ON T.SECTION_ITEM_CODE = A.CODE
+	         INNER JOIN (SELECT CODE, NAME
+	                       FROM T_BSE_TRANS_TYPE
+	                      WHERE ACTIVE = 'Y') B
+	            ON T.TRANS_TYPE_CODE = B.CODE
+	         INNER JOIN (SELECT E.USER_NAME CREATE_USER_CODE,
+	                            E.EMP_NAME  CREATE_USER_NAME
+	                       FROM T_BSE_USER E
+	                      WHERE E.ACTIVE = 'Y') F
+	            ON T.CREATE_USER_CODE = F.CREATE_USER_CODE
+	         INNER JOIN (SELECT G.USER_NAME MODIFY_USER_CODE,
+	                            G.EMP_NAME  MODIFY_USER_NAME
+	                       FROM T_BSE_USER G
+	                      WHERE G.ACTIVE = 'Y') H
+	            ON T.MODIFY_USER_CODE = H.MODIFY_USER_CODE) Z
+		 WHERE 1 = 1
+	</sql>
+ 
+	
+	<!-- 查询条件 -->
+	<sql id="mainSqlCondtion">
+		
+		<if test="(priceDeliveryFeeEntity.id != null) and (priceDeliveryFeeEntity.id != '')">
+			AND Z.ID = #{priceDeliveryFeeEntity.id,jdbcType=VARCHAR}
+		</if>
+				
+		<if test="(priceDeliveryFeeEntity.cityType != null) and (priceDeliveryFeeEntity.cityType != '')">
+			AND Z.CITY_TYPE = #{priceDeliveryFeeEntity.cityType,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="(priceDeliveryFeeEntity.state != null) and (priceDeliveryFeeEntity.state != '')">
+			AND Z.STATE = #{priceDeliveryFeeEntity.state,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="(priceDeliveryFeeEntity.transTypeCode != null) and (priceDeliveryFeeEntity.transTypeCode != '')">
+			AND Z.TRANS_TYPE_CODE = #{priceDeliveryFeeEntity.transTypeCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="(priceDeliveryFeeEntity.sectionItemCode != null) and (priceDeliveryFeeEntity.sectionItemCode != '')">
+			AND Z.SECTION_ITEM_CODE = #{priceDeliveryFeeEntity.sectionItemCode,jdbcType=VARCHAR}
+		</if>						
+	</sql>
+
+	<!-- 根据参数查询送货费信息  -->
+	<select id="queryListByParam" resultMap="priceDeliveryFeeResultMap">
+		<include refid="mainSqlBody"></include>
+		<include refid="mainSqlCondtion"></include>
+	    ORDER BY Z.MODIFY_TIME DESC
+	</select>
+	
+	
+	
+	<!-- 根据参数统计送货费信息 -->
+	<select id="queryCountByParam" resultType="Long" parameterType="map">
+		SELECT COUNT(1)
+		FROM (
+			<include refid="mainSqlBody"></include>
+			<include refid="mainSqlCondtion"></include>
+		)
+	</select>
+	
+	
+	
+	
+	
+	<!-- 增加一条送货费 -->
+	<insert id="addPriceDeliveryFee" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceDeliveryFeeEntity">
+	    INSERT INTO T_PRICE_DELIVERY_FEE
+	     (	
+	    	ID,
+			CITY_TYPE,
+			TRANS_TYPE_CODE,
+			SECTION_ITEM_CODE,
+			effective_time,
+			invalid_time,
+			remark,
+			active,
+			create_time,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{cityType,jdbcType=VARCHAR},
+	    	#{transTypeCode,jdbcType=VARCHAR},
+	    	#{sectionItemCode,jdbcType=VARCHAR},
+	    	#{effectiveTime,jdbcType=TIMESTAMP},
+	    	#{invalidTime,jdbcType=TIMESTAMP},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	SYSDATE,
+	    	#{createUserCode,jdbcType=VARCHAR},
+	    	SYSDATE,
+	    	#{modifyUserCode,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改 -->
+	<update id="updatePriceDeliveryFee" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceDeliveryFeeEntity">
+	    UPDATE T_PRICE_DELIVERY_FEE SET 
+	    <if test="state == 'setNullInvalidTime '">
+	    	<![CDATA[ INVALID_TIME=NULL,]]>
+	    </if>
+	    <if test="invalidTime!=null">
+	    	INVALID_TIME=#{invalidTime,jdbcType=VARCHAR},
+	    </if>
+	    <if test="remark!=null and remark!=''">
+	    	remark= #{remark,jdbcType=VARCHAR},
+	    </if>
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyTime,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

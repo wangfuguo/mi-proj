@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.DiscountCorpSendDao" >
+  <resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.job.shared.domain.DiscountCorpSendEntity" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+    <result column="FREIGHT_SECTION_CODE" property="freightSectionCode" jdbcType="VARCHAR" />
+    <result column="PICKUP_SECTION_CODE" property="pickupSectionCode" jdbcType="VARCHAR" />
+    <result column="DELIVERY_SECTION_CODE" property="deliverySectionCode" jdbcType="VARCHAR" />
+    <result column="INSURANCE_RATE_SECTION_CODE" property="insuranceRateSectionCode" jdbcType="VARCHAR" />
+    <result column="INSURANCE_SECTION_CODE" property="insuranceSectionCode" jdbcType="VARCHAR" />
+    <result column="PAPER_SECTION_CODE" property="paperSectionCode" jdbcType="VARCHAR" />
+    <result column="SMS_SECTION_CODE" property="smsSectionCode" jdbcType="VARCHAR" />
+    <result column="FUEL_SECTION_CODE" property="fuelSectionCode" jdbcType="VARCHAR" />
+    <result column="COLLECTION_RATE_SECTION_CODE" property="collectionRateSectionCode" jdbcType="VARCHAR" />
+    <result column="COLLECTION_SECTION_CODE" property="collectionSectionCode" jdbcType="VARCHAR" />
+    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="ADD_SECTION_CODE" property="addSectionCode" jdbcType="VARCHAR" />
+    <result column="UPSTAIRS_SECTION_CODE" property="upstairsSectionCode" jdbcType="VARCHAR" />
+    <result column="LOGIST_CODE" property="logistCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PSE.ID,PSE.ORG_CODE,PSE.TRANS_TYPE_CODE,PSE.FREIGHT_SECTION_CODE,PSE.PICKUP_SECTION_CODE,PSE.DELIVERY_SECTION_CODE,PSE.
+    INSURANCE_RATE_SECTION_CODE,PSE.INSURANCE_SECTION_CODE,PSE.PAPER_SECTION_CODE,PSE.SMS_SECTION_CODE,PSE.
+    FUEL_SECTION_CODE,PSE.COLLECTION_RATE_SECTION_CODE,PSE.COLLECTION_SECTION_CODE,PSE.EFFECTIVE_TIME,PSE.
+    INVALID_TIME,PSE.REMARK,PSE.CREATE_TIME,PSE.CREATE_USER_CODE,PSE.MODIFY_TIME,PSE.MODIFY_USER_CODE,PSE.
+    ACTIVE,PSE.ADD_SECTION_CODE,PSE.UPSTAIRS_SECTION_CODE,
+    <![CDATA[
+		case when (PSE.invalid_time<sysdate and PSE.active='Y') then 'PASSED'
+ 			                     when (PSE.effective_time<=sysdate and PSE.active='Y') then 'EFFECTIVE'
+ 			                     when (PSE.effective_time>sysdate and PSE.active='Y') then 'WAIT'
+ 			                     when (PSE.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+    ]]>
+  </sql>
+	<select id="queryListByParam" resultMap="BaseResultMap"
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+		SELECT
+		<include refid="Base_Column_List"></include>
+		,TBO.LOGIST_CODE
+		FROM T_DISCOUNT_CORP PSE
+		LEFT JOIN T_BSE_ORG TBO ON TBO.CODE=PSE.ORG_CODE
+   	    WHERE
+		EXISTS (SELECT 1 FROM (
+			SELECT PSE.ORG_CODE,PSE.TRANS_TYPE_CODE,MAX(PSE.MODIFY_TIME) AS MAX_MODIFY_TIME,MAX(PSE.CREATE_TIME) AS MAX_CREATE_TIME
+			FROM T_DISCOUNT_CORP PSE
+			 <where>
+	      	<trim  prefixOverrides="OR">
+				<if test="startTime != null  and startTime != '' ">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= Effective_Time and Effective_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+				<if test=" endTime != null  and endTime != ''">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= Invalid_Time and Invalid_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+			</trim>
+	      </where>
+			GROUP BY PSE.ORG_CODE,PSE.TRANS_TYPE_CODE )
+		WHERE ORG_CODE = PSE.ORG_CODE AND TRANS_TYPE_CODE=PSE.TRANS_TYPE_CODE AND MAX_MODIFY_TIME = PSE.MODIFY_TIME AND MAX_CREATE_TIME = PSE.CREATE_TIME)
+	</select>
+	<select id="queryFailureData" resultMap="BaseResultMap"
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		SELECT
+		<include refid="Base_Column_List"></include>
+		,TBO.LOGIST_CODE
+		FROM T_JOB_SEND_FAILURE C 
+	    LEFT JOIN T_DISCOUNT_CORP PSE ON C.BUSINESS_ID = PSE.ID
+	    LEFT JOIN T_BSE_ORG TBO ON TBO.CODE=PSE.ORG_CODE
+   	    WHERE
+		EXISTS (SELECT 1 FROM (
+			SELECT PSE.ORG_CODE,PSE.TRANS_TYPE_CODE,MAX(PSE.CREATE_TIME) AS MAX_CREATE_TIME,MAX(PSE.MODIFY_TIME) AS MAX_MODIFY_TIME
+			FROM T_JOB_SEND_FAILURE C 
+	    	LEFT JOIN T_DISCOUNT_CORP PSE ON C.BUSINESS_ID = PSE.ID
+			<where>
+				<if test="active != null and active != ''">
+					AND C.ACTIVE = #{active, jdbcType=CHAR}
+				</if>
+			</where>
+			GROUP BY PSE.ORG_CODE,PSE.TRANS_TYPE_CODE )
+		WHERE ORG_CODE = PSE.ORG_CODE AND TRANS_TYPE_CODE=PSE.TRANS_TYPE_CODE AND MAX_MODIFY_TIME = PSE.MODIFY_TIME AND MAX_CREATE_TIME = PSE.CREATE_TIME)
+	<if test="retryTimes != null and retryTimes != ''">
+    	<![CDATA[AND C.RETRY_TIMES < #{retryTimes, jdbcType=INTEGER}]]>
+    </if>
+	</select>
+	<resultMap
+		type="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity"
+		id="priceEvnetSendResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="EVENT_NAME" property="eventName" jdbcType="VARCHAR" />
+		<result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="IS_FORCE_COLSE" property="isForceColse" jdbcType="VARCHAR" />
+		<result column="active" property="active" jdbcType="VARCHAR" />
+		<result column="create_user_code" property="createUser" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<!-- 门店集合 -->
+		<collection property="priceEventCorpSubs" ofType="com.hoau.miser.module.biz.job.shared.domain.PriceEventCorpSubSendEntity">
+			<id column="CS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="CS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="CS_CORPTYPE" property="corpType" jdbcType="VARCHAR"/>
+			<result column="CS_ORGCODE" property="orgCode" jdbcType="VARCHAR"/>
+		</collection>
+		<!-- 明细集合 -->
+		<collection property="priceEventDiscountSubs" ofType="com.hoau.miser.module.biz.job.shared.domain.PriceEventDiscountSubSendEntity">
+			<id column="DS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="DS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="DS_TRANSTYPECODE" property="transTypeCode" jdbcType="VARCHAR"/>
+			<result column="DS_FREIGHTSECTIONCODE" property="freightSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_ADDSECTIONCODE" property="addSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_FUELSECTIONCODE" property="fuelSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_PICKUPSECTIONCODE" property="pickupSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_DELIVERYSECTIONCODE" property="deliverySectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_UPSTAIRSECTIONCODE" property="upstairSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_INSURANCERATESECTIONCODE" property="insuranceRateSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_INSURANCESECTIONCODE" property="insuranceSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_PAPERSECTIONCODE" property="paperSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_SMSSECTIONCODE" property="smsSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_COLLECTIONRATESECTIONCODE" property="collectionRateSectionCode" jdbcType="VARCHAR"/>
+			<result column="DS_COLLECTIONSECTIONCODE" property="collectionSectionCode" jdbcType="VARCHAR"/>
+		</collection>
+		<!-- 渠道明细集合 -->
+		<collection property="priceEventOrderchannelSubs" ofType="com.hoau.miser.module.biz.job.shared.domain.PriceEventOrderchannelSubSendEntity">
+			<id column="OS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="OS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="OS_CHANNELCODE" property="channelCode" jdbcType="VARCHAR"/>
+		</collection>
+		<!-- 线路明细集合 -->
+		<collection property="priceEventRouteSubs" ofType="com.hoau.miser.module.biz.job.shared.domain.PriceEventRouteSubSendEntity">
+			<id column="RS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="RS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="RS_SENDPRICECITY" property="sendPriceCity" jdbcType="VARCHAR"/>
+			<result column="RS_ARRIVALPRICECITY" property="arrivalPriceCity" jdbcType="VARCHAR"/>
+		</collection>
+		<!-- 客户集合 -->
+		<collection property="priceEventCustomerSubs" ofType="com.hoau.miser.module.biz.job.shared.domain.PriceEventCustomerSubSendEntity">
+			<id column="CUS_ID" property="id" jdbcType="VARCHAR" />
+			<result column="CUS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+			<result column="CUS_CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR"/>
+			<result column="CUS_CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR"/>
+		</collection>
+	</resultMap>
+	<sql id="query_mian_field">
+		MAIN.ID AS ID,
+		MAIN.EVENT_CODE AS EVENT_CODE,
+		MAIN.EVENT_NAME AS EVENT_NAME,
+		MAIN.effective_time AS effective_time,
+		MAIN.invalid_time AS invalid_time,
+		MAIN.remark AS remark,
+		MAIN.IS_FORCE_COLSE as IS_FORCE_COLSE,
+		MAIN.active AS active,
+		MAIN.create_user_code AS create_user_code,
+		MAIN.create_time AS create_time,
+		MAIN.modify_time AS modify_time,
+		MAIN.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		<![CDATA[
+		case when (MAIN.invalid_time<sysdate and MAIN.active='Y') then 'PASSED'
+ 			                     when (MAIN.effective_time<=sysdate and MAIN.active='Y') then 'EFFECTIVE'
+ 			                     when (MAIN.effective_time>sysdate and MAIN.active='Y') then 'WAIT'
+ 			                     when (MAIN.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+		
+	</sql>
+	<sql id="query_priceEventCorpSubs_field">
+		CS.ID AS CS_ID,
+		CS.EVENT_CODE AS CS_EVENTCODE,
+		CS.CORP_TYPE AS CS_CORPTYPE,
+		CS.ORG_CODE AS CS_ORGCODE
+	</sql>
+	
+	<sql id="query_priceEventDiscountSubs_field">
+		DS.ID AS DS_ID,
+		DS.event_Code	AS DS_EVENTCODE ,
+		DS.trans_Type_Code	AS DS_TRANSTYPECODE,
+		DS.freight_Section_Code	AS DS_FREIGHTSECTIONCODE,
+		DS.add_Section_Code	AS DS_ADDSECTIONCODE,
+		DS.fuel_Section_Code	AS DS_FUELSECTIONCODE,
+		DS.pickup_Section_Code	AS DS_PICKUPSECTIONCODE,
+		DS.delivery_Section_Code	AS DS_DELIVERYSECTIONCODE,
+		DS.upstair_Section_Code	AS DS_UPSTAIRSECTIONCODE,
+		DS.insurance_Rate_Section_Code	AS DS_INSURANCERATESECTIONCODE,
+		DS.insurance_Section_Code	AS DS_INSURANCESECTIONCODE,
+		DS.paper_Section_Code	AS DS_PAPERSECTIONCODE,
+		DS.sms_Section_Code	AS DS_SMSSECTIONCODE,
+		DS.collection_Rate_Section_Code	AS DS_COLLECTIONRATESECTIONCODE,
+		DS.collection_Section_Code	AS DS_COLLECTIONSECTIONCODE
+	</sql>
+	<sql id="query_priceEventOrderchannelSubs_field">
+		OS.ID AS OS_ID,
+		OS.EVENT_CODE AS OS_EVENTCODE,
+		OS.CHANNEL_CODE AS OS_CHANNELCODE
+	</sql>
+	<sql id="query_priceEventRouteSubs_field">
+		RS.ID AS RS_ID,
+		RS.EVENT_CODE AS RS_EVENTCODE,
+		RS.SEND_PRICE_CITY AS RS_SENDPRICECITY,
+		RS.ARRIVAL_PRICE_CITY AS RS_ARRIVALPRICECITY
+	</sql>
+	<sql id="query_priceEventCustomerSubs_field">
+		CUS.ID AS CUS_ID,
+		CUS.EVENT_CODE AS CUS_EVENTCODE,
+		CUS.CUSTOMER_CODE AS CUS_CUSTOMER_CODE,
+		CUS.CUSTOMER_NAME AS CUS_CUSTOMER_NAME
+	</sql>
+	<select id="queryListByParamByEvent" resultMap="BaseResultMap"
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		SELECT
+		<include refid="Base_Column_List"></include>
+		,TBO.LOGIST_CODE
+		FROM T_DISCOUNT_CORP PSE
+		LEFT JOIN T_BSE_ORG TBO ON TBO.CODE=PSE.ORG_CODE
+   	    WHERE
+		EXISTS (SELECT 1 FROM (
+			SELECT PSE.ORG_CODE,PSE.TRANS_TYPE_CODE,MAX(PSE.MODIFY_TIME) AS MAX_MODIFY_TIME
+			FROM T_DISCOUNT_CORP PSE
+			 <where>
+	       PSE.ACTIVE = 'Y'
+			 <![CDATA[ AND NVL(#{endTime, jdbcType=TIMESTAMP}, SYSDATE) >= PSE.Effective_Time 
+			 	AND (PSE.Invalid_Time IS NULL OR PSE.Invalid_Time > NVL(#{endTime, jdbcType=TIMESTAMP}, SYSDATE))  ]]>
+	        <if test="corpCode != null and corpCode != ''">
+				AND PSE.CORP_CODE = #{corpCode, jdbcType=CHAR}
+			</if>
+			<if test="transTypeCode != null and transTypeCode != ''">
+				AND PSE.TRANS_TYPE_CODE = #{transTypeCode, jdbcType=CHAR}
+			</if>
+	      </where>
+			GROUP BY PSE.ORG_CODE,PSE.TRANS_TYPE_CODE )
+		WHERE ORG_CODE = PSE.ORG_CODE AND TRANS_TYPE_CODE=PSE.TRANS_TYPE_CODE AND MAX_MODIFY_TIME = PSE.MODIFY_TIME)
+	</select>
+	<!-- 网点折扣获取需要同步的活动-->
+	<select id="queryListByParamByEventDiscountCorp" resultMap="priceEvnetSendResultMap"
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		SELECT
+		<include refid="query_mian_field"></include>
+		,
+		<include refid="query_priceEventDiscountSubs_field"></include>
+		FROM T_PRICE_EVENT MAIN
+	    Left join T_PRICE_EVENT_CORP_SUB PECS ON MAIN.EVENT_CODE=PECS.EVENT_CODE
+	    Left join T_PRICE_EVENT_DISCOUNT_SUB DS ON MAIN.EVENT_CODE=DS.EVENT_CODE
+         WHERE
+         NOT EXISTS( SELECT 1 FROM (
+          SELECT EVENT_CODE from T_PRICE_EVENT_CUSTOMER_SUB PECS
+          )
+          WHERE MAIN.EVENT_CODE=EVENT_CODE
+         )
+          AND 
+         NOT EXISTS( SELECT 1 FROM (
+          SELECT EVENT_CODE from T_PRICE_EVENT_ORDERCHANNEL_SUB PEOS
+          )
+          WHERE MAIN.EVENT_CODE=EVENT_CODE
+         )
+          AND 
+         NOT EXISTS( SELECT 1 FROM (
+          SELECT EVENT_CODE from T_PRICE_EVENT_ROUTE_SUB RS
+          )
+          WHERE MAIN.EVENT_CODE=EVENT_CODE
+         )
+         AND
+    	EXISTS (SELECT 1 FROM (
+      SELECT PECS.ORG_CODE,DS.TRANS_TYPE_CODE,MAX(MAIN.MODIFY_TIME) AS MAX_MODIFY_TIME
+      FROM T_PRICE_EVENT MAIN
+      Left join T_PRICE_EVENT_CORP_SUB PECS ON MAIN.EVENT_CODE=PECS.EVENT_CODE
+      Left join T_PRICE_EVENT_DISCOUNT_SUB DS ON MAIN.EVENT_CODE=DS.EVENT_CODE
+       <where>
+			<trim  prefix="(" suffix=")" prefixOverrides="OR">
+				<if test="startTime != null  and startTime != '' ">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= MAIN.Effective_Time and MAIN.Effective_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+				<if test=" endTime != null  and endTime != ''">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= MAIN.Invalid_Time and MAIN.Invalid_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+			</trim>
+	        <if test="corpCode != null and corpCode != ''">
+				AND PECS.ORG_CODE = #{corpCode, jdbcType=CHAR}
+			</if>
+			<if test="transTypeCode != null and transTypeCode != ''">
+				AND DS.TRANS_TYPE_CODE = #{transTypeCode, jdbcType=CHAR}
+			</if>
+	      </where>
+      	GROUP BY PECS.ORG_CODE,DS.TRANS_TYPE_CODE ) 
+    	WHERE ORG_CODE = PECS.ORG_CODE AND TRANS_TYPE_CODE=DS.TRANS_TYPE_CODE AND MAX_MODIFY_TIME = MAIN.MODIFY_TIME)
+		<if test="corpCode != null and corpCode != ''">
+			AND PECS.ORG_CODE = #{corpCode, jdbcType=CHAR}
+		</if>
+		<if test="transTypeCode != null and transTypeCode != ''">
+			AND DS.TRANS_TYPE_CODE = #{transTypeCode, jdbcType=CHAR}
+		</if>
+	</select>
+	
+		<!-- 网点折扣活动同步-->
+	<select id="queryListByParamByEventFORDiscountCorp" resultMap="priceEvnetSendResultMap"
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		SELECT
+		<include refid="query_mian_field"></include>
+		,
+		<include refid="query_priceEventDiscountSubs_field"></include>
+		FROM T_PRICE_EVENT MAIN
+	    Left join T_PRICE_EVENT_CORP_SUB PECS ON MAIN.EVENT_CODE=PECS.EVENT_CODE
+	    Left join T_PRICE_EVENT_DISCOUNT_SUB DS ON MAIN.EVENT_CODE=DS.EVENT_CODE
+         WHERE
+         NOT EXISTS( SELECT 1 FROM (
+          SELECT EVENT_CODE from T_PRICE_EVENT_CUSTOMER_SUB PECS
+          )
+          WHERE MAIN.EVENT_CODE=EVENT_CODE
+         )
+          AND 
+         NOT EXISTS( SELECT 1 FROM (
+          SELECT EVENT_CODE from T_PRICE_EVENT_ORDERCHANNEL_SUB PEOS
+          )
+          WHERE MAIN.EVENT_CODE=EVENT_CODE
+         )
+         AND 
+         NOT EXISTS( SELECT 1 FROM (
+          SELECT EVENT_CODE from T_PRICE_EVENT_ROUTE_SUB RS
+          )
+          WHERE MAIN.EVENT_CODE=EVENT_CODE
+         )
+         AND
+    	EXISTS (SELECT 1 FROM (
+      SELECT PECS.ORG_CODE,DS.TRANS_TYPE_CODE,MAX(MAIN.MODIFY_TIME) AS MAX_MODIFY_TIME
+      FROM T_PRICE_EVENT MAIN
+      Left join T_PRICE_EVENT_CORP_SUB PECS ON MAIN.EVENT_CODE=PECS.EVENT_CODE
+      Left join T_PRICE_EVENT_DISCOUNT_SUB DS ON MAIN.EVENT_CODE=DS.EVENT_CODE
+       <where>
+	        <trim  prefixOverrides="OR">
+				<if test="startTime != null  and startTime != '' ">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= MAIN.Effective_Time and MAIN.Effective_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+				<if test=" endTime != null  and endTime != ''">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= MAIN.Invalid_Time and MAIN.Invalid_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+			</trim>
+	      </where>
+      	GROUP BY PECS.ORG_CODE,DS.TRANS_TYPE_CODE ) 
+    	WHERE ORG_CODE = PECS.ORG_CODE AND TRANS_TYPE_CODE=DS.TRANS_TYPE_CODE AND MAX_MODIFY_TIME = MAIN.MODIFY_TIME)
+	</select>
+	<update id="failureInfoUniqByDiscountCorp" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		update T_JOB_SEND_FAILURE A
+         SET A.ACTIVE = 'N'
+         where A.ACTIVE = 'Y'
+               and EXISTS(
+                 select 1 from (
+                           select * from(
+                              select 
+                                     A.id,
+                                   B.ORG_CODE,
+                                    B.TRANS_TYPE_CODE
+                                    FROM T_JOB_SEND_FAILURE A
+                                    join T_DISCOUNT_CORP B on A.BUSINESS_ID = B.ID
+                                   where A.active='Y'
+                                  AND A.TYPE = #{type, jdbcType=VARCHAR}
+                            ) T      
+                              where 
+                                 exists(
+                                     select 1 from (
+                                          select 
+                                    PSE.id,
+                                    PSE.ORG_CODE,
+                                    PSE.TRANS_TYPE_CODE
+                                    from T_DISCOUNT_CORP PSE
+                                    WHERE
+                                          (PSE.ORG_CODE,PSE.TRANS_TYPE_CODE, PSE.MODIFY_TIME,PSE.CREATE_TIME)
+                                      IN (
+                                  SELECT PSE.ORG_CODE,PSE.TRANS_TYPE_CODE,MAX(PSE.MODIFY_TIME) AS MAX_MODIFY_TIME,MAX(PSE.CREATE_TIME) AS MAX_CREATE_TIME
+                                  FROM T_DISCOUNT_CORP PSE
+                                   <where>
+                                      <trim  prefixOverrides="OR">
+                                    <if test="lastSendTime != null  and sendTime != '' ">
+                                      <![CDATA[OR (#{lastSendTime, jdbcType=TIMESTAMP} <= Effective_Time and Effective_Time<= #{sendTime, jdbcType=TIMESTAMP} ) ]]> 
+                                    </if>
+                                    <if test=" lastSendTime != null  and sendTime != ''">
+                                      <![CDATA[OR (#{lastSendTime, jdbcType=TIMESTAMP} <= Invalid_Time and Invalid_Time<= #{sendTime, jdbcType=TIMESTAMP} ) ]]> 
+                                    </if>
+                                  </trim>
+                                    </where>
+                                  GROUP BY PSE.ORG_CODE,PSE.TRANS_TYPE_CODE
+                                      )
+                                       ) temp 
+                                        where  t.ORG_CODE=temp.ORG_CODE
+                                           and t.TRANS_TYPE_CODE=temp.TRANS_TYPE_CODE
+                                 )
+                   
+                   ) temp where temp.id=a.id
+              )
+	</update>
+</mapper>

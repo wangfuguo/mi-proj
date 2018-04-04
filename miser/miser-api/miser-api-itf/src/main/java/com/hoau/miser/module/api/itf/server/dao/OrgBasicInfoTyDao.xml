@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.OrgBasicInfoTyDao">
+	<resultMap id="orgSimpleResultMap"
+		type="com.hoau.miser.module.api.itf.api.shared.domain.OrgBasicInfoTyEntity">
+		<result property="id" column="ORG_ID" jdbcType="VARCHAR" />
+		<result property="code" column="ORG_CODE" jdbcType="VARCHAR" />
+		<result property="name" column="ORG_NAME" jdbcType="VARCHAR" />
+		<result property="logisticCode" column="LOGIST_CODE" jdbcType="VARCHAR" />
+		<result property="provinceCode" column="ORG_PROVINCE_CODE"
+			jdbcType="VARCHAR" />
+		<result property="cityCode" column="ORG_CITY_CODE" jdbcType="VARCHAR" />
+		<result property="countyCode" column="ORG_COUNTY_CODE"
+			jdbcType="VARCHAR" />
+		<result property="provinceName" column="ORG_PROVINCE_NAME"
+			jdbcType="VARCHAR" />
+		<result property="cityName" column="ORG_CITY_NAME" jdbcType="VARCHAR" />
+		<result property="countyName" column="ORG_COUNTY_NAME"
+			jdbcType="VARCHAR" />
+		<result property="addressDetail" column="ORG_ADDRESS_DETAIL"
+			jdbcType="VARCHAR" />
+		<result property="active" column="ORG_ACTIVE" jdbcType="CHAR" />
+	</resultMap>
+
+	<sql id="org_simple_param">
+		ORG.ID AS ORG_ID, /** ID **/
+		ORG.CODE AS ORG_CODE, /** 组织编码 **/
+		ORG.NAME AS ORG_NAME, /** 组织名称 **/
+		ORG.LOGIST_CODE AS LOGIST_CODE, /** 物流代码 */
+		ORG.PROVINCE_CODE AS ORG_PROVINCE_CODE,/** 省份编码 **/
+		ORG.CITY_CODE AS ORG_CITY_CODE,/** 城市编码 **/
+		ORG.COUNTY_CODE AS ORG_COUNTY_CODE,/** 区县编码 **/
+		ORG.PROVINCE AS ORG_PROVINCE_NAME,/** 省份 **/
+		ORG.CITY AS ORG_CITY_NAME,/** 城市 **/
+		ORG.COUNTY AS ORG_COUNTY_NAME,/** 区县 **/
+		ORG.ADDRESS_DETAIL AS ORG_ADDRESS_DETAIL,/** 详细地址 **/
+		ORG.ACTIVE AS ORG_ACTIVE /** 是否启用 **/
+	</sql>
+
+	<select id="queryOrgBasicInfoByCode" parameterType="map"
+		resultMap="orgSimpleResultMap">
+		SELECT /** 综合-组织-按组织编码查询组织信息 **/
+		<include refid="org_simple_param"></include>
+		FROM T_BSE_ORG ORG
+		WHERE ORG.CODE = #{code,jdbcType=VARCHAR}
+		union all
+		SELECT /** 综合-组织-按组织编码查询组织信息 **/
+		<include refid="org_simple_param"></include>
+		FROM t_bse_outer_branch ORG
+		WHERE ORG.CODE = #{code,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

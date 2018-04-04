@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.CustomerDao">
+    <resultMap type="com.hoau.miser.module.biz.base.api.shared.domain.CustomerEntity" id="customerMap">
+    	<id column="ID" property="id" jdbcType="VARCHAR"/>
+    	<id column="CODE" property="code" jdbcType="VARCHAR"/>
+    	<result column="NAME" property="name" jdbcType="VARCHAR"/>
+    	<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR"/>
+    	<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR"/>
+    	<result column="LOGISTIC_NAME" property="logisticName" jdbcType="VARCHAR"/>
+    	<result column="CONTRACT_START_TIME" property="contractStartTime" jdbcType="TIMESTAMP"/>
+    	<result column="CONTRACT_END_TIME" property="contractEndTime" jdbcType="TIMESTAMP"/>
+    	<result column="PC_START_TIME" property="pcStartTime" jdbcType="TIMESTAMP"/>
+    	<result column="PC_END_TIME" property="pcEndTime" jdbcType="TIMESTAMP"/>
+    	<result column="USE_CUSTOMER_PC" property="useCustomerPc" jdbcType="VARCHAR"/>
+    	<result column="USE_CUSTOMER_DISCOUNT" property="useCustomerDiscount" jdbcType="VARCHAR"/>
+    	<result column="SIGNBILL_SHOW_MONEY" property="showMoneyOnSignBill" jdbcType="VARCHAR"/>
+    	<result column="YDJ_USE_DRD" property="ydjUseDrd" jdbcType="VARCHAR"/>
+    	<result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+    	<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP"/>
+    	<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR"/>
+    	<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP"/>
+    	<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR"/>
+    	<result column="ACTIVE" property="active" jdbcType="VARCHAR"/>
+    </resultMap>
+	
+	<!-- 列表查询列 -->
+	<sql id="main_result_columns">
+		T.ID AS ID,
+		T.CODE AS CODE,
+		T.NAME AS NAME,
+		T.ORG_CODE AS ORG_CODE,
+		ORG.NAME AS ORG_NAME,
+		ORG.LOGIST_CODE AS LOGISTIC_NAME, 
+		T.CONTRACT_START_TIME AS CONTRACT_START_TIME,
+		T.CONTRACT_END_TIME AS CONTRACT_END_TIME, 
+		T.PC_START_TIME AS PC_START_TIME, 
+		T.PC_END_TIME AS PC_END_TIME, 
+		T.USE_CUSTOMER_PC AS USE_CUSTOMER_PC, 
+		T.USE_CUSTOMER_DISCOUNT AS USE_CUSTOMER_DISCOUNT, 
+		T.SIGNBILL_SHOW_MONEY AS SIGNBILL_SHOW_MONEY,
+		T.YDJ_USE_DRD AS YDJ_USE_DRD,
+		T.REMARK AS REMARK, 
+		T.CREATE_TIME AS CREATE_TIME, 
+		T.CREATE_USER_CODE AS CREATE_USER_CODE, 
+		T.MODIFY_TIME AS MODIFY_TIME, 
+		T.MODIFY_USER_CODE AS MODIFY_USER_CODE, 
+		T.ACTIVE AS ACTIVE
+	</sql>
+
+	<!-- excel导出查询列 -->
+	<sql id="main_excel_result_columns">
+		T.ID AS ID,
+		T.CODE AS CODE,
+		T.NAME AS NAME,
+		T.ORG_CODE AS ORG_CODE,
+		ORG.NAME AS ORG_NAME,
+		ORG.LOGIST_CODE AS LOGISTIC_NAME,
+		T.CONTRACT_START_TIME AS CONTRACT_START_TIME,
+		T.CONTRACT_END_TIME AS CONTRACT_END_TIME,
+		T.PC_START_TIME AS PC_START_TIME,
+		T.PC_END_TIME AS PC_END_TIME,
+		DECODE(T.USE_CUSTOMER_PC, 'Y', '是', '否') AS USE_CUSTOMER_PC,
+		DECODE(T.USE_CUSTOMER_DISCOUNT, 'Y', '是', '否') AS USE_CUSTOMER_DISCOUNT,
+		DECODE(T.SIGNBILL_SHOW_MONEY, 'Y', '是', '否') AS SIGNBILL_SHOW_MONEY,
+		DECODE(T.YDJ_USE_DRD, 'Y', '是', '否') AS YDJ_USE_DRD,
+		T.REMARK AS REMARK,
+		T.CREATE_TIME AS CREATE_TIME,
+		T.CREATE_USER_CODE AS CREATE_USER_CODE,
+		T.MODIFY_TIME AS MODIFY_TIME,
+		T.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		DECODE(T.ACTIVE, 'Y', '是', '否') AS ACTIVE
+	</sql>
+	
+	<!-- 列表查询条件 -->
+	<sql id="main_query_filter">
+		<if test="code != null and code != ''">
+			AND T.CODE = #{code, jdbcType=VARCHAR} 
+		</if>
+		<if test="name != null and name != ''">
+			AND T.NAME LIKE CONCAT(CONCAT('%', #{name, jdbcType=VARCHAR}),'%')
+		</if>
+		<if test="orgCode != null and orgCode != ''">
+			AND T.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+		</if>
+		<if test="active != null and active != ''">
+			AND T.ACTIVE = #{active, jdbcType=VARCHAR}
+		</if>
+		<if test="active == null or active == ''">
+			AND T.ACTIVE = 'Y'
+		</if>
+	</sql>
+	
+	<!-- 查询客户列表 -->
+	<select id="queryCustomers" resultMap="customerMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CustomerEntity">
+		SELECT 
+		<include refid="main_result_columns"></include>
+		FROM T_BSE_CUSTOMER T LEFT JOIN T_BSE_ORG ORG ON T.ORG_CODE = ORG.CODE
+		<where>
+			<include refid="main_query_filter"></include>
+		</where>
+	</select>
+
+	<!-- 查询客户列表总数量 -->
+	<select id="queryCustomerCount" resultType="Long" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CustomerEntity">
+		SELECT COUNT(0) FROM T_BSE_CUSTOMER T LEFT JOIN T_BSE_ORG ORG ON T.ORG_CODE = ORG.CODE
+		<where>
+			<include refid="main_query_filter"></include>
+		</where>
+	</select>
+	
+	<!-- 根据id查询客户信息 -->
+	<select id="queryCustomerById" resultMap="customerMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CustomerEntity">
+		SELECT <include refid="main_result_columns"></include>
+		FROM T_BSE_CUSTOMER T LEFT JOIN T_BSE_ORG ORG ON T.ORG_CODE = ORG.CODE 
+		WHERE T.ID = #{id, jdbcType=VARCHAR}
+	</select>
+
+	<!-- 更新客户信息 -->
+	<update id="updateCustomer" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CustomerEntity">
+		UPDATE T_BSE_CUSTOMER SET 
+		PC_START_TIME = #{pcStartTime, jdbcType=TIMESTAMP},
+		PC_END_TIME = #{pcEndTime, jdbcType=TIMESTAMP},
+		USE_CUSTOMER_PC = #{useCustomerPc, jdbcType=VARCHAR},
+		USE_CUSTOMER_DISCOUNT = #{useCustomerDiscount, jdbcType=VARCHAR},
+		SIGNBILL_SHOW_MONEY = #{showMoneyOnSignBill, jdbcType=VARCHAR},
+		YDJ_USE_DRD = #{ydjUseDrd, jdbcType=VARCHAR},
+		REMARK = #{remark, jdbcType=VARCHAR},
+		MODIFY_TIME = #{modifyDate, jdbcType=TIMESTAMP},
+		MODIFY_USER_CODE = #{modifyUser, jdbcType=VARCHAR}
+		WHERE ID = #{id, jdbcType=VARCHAR}
+		<if test="active != null and active != ''">
+			AND ACTIVE = #{active, jdbcType=VARCHAR}
+		</if>
+		<if test="active == null or active == ''">
+			AND ACTIVE = 'Y'
+		</if>
+	</update>
+
+	<!-- 查询客户列表 -->
+	<select id="queryExcelCustomers" resultMap="customerMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CustomerEntity">
+		SELECT
+		<include refid="main_excel_result_columns"></include>
+		FROM T_BSE_CUSTOMER T LEFT JOIN T_BSE_ORG ORG ON T.ORG_CODE = ORG.CODE
+		<where>
+			<include refid="main_query_filter"></include>
+		</where>
+	</select>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.AvailableTransportTypeDao">
+
+    <resultMap type="com.hoau.miser.module.api.itf.api.shared.vo.AvailableTransportTypeQueryResult" id="transportTypeMap">
+        <result column="CODE" property="code"  jdbcType="VARCHAR" />
+        <result column="NAME" property="name"  jdbcType="VARCHAR" />
+    </resultMap>
+
+    <!--查询时效可用的运输类型列表-->
+    <select id="queryTimeAvailableTransportTypes"
+            parameterType="com.hoau.miser.module.api.itf.api.shared.domain.TransportTypeQueryEntity"
+            resultMap="transportTypeMap">
+        SELECT DISTINCT B.CODE, B.NAME
+        FROM T_TIME_STANDARD A LEFT JOIN T_BSE_TRANS_TYPE B ON A.TRANS_TYPE_CODE = B.CODE
+        WHERE
+        A.SEND_TIME_CITY = #{sendTimeCity, jdbcType=VARCHAR}
+        AND A.ARRIVAL_TIME_CITY = #{arriveTimeCity, jdbcType=VARCHAR}
+        AND A.ACTIVE = 'Y'
+        AND B.ACTIVE = 'Y'
+        <choose>
+            <when test="queryTime != null and queryTime != ''">
+                AND <![CDATA[A.EFFECTIVE_TIME<=#{queryTime, jdbcType=TIMESTAMP}]]>
+                AND (<![CDATA[NVL(A.INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss')) > #{queryTime, jdbcType=TIMESTAMP}]]>
+                )
+            </when>
+            <otherwise>
+                AND <![CDATA[ A.EFFECTIVE_TIME <= SYSDATE ]]>
+                AND (<![CDATA[ NVL(A.INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss')) > SYSDATE ]]>
+                )
+            </otherwise>
+        </choose>
+        ORDER BY B.ORDER_NO
+    </select>
+
+    <!--查询价格可用的运输类型列表-->
+    <select id="queryPriceAvailableTransportTypes"
+            parameterType="com.hoau.miser.module.api.itf.api.shared.domain.TransportTypeQueryEntity"
+            resultMap="transportTypeMap">
+        SELECT DISTINCT B.CODE, B.NAME
+        FROM T_PRICE_STANDARD A LEFT JOIN T_BSE_TRANS_TYPE B ON A.TRANS_TYPE_CODE = B.CODE
+        WHERE
+        A.SEND_PRICE_CITY = #{sendPriceCity, jdbcType=VARCHAR}
+        AND A.ARRIVE_PRICE_CITY = #{arrivePriceCity, jdbcType=VARCHAR}
+        AND A.ACTIVE = 'Y'
+        AND B.ACTIVE = 'Y'
+        <choose>
+            <when test="queryTime != null and queryTime != ''">
+                AND <![CDATA[A.EFFECTIVE_TIME<=#{queryTime, jdbcType=TIMESTAMP}]]>
+                AND (<![CDATA[NVL(A.INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss')) > #{queryTime, jdbcType=TIMESTAMP}]]>
+                )
+            </when>
+            <otherwise>
+                AND <![CDATA[ A.EFFECTIVE_TIME <= SYSDATE ]]>
+                AND (<![CDATA[ NVL(A.INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss')) > SYSDATE ]]>
+                )
+            </otherwise>
+        </choose>
+        ORDER BY B.ORDER_NO
+    </select>
+</mapper>

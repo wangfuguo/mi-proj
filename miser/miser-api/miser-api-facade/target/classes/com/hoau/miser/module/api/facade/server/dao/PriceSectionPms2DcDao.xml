@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.facade.server.dao.PriceSectionPms2DcDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.PriceSectionPms2DcEntity"
+		id="priceSectionResultMap">
+		<!-- 价格类型：易入户标准、网店、客户（分段）价格 -->
+		<id column="PRICESECTIONTYPE" property="priceSectionType" jdbcType="VARCHAR" />
+		<!-- 网店编码 -->
+		<id column="CORPCODE" property="corpCode" jdbcType="VARCHAR" />
+		<!-- 客户编码 -->
+		<id column="CUSTOMERCODE" property="customerCode" jdbcType="VARCHAR" />
+		<!-- 运输类型 -->
+		<id column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<!-- 出发价卡城市编号 -->
+		<id column="SENDPRICECITYCODE" property="sendPriceCityCode" jdbcType="VARCHAR" />
+		<!-- 到达价卡城市编号 -->
+		<id column="ARRIVEPRICECITYCODE" property="arrivePriceCityCode" jdbcType="VARCHAR" />
+		<!-- 一段首重 -->
+		<id column="FIRST_WEIGHT" property="firstWeight" jdbcType="DOUBLE" />
+		<!-- 一段首重单价 -->
+		<id column="FIRST_WEIGHT_PRICE" property="firstWeightPrice" jdbcType="DOUBLE" />
+		<!-- 一段续重单价 -->
+		<id column="FIRST_ADD_WEIGHT_PRICE" property="firstAddWeightPrice" jdbcType="DOUBLE" />
+		<!-- 二段首重 -->
+		<id column="SECOND_WEIGHT" property="secondWeight" jdbcType="DOUBLE" />
+		<!-- 二段首重单价 -->
+		<id column="SECOND_WEIGHT_PRICE" property="secondWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 二段续重单价 -->
+		<id column="SECOND_ADD_WEIGHT_PRICE" property="secondAddWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 三段首重 -->
+		<id column="THIRD_WEIGHT" property="thirdWeight" jdbcType="DOUBLE" />
+		<!-- 三段首重单价 -->
+		<id column="THIRD_WEIGHT_PRICE" property="thirdWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 三段续重单价 -->
+		<id column="THIRD_ADD_WEIGHT_PRICE" property="thirdAddWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 生效时间 -->
+		<id column="EFFECTIVETIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<!-- 失效时间 -->
+		<id column="INVALIDTIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<!-- 是否可用 -->
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<!--  pms优惠分段oode -->
+		<id column="FREIGHTSECTIONCODE" property="freightSectionCode" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryPriceSections" resultMap="priceSectionResultMap" parameterType="map">
+	SELECT 
+	   'PriceStandardSection' AS PRICESECTIONTYPE,
+	   '' AS CORPCODE,
+	   '' AS CUSTOMERCODE,
+	   A.TRANS_TYPE_CODE AS TRANSTYPECODE,
+	   A.SEND_PRICE_CITY AS SENDPRICECITYCODE,
+	   A.ARRIVE_PRICE_CITY AS ARRIVEPRICECITYCODE,
+	   A.FIRST_WEIGHT AS FIRSTWEIGHT,
+	   A.FIRST_WEIGHT_PRICE AS FIRSTWEIGHTPRICE,
+	   A.FIRST_ADD_WEIGHT_PRICE AS FIRSTADDWEIGHTPRICE,
+	   A.SECOND_WEIGHT AS SECONDWEIGHT,
+	   A.SECOND_WEIGHT_PRICE AS SECONDWEIGHTPRICE,
+	   A.SECOND_ADD_WEIGHT_PRICE AS SECONDADDWEIGHTPRICE,
+	   A.THIRD_WEIGHT AS THIRDWEIGHT,
+	   A.THIRD_WEIGHT_PRICE AS THIRDWEIGHTPRICE,
+	   A.THIRD_ADD_WEIGHT_PRICE AS THIRDADDWEIGHTPRICE,
+	   A.EFFECTIVE_TIME AS EFFECTIVETIME,
+	   A.INVALID_TIME AS INVALIDTIME,
+	   A.ACTIVE AS ACTIVE,
+	   '' AS FREIGHTSECTIONCODE
+	   FROM T_PRICE_STANDARD_SECTION A
+	   WHERE A.ACTIVE='Y' AND A.TRANS_TYPE_CODE=#{transTypeCode,jdbcType=VARCHAR} AND A.SEND_PRICE_CITY=#{sendPriceCityCode,jdbcType=VARCHAR} AND A.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR}
+	UNION 
+	SELECT 
+	   'PriceCorpSection' AS PRICESECTIONTYPE,
+	   B.CORP_CODE AS CORPCODE,
+	   '' AS CUSTOMERCODE,
+	   B.TRANS_TYPE_CODE AS TRANSTYPECODE,
+	   '' AS SENDPRICECITYCODE,
+	   B.ARRIVE_PRICE_CITY AS ARRIVEPRICECITYCODE,
+	   B.FIRST_WEIGHT AS FIRSTWEIGHT,
+	   B.FIRST_WEIGHT_PRICE AS FIRSTWEIGHTPRICE,
+	   B.FIRST_ADD_WEIGHT_PRICE AS FIRSTADDWEIGHTPRICE,
+	   B.SECOND_WEIGHT AS SECONDWEIGHT,
+	   B.SECOND_WEIGHT_PRICE AS SECONDWEIGHTPRICE,
+	   B.SECOND_ADD_WEIGHT_PRICE AS SECONDADDWEIGHTPRICE,
+	   B.THIRD_WEIGHT AS THIRDWEIGHT,
+	   B.THIRD_WEIGHT_PRICE AS THIRDWEIGHTPRICE,
+	   B.THIRD_ADD_WEIGHT_PRICE AS THIRDADDWEIGHTPRICE,
+	   B.EFFECTIVE_TIME AS EFFECTIVETIME,
+	   B.INVALID_TIME AS INVALIDTIME,
+	   B.ACTIVE AS ACTIVE,
+	   B.FREIGHT_SECTION_CODE AS FREIGHTSECTIONCODE
+	   FROM T_PRICE_CORP_SECTION B
+	   WHERE B.ACTIVE='Y' AND B.TRANS_TYPE_CODE=#{transTypeCode,jdbcType=VARCHAR} AND B.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR} AND B.CORP_CODE = #{corpCode,jdbcType=VARCHAR}
+	UNION 
+	SELECT 
+	   'PriceCustomerSection' AS PRICESECTIONTYPE,
+	   '' AS CORPCODE,
+	   C.CUSTOMER_CODE AS CUSTOMERCODE,
+	   D.TRANS_TYPE_CODE AS TRANSTYPECODE,
+	   D.SEND_PRICE_CITY AS SENDPRICECITYCODE,
+	   D.ARRIVE_PRICE_CITY AS ARRIVEPRICECITYCODE,
+	   D.FIRST_WEIGHT AS FIRSTWEIGHT,
+	   D.FIRST_WEIGHT_PRICE AS FIRSTWEIGHTPRICE,
+	   D.FIRST_ADD_WEIGHT_PRICE AS FIRSTADDWEIGHTPRICE,
+	   D.SECOND_WEIGHT AS SECONDWEIGHT,
+	   D.SECOND_WEIGHT_PRICE AS SECONDWEIGHTPRICE,
+	   D.SECOND_ADD_WEIGHT_PRICE AS SECONDADDWEIGHTPRICE,
+	   D.THIRD_WEIGHT AS THIRDWEIGHT,
+	   D.THIRD_WEIGHT_PRICE AS THIRDWEIGHTPRICE,
+	   D.THIRD_ADD_WEIGHT_PRICE AS THIRDADDWEIGHTPRICE,
+	   C.EFFECTIVE_TIME AS EFFECTIVETIME,
+	   C.INVALID_TIME AS INVALIDTIME,
+	   D.ACTIVE AS ACTIVE,
+	   D.FREIGHT_SECTION_CODE AS FREIGHTSECTIONCODE
+	   FROM T_PRICE_CUSTOMER_SECTION C JOIN T_PRICE_CUSTOMER_SECTION_SUB D ON D.PARENT_ID=C.ID
+	   WHERE C.ACTIVE='Y' AND D.ACTIVE='Y' AND D.TRANS_TYPE_CODE=#{transTypeCode,jdbcType=VARCHAR} AND D.SEND_PRICE_CITY=#{sendPriceCityCode,jdbcType=VARCHAR} AND D.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR} AND C.CUSTOMER_CODE=#{customerCode,jdbcType=VARCHAR}
+	</select>
+</mapper>

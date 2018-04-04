@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.CorpPriceCityDao">
+
+    <!--价格城市实体-->
+	<resultMap id="priceCityMap" type="com.hoau.miser.module.api.itf.api.shared.domain.CorpPriceCityEntity">
+		<result property="orgCode" column="orgCode" jdbcType="VARCHAR"/>
+		<result property="orgName" column="orgName" jdbcType="VARCHAR"/>
+		<result property="logisticCode" column="logisticCode" jdbcType="VARCHAR"/>
+		<result property="provinceCode" column="provinceCode" jdbcType="VARCHAR"/>
+		<result property="provinceName" column="provinceName" jdbcType="VARCHAR"/>
+		<result property="cityCode" column="cityCode" jdbcType="VARCHAR"/>
+		<result property="cityName" column="cityName" jdbcType="VARCHAR"/>
+		<result property="areaCode" column="areaCode" jdbcType="VARCHAR"/>
+		<result property="areaName" column="areaName" jdbcType="VARCHAR"/>
+		<result property="sendPriceCityCode" column="sendPriceCityCode" jdbcType="VARCHAR"/>
+		<result property="sendPriceCityName" column="sendPriceCityName" jdbcType="VARCHAR"/>
+		<result property="arrivalPriceCityCode" column="arrivalPriceCityCode" jdbcType="VARCHAR"/>
+		<result property="arrivalPriceCityName" column="arrivalPriceCityName" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<!--根据组织编号查询出发到达价格城市-->
+	<select id="queryPriceCityByOrgCode" parameterType="map" resultMap="priceCityMap">
+        SELECT
+        B.PROVINCE_CODE provinceCode,
+        B.CITY_CODE cityCode,
+        B.AREA_CODE areaCode,
+        <if test="type == 'SEND'">
+        	B.PRICE_CITY AS sendPriceCityCode,
+        	D.NAME AS sendPriceCityName
+        </if>
+        <if test="type == 'ARRIVAL'">
+        	B.PRICE_CITY AS arrivalPriceCityCode,
+          	D.NAME AS arrivalPriceCityName
+        </if>
+        FROM T_PRICE_CITY_MAPPING_DISTRICT B
+        LEFT JOIN T_PRICE_CITY D ON B.PRICE_CITY = D.CODE
+        WHERE 
+        B.PROVINCE_CODE = #{provinceCode}
+        AND B.CITY_CODE = #{cityCode}
+        AND B.AREA_CODE = #{countyCode}
+        AND B.ACTIVE = 'Y' 
+        AND B.TYPE = #{type}
+        AND D.ACTIVE = 'Y'
+        AND D.PRICECITYSCOPE='STANDARD'
+	</select>
+
+</mapper>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.OrgDao">
+    <resultMap type="com.hoau.miser.module.biz.base.api.shared.domain.OrgEntity" id="OrgMap">
+        <result column="USER_NAME"   property="userName"  jdbcType="VARCHAR" />
+        <result column="IS_DIVISION"   property="isDivision"  jdbcType="VARCHAR" />
+        <result column="IS_BIG_REGION"   property="isBigRegion"  jdbcType="VARCHAR" />
+        <result column="IS_ROAD_AREA"   property="isRoadArea"  jdbcType="VARCHAR" />
+        <result column="IS_SALES_DEPARTMENT"   property="isSalesDepartment"  jdbcType="VARCHAR" />
+    
+        <result column="ORG1_CODE"   property="salesDepartmentCode"  jdbcType="VARCHAR" />
+        <result column="ORG1_NAME" property="salesDepartmentName"  jdbcType="VARCHAR" />
+        
+        <result column="ORG2_CODE"   property="roadAreaCode"  jdbcType="VARCHAR" />
+        <result column="ORG2_NAME" property="roadAreaName"  jdbcType="VARCHAR" />
+        
+        <result column="ORG3_CODE"   property="bigRegionCode"  jdbcType="VARCHAR" />
+        <result column="ORG3_NAME" property="bigRegionName"  jdbcType="VARCHAR" />
+        
+        <result column="ORG4_CODE"   property="divisionCode"  jdbcType="VARCHAR" />
+        <result column="ORG4_NAME" property="divisionName"  jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="queryOrgByUserName" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.OrgEntity"
+            resultMap="OrgMap">
+      SELECT TBU.USER_NAME,ORG1.IS_DIVISION,ORG1.IS_BIG_REGION,ORG1.IS_ROAD_AREA,ORG1.IS_SALES_DEPARTMENT,
+      ORG1.CODE AS ORG1_CODE,ORG1.NAME AS ORG1_NAME,
+      ORG2.CODE AS ORG2_CODE,ORG2.NAME AS ORG2_NAME,
+      ORG3.CODE AS ORG3_CODE,ORG3.NAME AS ORG3_NAME,
+      ORG4.CODE AS ORG4_CODE,ORG4.NAME AS ORG4_NAME 
+      FROM T_BSE_USER TBU
+      LEFT JOIN T_BSE_ORG ORG1 ON TBU.ORG_CODE=ORG1.CODE AND ORG1.ACTIVE='Y'
+      LEFT JOIN T_BSE_ORG ORG2 ON ORG1.PARENT_CODE=ORG2.CODE AND ORG2.ACTIVE='Y'
+      LEFT JOIN T_BSE_ORG ORG3 ON ORG2.PARENT_CODE=ORG3.CODE AND ORG3.ACTIVE='Y'
+      LEFT JOIN T_BSE_ORG ORG4 ON ORG3.PARENT_CODE=ORG4.CODE AND ORG4.ACTIVE='Y'
+      WHERE TBU.USER_NAME=#{userName, jdbcType=VARCHAR} AND TBU.ACTIVE='Y'
+    </select>
+    
+    <!-- add by dengyin 2016-5-3 10:42:44 价格时效查询需求 补充完整的 组织机构信息查询 -->
+    <resultMap id="orgInfoMap" 
+    		   type="com.hoau.miser.module.biz.base.api.shared.domain.OrgInfoEntity">
+    	<result column="ID"   property="id"  jdbcType="VARCHAR" />
+    	<result column="CODE"   property="code"  jdbcType="VARCHAR" />
+    	<result column="NAME"   property="name"  jdbcType="VARCHAR" />
+    	<result column="PARENT_CODE"   property="parentCode"  jdbcType="VARCHAR" />
+    	<result column="PARENT_NAME"   property="parentName"  jdbcType="VARCHAR" />
+    	<result column="NATURE"   property="nature"  jdbcType="INTEGER" />
+    	<result column="LOGIST_CODE"   property="logistCode"  jdbcType="VARCHAR" />
+    	<result column="MANAGER_CODE"   property="managerCode"  jdbcType="VARCHAR" />
+    	<result column="MANAGER_NAME"   property="managerName"  jdbcType="VARCHAR" />
+    	<result column="PROVINCE"   property="province"  jdbcType="VARCHAR" />    	
+     	<result column="PROVINCE_CODE"   property="provinceCode"  jdbcType="VARCHAR" />
+    	<result column="CITY"   property="city"  jdbcType="VARCHAR" />
+    	<result column="CITY_CODE"   property="cityCode"  jdbcType="VARCHAR" />
+    	<result column="COUNTY"   property="county"  jdbcType="VARCHAR" />
+    	<result column="COUNTY_CODE"   property="countyCode"  jdbcType="VARCHAR" />
+    	
+    	<result column="AREA_CODE"   property="areaCode"  jdbcType="VARCHAR" />
+    	<result column="PHONE"   property="phone"  jdbcType="VARCHAR" />
+    	<result column="FAX"   property="fax"  jdbcType="VARCHAR" />
+    	<result column="ADDRESS_DETAIL"   property="addressDetail"  jdbcType="VARCHAR" />
+    	<result column="LNG"   property="lng"  jdbcType="INTEGER" />
+    	
+     	<result column="LAT"   property="lat"  jdbcType="INTEGER" />
+    	<result column="IS_DIVISION"   property="isDivision"  jdbcType="VARCHAR" />
+    	<result column="DIVISION_CODE"   property="divisionCode"  jdbcType="VARCHAR" />
+    	<result column="IS_BIG_REGION"   property="isBigRegion"  jdbcType="VARCHAR" />
+    	<result column="BIG_REGION_CODE"   property="bigRegionCode"  jdbcType="VARCHAR" />
+    	<result column="IS_TRANSFER_CENTER"   property="isTransferCenter"  jdbcType="VARCHAR" />
+    	<result column="IS_ROAD_AREA"   property="isRoadArea"  jdbcType="VARCHAR" />
+    	<result column="IS_FLEET"   property="isFleet"  jdbcType="VARCHAR" />    	
+     	<result column="IS_PLATFORM"   property="isPlatform"  jdbcType="VARCHAR" />
+    	<result column="IS_SALES_DEPARTMENT"   property="isSalesDepartment"  jdbcType="VARCHAR" />
+    	<result column="ACTIVE"   property="active"  jdbcType="VARCHAR" />
+    	<result column="VERSION_NO"   property="versionNo"  jdbcType="VARCHAR" />
+    	<result column="CREATE_TIME"   property="createTime"  jdbcType="TIMESTAMP" />
+    	
+    	<result column="CREATE_USER_CODE"   property="createUserCode"  jdbcType="VARCHAR" />
+    	<result column="MODIFY_TIME"   property="modifyTime"  jdbcType="TIMESTAMP" />
+    	<result column="MODIFY_USER_CODE"   property="modifyUserCode"  jdbcType="VARCHAR" />
+    	<result column="BEGIN_TIME"   property="beginTime"  jdbcType="TIMESTAMP" />
+    	<result column="END_TIME"   property="endTime"  jdbcType="TIMESTAMP" />
+    	<result column="PINYIN"   property="pinyin"  jdbcType="VARCHAR" />
+    	<result column="SIMPLE_PINYIN"   property="simplePinyin"  jdbcType="VARCHAR" />
+    	<result column="NOTES"   property="notes"  jdbcType="VARCHAR" />
+    	<result column="IS_BIG_REGION_FINANCE"   property="isBigRegionFinance"  jdbcType="VARCHAR" />
+    	<result column="IS_DIVISION_FINANCE"   property="isDivisionFinance"  jdbcType="VARCHAR" />
+    	<result column="IS_FINANCE"   property="isFinance"  jdbcType="VARCHAR" />
+    	<result column="IS_FRANCHISE"   property="isFranchise"  jdbcType="VARCHAR" />
+    	
+    </resultMap>
+    
+    <select id="queryOrgaInfoByEntity"
+    	 parameterType="com.hoau.miser.module.biz.base.api.shared.domain.OrgInfoEntity"
+         resultMap="orgInfoMap">
+    	SELECT 
+    	   id,
+	       code,
+	       name,
+	       parent_code,
+	       parent_name,
+	       nature,
+	       logist_code,
+	       manager_code,
+	       manager_name,
+	       province,
+	       province_code,
+	       city,
+	       city_code,
+	       county,
+	       county_code,
+	       area_code,
+	       phone,
+	       fax,
+	       address_detail,
+	       lng,
+	       lat,
+	       is_division,
+	       division_code,
+	       is_big_region,
+	       big_region_code,
+	       is_transfer_center,
+	       is_road_area,
+	       is_fleet,
+	       is_platform,
+	       is_sales_department,
+	       active,
+	       version_no,
+	       create_time,
+	       create_user_code,
+	       modify_time,
+	       modify_user_code,
+	       begin_time,
+	       end_time,
+	       pinyin,
+	       simple_pinyin,
+	       notes,
+	       is_big_region_finance,
+	       is_division_finance,
+	       is_finance,
+	       is_franchise
+	  FROM T_BSE_ORG T
+	 WHERE 1 = 1
+	 
+	 <if test="code != null and code !='' ">
+	   AND T.CODE = #{code,jdbcType=VARCHAR}
+	 </if>
+	 
+	 <if test="isSalesDepartment != null and isSalesDepartment !='' ">
+	   AND T.IS_SALES_DEPARTMENT = #{isSalesDepartment,jdbcType=VARCHAR}
+	 </if>	 
+	 
+	  AND T.ACTIVE = 'Y'
+    </select>
+    <!-- end by dengyin 2016-5-3 10:42:44 价格时效查询需求 补充完整的 组织机构信息查询 -->
+    
+</mapper>

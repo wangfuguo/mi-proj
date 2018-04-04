@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceEventTyDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.itf.api.shared.domain.PriceEventEntity"
+		id="priceEventResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="EVENT_NAME" property="eventName" jdbcType="VARCHAR" />
+		<result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="IS_FORCE_COLSE" property="isForceColse" jdbcType="VARCHAR" />
+		<result column="active" property="active" jdbcType="VARCHAR" />
+		<result column="create_user_code" property="createUser" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<!-- 明细集合 -->
+		<collection property="priceEventDiscountSubs" resultMap="priceEventDiscountDetailMap" />
+	</resultMap>
+
+    <!--活动折扣明细实体-->
+    <resultMap id="priceEventDiscountDetailMap" type="com.hoau.miser.module.api.itf.api.shared.domain.PriceEventDiscountSubEntity">
+        <id column="DS_ID" property="id" jdbcType="VARCHAR" />
+        <result column="DS_EVENTCODE" property="eventCode" jdbcType="VARCHAR"/>
+        <result column="DS_TRANSTYPECODE" property="transTypeCode" jdbcType="VARCHAR"/>
+        <result column="DS_FREIGHTSECTIONCODE" property="freightSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_ADDSECTIONCODE" property="addSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_FUELSECTIONCODE" property="fuelSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_PICKUPSECTIONCODE" property="pickupSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_DELIVERYSECTIONCODE" property="deliverySectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_UPSTAIRSECTIONCODE" property="upstairSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_INSURANCERATESECTIONCODE" property="insuranceRateSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_INSURANCESECTIONCODE" property="insuranceSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_PAPERSECTIONCODE" property="paperSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_SMSSECTIONCODE" property="smsSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_COLLECTIONRATESECTIONCODE" property="collectionRateSectionCode" jdbcType="VARCHAR"/>
+        <result column="DS_COLLECTIONSECTIONCODE" property="collectionSectionCode" jdbcType="VARCHAR"/>
+    </resultMap>
+
+	<sql id="query_main_field">
+		A.ID AS ID,
+		A.EVENT_CODE AS EVENT_CODE,
+		A.EVENT_NAME AS EVENT_NAME,
+		A.effective_time AS effective_time,
+		A.invalid_time AS invalid_time,
+		A.remark AS remark,
+		A.IS_FORCE_COLSE as IS_FORCE_COLSE,
+		A.active AS active,
+		A.create_user_code AS create_user_code,
+		A.create_time AS create_time,
+		A.modify_time AS modify_time,
+		A.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		<![CDATA[
+		case when (A.invalid_time<sysdate and A.active='Y') then '1'
+								 when (A.effective_time<=sysdate and A.active='Y') then '2'
+								 when (A.effective_time>sysdate and A.active='Y') then '3'
+								 when (A.active='N' and A.IS_FORCE_COLSE='N') then '4'
+								 when (A.active='N' and A.IS_FORCE_COLSE='Y') then '5'
+						   else
+								''
+		end as state
+        ]]>
+	</sql>
+
+	<sql id="query_priceEventDiscountSubs_field">
+		DS.ID AS DS_ID,
+		DS.event_Code	AS DS_EVENTCODE ,
+		DS.trans_Type_Code	AS DS_TRANSTYPECODE,
+		DS.freight_Section_Code	AS DS_FREIGHTSECTIONCODE,
+		DS.add_Section_Code	AS DS_ADDSECTIONCODE,
+		DS.fuel_Section_Code	AS DS_FUELSECTIONCODE,
+		DS.pickup_Section_Code	AS DS_PICKUPSECTIONCODE,
+		DS.delivery_Section_Code	AS DS_DELIVERYSECTIONCODE,
+		DS.upstair_Section_Code	AS DS_UPSTAIRSECTIONCODE,
+		DS.insurance_Rate_Section_Code	AS DS_INSURANCERATESECTIONCODE,
+		DS.insurance_Section_Code	AS DS_INSURANCESECTIONCODE,
+		DS.paper_Section_Code	AS DS_PAPERSECTIONCODE,
+		DS.sms_Section_Code	AS DS_SMSSECTIONCODE,
+		DS.collection_Rate_Section_Code	AS DS_COLLECTIONRATESECTIONCODE,
+		DS.collection_Section_Code	AS DS_COLLECTIONSECTIONCODE
+	</sql>
+
+	<!-- 根据参数查询活动信息 -->
+	<select id="queryEventsWithDetail" resultMap="priceEventResultMap"
+		parameterType="com.hoau.miser.module.api.itf.api.shared.domain.PriceEventTyQueryEntity">
+		SELECT
+		<include refid="query_main_field"></include>
+		,
+		<include refid="query_priceEventDiscountSubs_field"></include>
+		FROM T_PRICE_EVENT A
+		Left join T_PRICE_EVENT_DISCOUNT_SUB DS ON A.EVENT_CODE=DS.EVENT_CODE
+		WHERE
+		<!-- 活动线路满足条件 -->
+		(NOT EXISTS(SELECT 1 FROM T_PRICE_EVENT_ROUTE_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_ROUTE_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y' AND SEND_PRICE_CITY = #{sendPriceCity,jdbcType=VARCHAR} AND ARRIVAL_PRICE_CITY = #{arrivalPriceCity,jdbcType=VARCHAR}))
+		<!-- 活动门店满足条件 -->
+		AND (NOT EXISTS(SELECT 1 FROM T_PRICE_EVENT_CORP_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CORP_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y' AND CORP_TYPE = #{orgType,jdbcType=VARCHAR} AND ORG_CODE = #{orgCode,jdbcType=VARCHAR}))
+		<!-- 活动渠道满足条件 -->
+		AND (NOT EXISTS(SELECT 1 FROM T_PRICE_EVENT_ORDERCHANNEL_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_ORDERCHANNEL_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y' AND CHANNEL_CODE = #{orderChannel,jdbcType=VARCHAR}))
+		<!-- 活动客户满足条件 -->
+		AND (NOT EXISTS(SELECT 1 FROM T_PRICE_EVENT_CUSTOMER_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CUSTOMER_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y' AND CUSTOMER_CODE = #{customerCode,jdbcType=VARCHAR}))
+		<!-- 至少要有一个活动范围 -->
+		AND (EXISTS(SELECT 1 FROM T_PRICE_EVENT_ROUTE_SUB WHERE  EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CORP_SUB WHERE  EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_ORDERCHANNEL_SUB WHERE  EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CUSTOMER_SUB WHERE  EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y'))
+
+		<!-- 有效的活动 -->
+		AND A.ACTIVE = 'Y'
+        <if test="transportType != null and transportType != ''">
+            AND DS.TRANS_TYPE_CODE = #{transportType, jdbcType=VARCHAR}
+        </if>
+		<!-- 活动的时间在范围内 -->
+		<choose>
+			<when test="queryTime != null and queryTime != ''">
+                AND <![CDATA[A.EFFECTIVE_TIME<=#{queryTime, jdbcType=TIMESTAMP}]]>
+                AND (<![CDATA[NVL(A.INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss')) > #{queryTime, jdbcType=TIMESTAMP}]]>
+                )
+            </when>
+            <otherwise>
+                AND <![CDATA[ A.EFFECTIVE_TIME <= SYSDATE ]]>
+                AND (<![CDATA[ NVL(A.INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss')) > SYSDATE ]]>
+                )
+            </otherwise>
+		</choose>
+	</select>
+
+	<!-- 根据参数查询活动信息,不带明细信息 -->
+	<select id="queryEventsWithoutDetail" resultMap="priceEventResultMap"
+			parameterType="com.hoau.miser.module.api.itf.api.shared.domain.PriceEventTyQueryEntity">
+		SELECT
+		<include refid="query_main_field"></include>
+		FROM T_PRICE_EVENT A
+		WHERE
+		<!-- 活动线路满足条件 -->
+		(NOT EXISTS(SELECT 1 FROM T_PRICE_EVENT_ROUTE_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_ROUTE_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y' AND SEND_PRICE_CITY = #{startPriceCity,jdbcType=VARCHAR} AND ARRIVAL_PRICE_CITY = #{arrivalPriceCity,jdbcType=VARCHAR}))
+		<!-- 活动门店满足条件 -->
+		AND (NOT EXISTS(SELECT 1 FROM T_PRICE_EVENT_CORP_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CORP_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y' AND CORP_TYPE = #{orgType,jdbcType=VARCHAR} AND ORG_CODE = #{orgCode,jdbcType=VARCHAR}))
+		<!-- 活动渠道满足条件 -->
+		AND (NOT EXISTS(SELECT 1 FROM T_PRICE_EVENT_ORDERCHANNEL_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_ORDERCHANNEL_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y' AND CHANNEL_CODE = #{orderOrign,jdbcType=VARCHAR}))
+		<!-- 活动客户满足条件 -->
+		AND (NOT EXISTS(SELECT 1 FROM T_PRICE_EVENT_CUSTOMER_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CUSTOMER_SUB WHERE EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y' AND CUSTOMER_CODE = #{customerCode,jdbcType=VARCHAR}))
+		<!-- 至少要有一个活动范围 -->
+		AND (EXISTS(SELECT 1 FROM T_PRICE_EVENT_ROUTE_SUB WHERE  EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CORP_SUB WHERE  EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_ORDERCHANNEL_SUB WHERE  EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y')
+			OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CUSTOMER_SUB WHERE  EVENT_CODE = A.EVENT_CODE AND ACTIVE = 'Y'))
+
+		<!-- 有效的活动 -->
+		AND ACTIVE = 'Y'
+		<!-- 活动的时间在范围内 -->
+        <choose>
+            <when test="queryTime != null and queryTime != ''">
+                AND <![CDATA[A.EFFECTIVE_TIME<=#{queryTime, jdbcType=TIMESTAMP}]]>
+                AND (<![CDATA[NVL(A.INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss')) > #{queryTime, jdbcType=TIMESTAMP}]]>
+                )
+            </when>
+            <otherwise>
+                AND <![CDATA[ A.EFFECTIVE_TIME <= SYSDATE ]]>
+                AND (<![CDATA[ NVL(A.INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss')) > SYSDATE ]]>
+                )
+            </otherwise>
+        </choose>
+	</select>
+
+    <!-- 根据活动编号查询活动折扣明细 -->
+    <select id="queryEventDetailByEventCode" parameterType="string" resultMap="priceEventDiscountDetailMap">
+        SELECT
+        <include refid="query_priceEventDiscountSubs_field"></include>
+        FROM T_PRICE_EVENT_DISCOUNT_SUB DS
+        WHERE DS.EVENT_CODE = #{eventCode, jdbcType=VARCHAR}
+        <if test="transportType != null and transportType != ''">
+            AND DS.TRANS_TYPE_CODE = #{transportType, jdbcType=VARCHAR}
+        </if>
+    </select>
+</mapper>

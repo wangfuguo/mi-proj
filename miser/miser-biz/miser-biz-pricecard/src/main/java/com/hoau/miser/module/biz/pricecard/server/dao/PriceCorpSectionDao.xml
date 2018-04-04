@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoau.miser.module.biz.pricecard.server.dao.PriceCorpSectionDao" >
+  <resultMap id="ResultMap" type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCorpSectionEntity" >
+    <result column="INDEXS" property="index" jdbcType="VARCHAR" />
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+    <result column="CORP_CODE" property="corpCode" jdbcType="VARCHAR" />
+    <result column="CORP_NAME" property="corpName" jdbcType="VARCHAR" />
+    <result column="ARRIVE_PRICE_CITY" property="arrivePriceCity" jdbcType="VARCHAR" />
+    <result column="ARRIVE_PRICE_CITY_NAME" property="arrivePriceCityName" jdbcType="VARCHAR" />
+    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+    <result column="DATAORIGN" property="dataorign" jdbcType="VARCHAR" />
+    <result column="FREIGHT_SECTION_CODE" property="freightSectionCode" jdbcType="VARCHAR" />
+    <result column="FREIGHT_SECTION_NAME" property="freightSectionName" jdbcType="VARCHAR" />
+    <result column="FIRST_WEIGHT" property="firstWeight" jdbcType="DECIMAL" />
+    <result column="FIRST_WEIGHT_PRICE" property="firstWeightPrice" jdbcType="DECIMAL" />
+    <result column="FIRST_ADD_WEIGHT_PRICE" property="firstAddWeightPrice" jdbcType="DECIMAL" />
+    <result column="SECOND_WEIGHT" property="secondWeight" jdbcType="DECIMAL" />
+    <result column="SECOND_WEIGHT_PRICE" property="secondWeightPrice" jdbcType="DECIMAL" />
+    <result column="SECOND_ADD_WEIGHT_PRICE" property="secondAddWeightPrice" jdbcType="DECIMAL" />
+    <result column="THIRD_WEIGHT" property="thirdWeight" jdbcType="DECIMAL" />
+    <result column="THIRD_WEIGHT_PRICE" property="thirdWeightPrice" jdbcType="DECIMAL" />
+    <result column="THIRD_ADD_WEIGHT_PRICE" property="thirdAddWeightPrice" jdbcType="DECIMAL" />
+    <result column="DIVISION_NAME" property="divisionName" jdbcType="VARCHAR" />
+    <result column="DIVISION_CODE" property="divisionCode" jdbcType="VARCHAR" />
+    <result column="BIG_REGION_NAME" property="bigRegionName" jdbcType="VARCHAR" />
+    <result column="BIG_REGION_CODE" property="bigRegionCode" jdbcType="VARCHAR" />
+    <result column="ROAD_AREA_CODE" property="roadAreaCode" jdbcType="VARCHAR" />
+    <result column="ROAD_AREA_NAME" property="roadAreaName" jdbcType="VARCHAR" />
+    <result column="LOGISTIC_NAME" property="logisticName" jdbcType="VARCHAR" />
+    <result column="CREATE_USER_NAME" property="createUserName" jdbcType="VARCHAR" />
+    <result column="MODIFY_USER_NAME" property="modifyUserName" jdbcType="VARCHAR" />
+    <result column="STATUS" property="state" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="mian_query">
+ 	SELECT * FROM (
+	 		SELECT
+		      MAX(D.NAME) AS DIVISION_NAME,MAX(D.CODE) AS DIVISION_CODE,MAX(C.NAME) AS BIG_REGION_NAME,MAX(C.CODE) AS BIG_REGION_CODE,
+		      MAX(B.CODE) AS ROAD_AREA_CODE,MAX(B.NAME) AS ROAD_AREA_NAME,MAX(A.NAME) AS CORP_NAME,MAX(A.CODE) AS CORP_CODE,
+		      MAX(A.LOGIST_CODE) AS LOGISTIC_NAME,T.EFFECTIVE_TIME AS EFFECTIVE_TIME,T.INVALID_TIME AS INVALID_TIME,MAX(T.REMARK) AS REMARK,
+		      MAX(T.CREATE_TIME) AS CREATE_TIME ,MAX(T.CREATE_USER_CODE) AS CREATE_USER_CODE,MAX(E.EMP_NAME) AS CREATE_USER_NAME,
+		      MAX(T.MODIFY_TIME) AS MODIFY_TIME ,MAX(T.MODIFY_USER_CODE) AS MODIFY_USER_CODE,MAX(F.EMP_NAME) AS MODIFY_USER_NAME,
+		     <![CDATA[ 
+		      MAX(CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+		      WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME <= SYSDATE THEN 'PASSED'
+		      WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+		      ELSE 'EFFECTIVE' END) AS STATUS  ]]>   
+			FROM T_PRICE_CORP_SECTION T
+			LEFT JOIN (SELECT CODE,NAME,PARENT_CODE,LOGIST_CODE FROM T_BSE_ORG WHERE  IS_SALES_DEPARTMENT = 'Y') A 
+			     ON A.CODE = T.CORP_CODE
+			LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_ROAD_AREA = 'Y') B 
+			     ON A.PARENT_CODE = B.CODE
+			LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_BIG_REGION = 'Y') C 
+			     ON B.PARENT_CODE = C.CODE
+			LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_DIVISION = 'Y') D 
+			     ON C.PARENT_CODE = D.CODE
+			LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') E
+			     ON E.USER_NAME = T.CREATE_USER_CODE
+			LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') F
+			     ON F.USER_NAME = T.MODIFY_USER_CODE
+			WHERE 1 = 1
+			<if test ="(divisionCode != null) and (divisionCode !='')">
+				AND D.CODE = #{divisionCode}
+			</if>
+			<if test ="(bigRegionCode != null) and (bigRegionCode !='')">
+				AND C.CODE = #{bigRegionCode}
+			</if>
+			<if test ="(roadAreaCode != null) and (roadAreaCode !='')">
+				AND B.CODE = #{roadAreaCode}
+			</if>
+			<if test ="(corpCode != null) and (corpCode !='')">
+				AND A.CODE = #{corpCode}
+			</if>
+			
+			<if test ="(effectiveTime != null) and (effectiveTime !='')">
+				 AND #{effectiveTime} BETWEEN  EFFECTIVE_TIME AND INVALID_TIME  
+			</if>
+			
+			<if test ="(dataorign != null) and (dataorign !='')">
+				 AND T.DATAORIGN = #{dataorign} 
+			</if>
+			
+			GROUP BY T.CORP_CODE,T.EFFECTIVE_TIME,T.INVALID_TIME
+			ORDER BY MODIFY_TIME  desc
+		)
+		WHERE 1 = 1
+		<if test="state != null and state !=''">
+			AND STATUS = #{state}
+		</if>
+	</sql>
+	
+  <sql id="detail_query">
+	 	SELECT ROWNUM AS INDEXS,M.* FROM (SELECT
+		      D.NAME AS DIVISION_NAME,D.CODE AS DIVISION_CODE,C.NAME AS BIG_REGION_NAME,C.CODE AS BIG_REGION_CODE,
+		      B.CODE AS ROAD_AREA_CODE,B.NAME AS ROAD_AREA_NAME,A.NAME AS CORP_NAME,A.CODE AS CORP_CODE,
+		      T.EFFECTIVE_TIME AS EFFECTIVE_TIME,T.INVALID_TIME AS INVALID_TIME,T.REMARK AS REMARK,
+		      ARRIVE_PRICE_CITY,G.NAME AS ARRIVE_PRICE_CITY_NAME,FREIGHT_SECTION_CODE,H.NAME AS FREIGHT_SECTION_NAME,TRANS_TYPE_CODE,TRANS_TYPE_NAME,
+			  FIRST_WEIGHT,FIRST_WEIGHT_PRICE,FIRST_ADD_WEIGHT_PRICE,SECOND_WEIGHT,   
+			  SECOND_WEIGHT_PRICE,SECOND_ADD_WEIGHT_PRICE,THIRD_WEIGHT,THIRD_WEIGHT_PRICE,THIRD_ADD_WEIGHT_PRICE,
+			  T.CREATE_USER_CODE,E.EMP_NAME AS CREATE_USER_NAME,T.MODIFY_USER_CODE,F.EMP_NAME AS MODIFY_USER_NAME,
+			  A.LOGIST_CODE AS LOGISTIC_NAME,
+			  T.CREATE_TIME,T.MODIFY_TIME,
+		     <![CDATA[ 
+		      CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+		      WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME <= SYSDATE THEN 'PASSED'
+		      WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+		      ELSE 'EFFECTIVE' END AS STATUS  ]]>   
+			FROM T_PRICE_CORP_SECTION T
+			LEFT JOIN (SELECT CODE,NAME,PARENT_CODE,LOGIST_CODE FROM T_BSE_ORG WHERE  IS_SALES_DEPARTMENT = 'Y') A 
+			     ON A.CODE = T.CORP_CODE
+			LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_ROAD_AREA = 'Y') B 
+			     ON A.PARENT_CODE = B.CODE
+			LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_BIG_REGION = 'Y') C 
+			     ON B.PARENT_CODE = C.CODE
+			LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_DIVISION = 'Y') D 
+			     ON C.PARENT_CODE = D.CODE
+			LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') E
+			     ON E.USER_NAME = T.CREATE_USER_CODE
+			LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') F
+			     ON F.USER_NAME = T.MODIFY_USER_CODE
+			LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_CITY WHERE ACTIVE = 'Y') G
+				 ON G.CODE = T.ARRIVE_PRICE_CITY
+			LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='FREIGHT') H
+				 ON H.CODE = T.FREIGHT_SECTION_CODE
+			     
+		    WHERE 1 = 1
+			<if test ="(corpCode != null) and (corpCode !='')">
+				AND A.code = #{corpCode}
+			</if>
+			<if test="(effectiveTime !=null) and (effectiveTime != '')">
+				AND T.EFFECTIVE_TIME = #{effectiveTime}
+			</if>
+		   <if test="(invalidTime != null) and (invalidTime!='')">
+			 AND T.INVALID_TIME = #{invalidTime}
+		   </if>
+			<if test ="(dataorign != null) and (dataorign !='')">
+				 AND T.DATAORIGN = #{dataorign} 
+			</if>
+		) M
+		WHERE 1 = 1
+		<if test="state != null and state !=''">
+			AND	M.STATUS = #{state}
+		</if>
+  	
+  </sql>	
+  
+  <select id="queryGroup" resultMap="ResultMap">
+		<include refid="mian_query"></include>
+  </select>
+  
+  <select id="search"  resultMap="ResultMap">
+  		<include refid="detail_query"></include>
+  </select>
+  
+  <select id="queryGroupCount" resultType="Long">
+  	select count(1) from (
+  		<include refid="mian_query"></include>
+  	)
+  </select>
+  
+  <insert id="insertBatch">
+  	insert into t_price_corp_section(
+  	    id,trans_type_code,trans_type_name,corp_code,corp_name,     
+		arrive_price_city,effective_time,invalid_time,remark,create_time,
+		freight_section_code,create_user_code,modify_time,modify_user_code,active,
+		dataorign,first_weight,first_weight_price,first_add_weight_price,second_weight,   
+		second_weight_price,second_add_weight_price,third_weight,third_weight_price,third_add_weight_price)
+	<foreach collection="list" item ="item" index="index"  separator ="union all"> 
+     SELECT
+      #{item.id,jdbcType=VARCHAR}, #{item.transTypeCode,jdbcType=VARCHAR}, #{item.transTypeName,jdbcType=VARCHAR}, 
+      #{priceCorpSection.corpCode,jdbcType=VARCHAR}, #{priceCorpSection.corpName,jdbcType=VARCHAR}, 
+      
+      #{item.arrivePriceCity,jdbcType=VARCHAR},#{priceCorpSection.effectiveTime,jdbcType=TIMESTAMP},#{priceCorpSection.invalidTime,jdbcType=TIMESTAMP},
+      #{priceCorpSection.remark,jdbcType=VARCHAR},#{priceCorpSection.createTime,jdbcType=TIMESTAMP},
+      
+      #{item.freightSectionCode,jdbcType=VARCHAR},#{priceCorpSection.createUserCode,jdbcType=TIMESTAMP},#{priceCorpSection.modifyTime ,jdbcType=TIMESTAMP},
+      #{priceCorpSection.modifyUserCode,jdbcType=VARCHAR},#{priceCorpSection.active,jdbcType=CHAR},
+      
+      #{priceCorpSection.dataorign,jdbcType=VARCHAR},#{item.firstWeight,jdbcType=DECIMAL},#{item.firstWeightPrice,jdbcType=DECIMAL},
+      #{item.firstAddWeightPrice,jdbcType=DECIMAL},#{item.secondWeight,jdbcType=DECIMAL},
+      
+      #{item.secondWeightPrice,jdbcType=DECIMAL},#{item.secondAddWeightPrice,jdbcType=DECIMAL},#{item.thirdWeight,jdbcType=DECIMAL},
+      #{item.thirdWeightPrice,jdbcType=DECIMAL},#{item.thirdAddWeightPrice,jdbcType=DECIMAL}
+      
+     from dual
+    </foreach> 
+  </insert>
+  
+  <update id="update" >
+  	update t_price_corp_section 
+  	<set >
+	  	<if test="newest.invalidTime != null and newest.invalidTime != ''">
+	  		INVALID_TIME = #{newest.invalidTime,jdbcType=TIMESTAMP},
+	  	</if>
+	  	<if test="newest.modifyTime != null and newest.modifyTime != ''">
+	  		MODIFY_TIME = #{newest.modifyTime,jdbcType=TIMESTAMP},
+	  	</if>
+	  	<if test="newest.modifyUserCode != null and newest.modifyUserCode != ''">
+	  		MODIFY_USER_CODE = #{newest.modifyUserCode,jdbcType=VARCHAR},
+	  	</if>
+	  	<if test="newest.active != null and newest.active != ''">
+	  		ACTIVE = #{newest.active,jdbcType=VARCHAR},
+	  	</if>
+  	</set>
+  	<where>
+  		1 = 1
+  		<if test="old.corpCode != null and old.corpCode != ''">
+	  		AND	CORP_CODE = #{old.corpCode,jdbcType=VARCHAR} 
+	  	</if>
+	  	<if test="old.effectiveTime != null and old.effectiveTime != ''">
+	  		AND EFFECTIVE_TIME = #{old.effectiveTime,jdbcType=TIMESTAMP}
+	  	</if>
+	  	<if test="old.invalidTime != null and old.invalidTime != ''">
+	  		AND INVALID_TIME = #{old.invalidTime,jdbcType=TIMESTAMP}
+	  	</if>
+	  	<if test="old.dataorign != null and old.dataorign != ''">
+	  		AND DATAORIGN = #{old.dataorign,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="old.active != null and old.active != ''">
+	  		AND ACTIVE = #{old.active,jdbcType=VARCHAR}
+	  	</if>
+  	</where>
+  </update>
+  
+  <select id="queryCurrentDateTime" resultType="java.util.Date">
+  		SELECT SYSDATE FROM DUAL
+  </select>
+  
+  
+</mapper>

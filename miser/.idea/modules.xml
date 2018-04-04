@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/miser-common/src/main/main.iml" filepath="$PROJECT_DIR$/miser-common/src/main/main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys-base/src/main/main1.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys-base/src/main/main1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys-login/src/main/main10.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys-login/src/main/main10.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-api/miser-api-itf/src/main/main11.iml" filepath="$PROJECT_DIR$/miser-api/miser-api-itf/src/main/main11.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-api/miser-api-facade/src/main/main12.iml" filepath="$PROJECT_DIR$/miser-api/miser-api-facade/src/main/main12.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-job/src/main/main13.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-job/src/main/main13.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-api/miser-api-itf-api/src/main/main14.iml" filepath="$PROJECT_DIR$/miser-api/miser-api-itf-api/src/main/main14.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-util/src/main/main15.iml" filepath="$PROJECT_DIR$/miser-util/src/main/main15.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-extrafee/src/main/main16.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-extrafee/src/main/main16.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-pricecard/src/main/main2.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-pricecard/src/main/main2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-base-api/src/main/main3.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-base-api/src/main/main3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys-base-api/src/main/main4.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys-base-api/src/main/main4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-base/src/main/main5.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-base/src/main/main5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-discount-api/src/main/main6.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-discount-api/src/main/main6.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-pricecard-api/src/main/main7.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-pricecard-api/src/main/main7.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys-job/src/main/main8.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys-job/src/main/main8.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-discount/src/main/main9.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-discount/src/main/main9.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser.iml" filepath="$PROJECT_DIR$/miser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-api/miser-api.iml" filepath="$PROJECT_DIR$/miser-api/miser-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-api/miser-api-facade/miser-api-facade.iml" filepath="$PROJECT_DIR$/miser-api/miser-api-facade/miser-api-facade.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-api/miser-api-itf/miser-api-itf.iml" filepath="$PROJECT_DIR$/miser-api/miser-api-itf/miser-api-itf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-api/miser-api-itf-api/miser-api-itf-api.iml" filepath="$PROJECT_DIR$/miser-api/miser-api-itf-api/miser-api-itf-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-api/miser-api-web/miser-api-web.iml" filepath="$PROJECT_DIR$/miser-api/miser-api-web/miser-api-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-base/miser-biz-base.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-base/miser-biz-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-base-api/miser-biz-base-api.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-base-api/miser-biz-base-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-discount/miser-biz-discount.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-discount/miser-biz-discount.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-discount-api/miser-biz-discount-api.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-discount-api/miser-biz-discount-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-extrafee/miser-biz-extrafee.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-extrafee/miser-biz-extrafee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-job/miser-biz-job.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-job/miser-biz-job.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-pricecard/miser-biz-pricecard.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-pricecard/miser-biz-pricecard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-pricecard-api/miser-biz-pricecard-api.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-pricecard-api/miser-biz-pricecard-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-voucher/miser-biz-voucher.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-voucher/miser-biz-voucher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-biz/miser-biz-web/miser-biz-web.iml" filepath="$PROJECT_DIR$/miser-biz/miser-biz-web/miser-biz-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-common/miser-common.iml" filepath="$PROJECT_DIR$/miser-common/miser-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-config/miser-config.iml" filepath="$PROJECT_DIR$/miser-config/miser-config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-job/miser-job.iml" filepath="$PROJECT_DIR$/miser-job/miser-job.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-job/miser-job-web/miser-job-web.iml" filepath="$PROJECT_DIR$/miser-job/miser-job-web/miser-job-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys-base/miser-sys-base.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys-base/miser-sys-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys-base-api/miser-sys-base-api.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys-base-api/miser-sys-base-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys-job/miser-sys-job.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys-job/miser-sys-job.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-sys/miser-sys-login/miser-sys-login.iml" filepath="$PROJECT_DIR$/miser-sys/miser-sys-login/miser-sys-login.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miser-util/miser-util.iml" filepath="$PROJECT_DIR$/miser-util/miser-util.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceCorpSectionTyDao">
+    <resultMap id="PriceCorpSectionResultMap" type="com.hoau.miser.module.api.itf.api.shared.domain.PriceCorpSectionTyEntity">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR"/>
+        <result column="CORP_CODE" property="corpCode" jdbcType="VARCHAR"/>
+        <result column="ARRIVE_PRICE_CITY" property="arrivePriceCityCode" jdbcType="VARCHAR"/>
+        <!--<result column="FREIGHT_SECTION_CODE" property="freightSectionCode" jdbcType="VARCHAR"/>-->
+        <result column="FIRST_WEIGHT" property="firstWeight" jdbcType="DECIMAL"/>
+        <result column="FIRST_WEIGHT_PRICE" property="firstWeightPrice" jdbcType="DECIMAL"/>
+        <result column="FIRST_ADD_WEIGHT_PRICE" property="firstAddWeightPrice" jdbcType="DECIMAL"/>
+        <result column="SECOND_WEIGHT" property="secondWeight" jdbcType="DECIMAL"/>
+        <result column="SECOND_WEIGHT_PRICE" property="secondWeightPrice" jdbcType="DECIMAL"/>
+        <result column="SECOND_ADD_WEIGHT_PRICE" property="secondAddWeightPrice" jdbcType="DECIMAL"/>
+        <result column="THIRD_WEIGHT" property="thirdWeight" jdbcType="DECIMAL"/>
+        <result column="THIRD_WEIGHT_PRICE" property="thirdWeightPrice" jdbcType="DECIMAL"/>
+        <result column="THIRD_ADD_WEIGHT_PRICE" property="thirdAddWeightPrice" jdbcType="DECIMAL"/>
+        <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP"/>
+        <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR"/>
+        <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP"/>
+        <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR"/>
+        <result column="ACTIVE" property="active" jdbcType="CHAR"/>
+    </resultMap>
+
+    <select id="queryPriceSectionQueryParamInSide" resultMap="PriceCorpSectionResultMap" parameterType="map">
+	  SELECT
+		T.ID,
+        T.TRANS_TYPE_CODE,
+        T.CORP_CODE,
+        T.ARRIVE_PRICE_CITY,
+		T.FREIGHT_SECTION_CODE,
+        T.FIRST_WEIGHT,
+        T.FIRST_WEIGHT_PRICE,
+        T.FIRST_ADD_WEIGHT_PRICE,
+        T.SECOND_WEIGHT,
+		T.SECOND_WEIGHT_PRICE,
+		T.SECOND_ADD_WEIGHT_PRICE,
+		T.THIRD_WEIGHT,
+		T.THIRD_WEIGHT_PRICE,
+		T.THIRD_ADD_WEIGHT_PRICE,
+		T.EFFECTIVE_TIME,
+        T.INVALID_TIME,
+        T.REMARK,
+        T.CREATE_TIME,
+		T.MODIFY_TIME
+		from T_PRICE_CORP_SECTION T
+		WHERE
+		    T.CORP_CODE=#{baseTyParam.originCode,jdbcType=VARCHAR}
+		AND T.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR}
+		AND T.TRANS_TYPE_CODE=#{baseTyParam.transTypeCode,jdbcType=VARCHAR}
+		AND T.active='Y'
+        and (<![CDATA[T.effective_time<=]]>#{baseTyParam.billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(T.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=#{baseTyParam.billTime,jdbcType=TIMESTAMP}]]>)
+				)
+  </select>
+
+</mapper>

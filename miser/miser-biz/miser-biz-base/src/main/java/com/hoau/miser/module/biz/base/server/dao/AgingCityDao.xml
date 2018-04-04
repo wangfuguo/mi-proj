@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.AgingCityDao">
+    <resultMap id="districtPriceMapping"
+		type="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity">
+		<result column="PROVINCE_CODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="PROVINCE_NAME" property="provinceName" jdbcType="VARCHAR" />
+		<result column="CITY_CODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+		<result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR" />
+		<result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remarks" jdbcType="VARCHAR" />
+		<result column="START_CITY_NAME" property="startAgingCity" jdbcType="VARCHAR" />
+		<result column="ARRIVE_CITY_NAME" property="arriveAgingCity" jdbcType="VARCHAR" />
+		<result column="START_CITY_CODE" property="startAgingCityCode" jdbcType="VARCHAR" />
+		<result column="ARRIVE_CITY_CODE" property="arriveAgingCityCode" jdbcType="VARCHAR" />
+		<result column="HAS_CORP" property="isLocations" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<result column="TIME_CITY" property="timeCity" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap type="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" id="timeCityMap">
+	<result property="num" column="NUM" jdbcType="VARCHAR"/>
+	<result property="code" column="CODE" jdbcType="VARCHAR"/>
+	<result property="agingCityName" column="NAME" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap id="districtResultMap1" type="com.hoau.miser.module.biz.base.api.shared.domain.DistrictEntity" >
+		<result property="id" column="ID" jdbcType="VARCHAR"/>
+		<result property="districtCode" column="DISTRICT_CODE" jdbcType="VARCHAR"/>
+		<result property="districtName" column="DISTRICT_NAME" jdbcType="VARCHAR"/>
+		<result property="districtType" column="DISTRICT_TYPE" jdbcType="VARCHAR"/>
+		<result property="parentDistrictCode" column="PARENT_DISTRICT_CODE" jdbcType="VARCHAR"/>
+		<result property="pinyin" column="PINYIN" jdbcType="VARCHAR"/>
+		<result property="pinyinShort" column="PINYIN_SHORT" jdbcType="VARCHAR"/>
+		<collection property="children" resultMap="districtChildResultMap"></collection>
+	</resultMap>
+	<resultMap id="districtChildResultMap" type="com.hoau.miser.module.biz.base.api.shared.domain.DistrictEntity" >
+		<result property="id" column="CHILD_ID" jdbcType="VARCHAR"/>
+		<result property="districtCode" column="CHILD_DISTRICT_CODE" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<sql id="aging_result_map">
+		H.START_CITY_NAME AS START_CITY_NAME,
+		H.START_CITY_CODE AS START_CITY_CODE,
+		G.ARRIVE_CITY_CODE AS ARRIVE_CITY_CODE,
+		G.ARRIVE_CITY_NAME AS ARRIVE_CITY_NAME,
+		NVL(H.PROVINCE_CODE ,G.PROVINCE_CODE ) AS PROVINCE_CODE, 
+		NVL(H.CITY_CODE ,G.CITY_CODE ) AS CITY_CODE,
+		NVL(H.AREA_CODE ,G.AREA_CODE ) AS AREA_CODE, 
+		NVL(H.REMARK ,G.REMARK )AS REMARK, 
+		NVL(H.MODIFY_TIME ,G.MODIFY_TIME ) AS MODIFY_TIME,
+		NVL(H.MODIFY_USER_CODE ,G.MODIFY_USER_CODE ) AS MODIFY_USER_CODE
+	</sql>
+	
+	
+	<sql id="result_map">
+		D.START_CITY_NAME AS START_CITY_NAME,
+		D.START_CITY_CODE  AS START_CITY_CODE,
+   		D.ARRIVE_CITY_NAME AS ARRIVE_CITY_NAME,
+   		 D.ARRIVE_CITY_CODE AS ARRIVE_CITY_CODE,
+		D.REMARK AS REMARK,
+		D.MODIFY_TIME AS MODIFY_TIME,
+		D.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		E.PROVINCE_NAME AS PROVINCE_NAME,
+		E.CITY_NAME AS CITY_NAME,
+		E.AREA_NAME AS AREA_NAME,
+		E.HAS_CORP AS HAS_CORP
+	</sql>
+	
+
+	<sql id="result_map_export">
+		D.START_CITY_NAME AS START_CITY_NAME,
+   		D.ARRIVE_CITY_NAME AS ARRIVE_CITY_NAME,
+		D.REMARK AS REMARK,
+		D.MODIFY_TIME AS MODIFY_TIME,
+		D.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		E.PROVINCE_NAME AS PROVINCE_NAME,
+		E.CITY_NAME AS CITY_NAME,
+		E.AREA_NAME AS AREA_NAME,
+		DECODE(E.HAS_CORP,'Y','是','N','否','') AS HAS_CORP
+	</sql>
+	
+		
+	<!-- 以下为web界面使用sql -->
+	<!-- 模糊查询参数 -->
+	<sql id="aging_condition_param">
+	    <if test="provinceCode != null and provinceCode != ''">
+	        	AND E.PROVINCE_CODE like CONCAT(CONCAT('%', #{provinceCode,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="cityCode != null and cityCode != ''">
+	        	AND E.CITY_CODE like CONCAT(CONCAT('%', #{cityCode,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="areaCode != null and areaCode != ''">
+	        	AND E.AREA_CODE like CONCAT(CONCAT('%', #{areaCode,jdbcType=VARCHAR}), '%') 
+	    </if>
+	   <!--  <if test="active != null and active != ''">
+	        	AND D.ACTIVE =  #{active,jdbcType=VARCHAR}
+	    </if> -->
+	    <if test="isLocations != null and isLocations != ''">
+			   AND E.HAS_CORP = #{isLocations,jdbcType=TIMESTAMP}
+		</if>
+		<if test="startAgingCity != null and startAgingCity != ''">
+	        	AND D.START_CITY_CODE = #{startAgingCity,jdbcType=VARCHAR}
+	    </if>
+	    <if test="arriveAgingCity != null and arriveAgingCity != ''">
+			   AND D.ARRIVE_CITY_CODE = #{arriveAgingCity,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<sql id="aging_condition_param_update">
+	    <if test="provinceName != null and provinceName != ''">
+	        	AND A.DISTRICT_NAME like CONCAT(CONCAT('%', #{provinceName,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="cityName != null and cityName != ''">
+	        	AND B.DISTRICT_NAME like CONCAT(CONCAT('%', #{cityName,jdbcType=VARCHAR}), '%') 
+	    </if>
+	    <if test="areaName != null and areaName != ''">
+	        	AND C.DISTRICT_NAME like CONCAT(CONCAT('%', #{areaName,jdbcType=VARCHAR}), '%') 
+	    </if>
+	</sql>
+	
+<!-- 	 T_TIME_CITY_MAPPING_DISTRICT MAPPING
+	    LEFT JOIN T_TIME_CITY TIME
+	    ON TIME.CODE=MAPPING.TIME_CITY 
+	    AND TIME.ACTIVE=MAPPING.ACTIVE AND TIME.TYPE='0' AND TIME.ACTIVE=MAPPING.ACTIVE
+	    LEFT JOIN T_TIME_CITY T1 ON T1.CODE=MAPPING.TIME_CITY AND T1.ACTIVE=MAPPING.ACTIVE
+     	AND T1.TYPE='1'
+	    WHERE MAPPING.ACTIVE='Y' -->
+	
+	<select id="queryAgingCityByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultMap="districtPriceMapping">
+	  	SELECT 
+	  	<include refid="result_map"></include>
+	  	FROM
+	  	<![CDATA[(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,A.DISTRICT_CODE AS PROVINCE_CODE, B.DISTRICT_NAME AS CITY_NAME ,B.DISTRICT_CODE AS CITY_CODE, C.DISTRICT_NAME 
+			AS AREA_NAME,C.DISTRICT_CODE AS AREA_CODE, C.HAS_CORP AS HAS_CORP
+			FROM T_BSE_DISTRICT A 
+			LEFT JOIN  T_BSE_DISTRICT B ON A.DISTRICT_CODE=B.PARENT_DISTRICT_CODE 
+			LEFT JOIN T_BSE_DISTRICT C ON B.DISTRICT_CODE=C.PARENT_DISTRICT_CODE
+			WHERE A.DISTRICT_TYPE='PROVINCE' AND B.DISTRICT_TYPE='CITY' AND C.DISTRICT_TYPE='AREA')E]]>
+	  	LEFT JOIN 
+	  	<![CDATA[(SELECT]]>
+	    <include refid="aging_result_map"></include>
+	    <![CDATA[FROM  
+	    (SELECT TIME.NAME AS START_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.CITY_CODE,MAPPING.TIME_CITY AS START_CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE,MAPPING.ACTIVE AS ACTIVE
+		FROM T_TIME_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_TIME_CITY TIME ON TIME.CODE=MAPPING.TIME_CITY AND TIME.ACTIVE=MAPPING.ACTIVE 
+		AND TIME.TYPE='SEND' AND TIME.ACTIVE=MAPPING.ACTIVE 
+		WHERE MAPPING.ACTIVE='Y' )H
+		FULL JOIN 
+		(SELECT T1.NAME AS ARRIVE_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.CITY_CODE,MAPPING.TIME_CITY AS ARRIVE_CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE
+		FROM T_TIME_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_TIME_CITY T1 ON T1.CODE=MAPPING.TIME_CITY 
+		AND T1.ACTIVE=MAPPING.ACTIVE AND T1.TYPE='ARRIVAL' WHERE MAPPING.ACTIVE='Y' )G
+		ON H.PROVINCE_CODE=G.PROVINCE_CODE AND H.CITY_CODE=G.CITY_CODE AND H.AREA_CODE=G.AREA_CODE
+	    )D]]>
+	   <![CDATA[
+	   ON D.PROVINCE_CODE=E.PROVINCE_CODE AND D.CITY_CODE=E.CITY_CODE AND D.AREA_CODE=E.AREA_CODE
+	   ]]>
+	    <where>
+	        <include refid="aging_condition_param"></include>
+	    </where>
+	      ORDER BY  D.MODIFY_TIME ASC
+	</select>
+	
+	
+	<select id="countAgingCityByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultType="long">
+	    SELECT /**bse 根据条件模糊匹配统计用户信息 **/
+	    COUNT(1) 
+	    FROM
+	  	<![CDATA[(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,A.DISTRICT_CODE AS PROVINCE_CODE, B.DISTRICT_NAME AS CITY_NAME ,B.DISTRICT_CODE AS CITY_CODE, C.DISTRICT_NAME 
+			AS AREA_NAME,C.DISTRICT_CODE AS AREA_CODE, C.HAS_CORP AS HAS_CORP
+			FROM T_BSE_DISTRICT A 
+			LEFT JOIN  T_BSE_DISTRICT B ON A.DISTRICT_CODE=B.PARENT_DISTRICT_CODE 
+			LEFT JOIN T_BSE_DISTRICT C ON B.DISTRICT_CODE=C.PARENT_DISTRICT_CODE
+			WHERE A.DISTRICT_TYPE='PROVINCE' AND B.DISTRICT_TYPE='CITY' AND C.DISTRICT_TYPE='AREA')E]]>
+	  	LEFT JOIN 
+	  	<![CDATA[(SELECT]]>
+	    <include refid="aging_result_map"></include>
+	    <![CDATA[FROM  
+	    (SELECT TIME.NAME AS START_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.CITY_CODE,MAPPING.TIME_CITY AS START_CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE,MAPPING.ACTIVE AS ACTIVE
+		FROM T_TIME_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_TIME_CITY TIME ON TIME.CODE=MAPPING.TIME_CITY AND TIME.ACTIVE=MAPPING.ACTIVE 
+		AND TIME.TYPE='SEND' AND TIME.ACTIVE=MAPPING.ACTIVE 
+		WHERE MAPPING.ACTIVE='Y' )H
+		FULL JOIN 
+		(SELECT T1.NAME AS ARRIVE_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.CITY_CODE,MAPPING.TIME_CITY AS ARRIVE_CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE
+		FROM T_TIME_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_TIME_CITY T1 ON T1.CODE=MAPPING.TIME_CITY 
+		AND T1.ACTIVE=MAPPING.ACTIVE AND T1.TYPE='ARRIVAL' WHERE MAPPING.ACTIVE='Y' )G
+		ON H.PROVINCE_CODE=G.PROVINCE_CODE AND H.CITY_CODE=G.CITY_CODE AND H.AREA_CODE=G.AREA_CODE
+	    )D]]>
+	   <![CDATA[
+	   ON D.PROVINCE_CODE=E.PROVINCE_CODE AND D.CITY_CODE=E.CITY_CODE AND D.AREA_CODE=E.AREA_CODE
+	   ]]>
+	    <where>
+	        <include refid="aging_condition_param"></include>
+	    </where>
+	</select>
+	
+	<!-- 增加时效城市 -->
+	<insert id="addAgingCityMapping" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity">
+		INSERT INTO T_TIME_CITY_MAPPING_DISTRICT(/**bse 新增时效城市**/
+	    ID,
+	    TIME_CITY,
+	    PROVINCE_CODE,
+	    CITY_CODE,
+	    AREA_CODE,
+	    REMARK,    
+	    ACTIVE,
+	    CREATE_TIME,
+	    CREATE_USER_CODE,
+	    MODIFY_TIME,
+	    MODIFY_USER_CODE
+	    )VALUES(
+	    #{id,jdbcType=VARCHAR},
+	    #{agingCityCode,jdbcType=VARCHAR},
+	    #{provinceCode,jdbcType=VARCHAR},
+	    #{cityCode,jdbcType=VARCHAR},
+	    #{areaCode,jdbcType=VARCHAR},
+	    #{remarks,jdbcType=VARCHAR},
+	    #{active,jdbcType=CHAR},
+	    #{createDate,jdbcType=TIMESTAMP},
+	    #{createUser,jdbcType=VARCHAR},
+	    #{modifyDate,jdbcType=TIMESTAMP},
+	    #{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<insert id="addAgingCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity">
+		 INSERT INTO T_TIME_CITY(/** 新增时效城市**/
+	    ID,
+	    CODE,
+	    NAME,
+	    REMARK,    
+	    ACTIVE,
+	    CREATE_TIME,
+	    CREATE_USER_CODE,
+	    MODIFY_TIME,
+	    MODIFY_USER_CODE,
+	    TYPE
+	    )VALUES(
+	    #{id,jdbcType=VARCHAR},
+	    #{agingCityCode,jdbcType=VARCHAR},
+	    #{agingCityName,jdbcType=VARCHAR},
+	    #{remarks,jdbcType=VARCHAR},
+	    #{active,jdbcType=CHAR},
+	    #{createDate,jdbcType=TIMESTAMP},
+	    #{createUser,jdbcType=VARCHAR},
+	    #{modifyDate,jdbcType=TIMESTAMP},
+	    #{modifyUser,jdbcType=VARCHAR},
+	    #{cityType,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<sql id="dis_child_param">
+		CHILD.ID AS CHILD_ID,		/** ID  */
+		CHILD.DISTRICT_CODE AS CHILD_DISTRICT_CODE,   /**	行政区域编码	*/
+		<include refid="dis_param"></include>
+	</sql>
+	
+	<sql id="dis_param">
+		D.ID AS ID,		/**ID  */
+		D.DISTRICT_CODE AS DISTRICT_CODE,   /**	行政区域编码	*/
+		D.DISTRICT_NAME AS DISTRICT_NAME,	/** 行政区域名称	*/
+		D.DISTRICT_TYPE AS DISTRICT_TYPE,	/** 行政区域类型	*/
+		D.PARENT_DISTRICT_CODE AS PARENT_DISTRICT_CODE,  /** 上级行政区域编码  */
+		D.PINYIN AS PINYIN,				/**	拼音 		*/
+		D.PINYIN_SHORT AS PINYIN_SHORT  /** 拼音简写	*/
+
+    </sql>
+		<select id="queryDistrictInfoByParentCode" parameterType="map" resultMap="districtResultMap1">
+		SELECT 
+		<include refid="dis_child_param"></include>
+		FROM T_BSE_DISTRICT D 
+	    LEFT JOIN T_BSE_DISTRICT CHILD ON D.DISTRICT_CODE = CHILD.PARENT_DISTRICT_CODE AND CHILD.ACTIVE = #{childActive,jdbcType=VARCHAR}
+	    WHERE D.ACTIVE = #{parentActive,jdbcType=VARCHAR}
+		 <if test="parentDistrictCode != null and parentDistrictCode != ''">
+	        AND D.PARENT_DISTRICT_CODE = #{parentDistrictCode,jdbcType=VARCHAR}
+	    </if>
+	     <if test="parentDistrictCode == null or parentDistrictCode == ''">
+	        AND D.PARENT_DISTRICT_CODE IS NULL
+	    </if>
+	</select>
+	
+	<select id="queryAgingCityByStartAgingName" parameterType="map" resultType="string">
+		SELECT CODE AS CODE FROM 
+		T_TIME_CITY 
+		WHERE NAME=#{startAgingCity,jdbcType=VARCHAR}
+		AND ACTIVE=#{active,jdbcType=VARCHAR}
+		AND TYPE=#{type,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="queryAgingCity" parameterType="map" resultType="map">
+		SELECT CODE AS CODE,NAME AS NAME FROM 
+		T_TIME_CITY 
+		WHERE 
+		 ACTIVE=#{active,jdbcType=VARCHAR}
+		AND TYPE=#{type,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="queryAgingCityMappingByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultType="long">
+		SELECT COUNT(1) FROM T_TIME_CITY TIME 
+		WHERE TIME.CODE IN(
+		SELECT T.TIME_CITY FROM T_TIME_CITY_MAPPING_DISTRICT T
+		INNER JOIN T_BSE_DISTRICT PRO
+		ON PRO.DISTRICT_CODE=T.PROVINCE_CODE AND  PRO.DISTRICT_NAME=#{provinceName,jdbcType=VARCHAR}
+		INNER JOIN T_BSE_DISTRICT CITY
+		ON CITY.DISTRICT_CODE=T.CITY_CODE AND CITY.DISTRICT_NAME=#{cityName,jdbcType=VARCHAR} 
+		AND CITY.PARENT_DISTRICT_CODE=PRO.DISTRICT_CODE
+		INNER JOIN T_BSE_DISTRICT AREA
+		ON AREA.DISTRICT_CODE=T.AREA_CODE AND AREA.DISTRICT_NAME=#{areaName,jdbcType=VARCHAR} 
+		AND AREA.PARENT_DISTRICT_CODE=CITY.DISTRICT_CODE
+		WHERE T.ACTIVE='Y') 
+		AND TIME.TYPE=#{cityType,jdbcType=VARCHAR} AND TIME.ACTIVE='Y'
+	</select>
+	
+	<update id="deleteAgingCityMappingByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity">
+		UPDATE T_TIME_CITY_MAPPING_DISTRICT DI
+			SET DI.ACTIVE='N',
+			DI.MODIFY_USER_CODE=#{modifyUser,jdbcType=VARCHAR},
+			DI.MODIFY_TIME=#{modifyDate,jdbcType=VARCHAR}
+			WHERE DI.TIME_CITY=(
+			SELECT T.TIME_CITY  FROM T_TIME_CITY TIME
+			INNER JOIN T_TIME_CITY_MAPPING_DISTRICT T ON TIME.CODE =T.TIME_CITY AND TIME.TYPE=#{cityType,jdbcType=VARCHAR} 
+			AND TIME.ACTIVE='Y' AND T.ACTIVE='Y'
+			INNER JOIN T_BSE_DISTRICT PRO
+			ON PRO.DISTRICT_CODE=T.PROVINCE_CODE AND  PRO.DISTRICT_NAME=#{provinceName,jdbcType=VARCHAR}
+			INNER JOIN T_BSE_DISTRICT CITY
+			ON CITY.DISTRICT_CODE=T.CITY_CODE AND CITY.DISTRICT_NAME=#{cityName,jdbcType=VARCHAR} 
+			AND CITY.PARENT_DISTRICT_CODE=PRO.DISTRICT_CODE
+			INNER JOIN T_BSE_DISTRICT AREA
+			ON AREA.DISTRICT_CODE=T.AREA_CODE AND AREA.DISTRICT_NAME=#{areaName,jdbcType=VARCHAR}  
+			AND AREA.PARENT_DISTRICT_CODE=CITY.DISTRICT_CODE
+			)
+	</update>
+	
+	
+	
+	<select id="queryCodeByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultMap="districtPriceMapping">
+		SELECT PRO.DISTRICT_CODE AS PROVINCE_CODE,
+        	   CITY.DISTRICT_CODE AS CITY_CODE ,
+        	   AREA.DISTRICT_CODE AS AREA_CODE
+	      FROM T_BSE_DISTRICT PRO
+	      LEFT JOIN T_BSE_DISTRICT CITY
+	      ON CITY.PARENT_DISTRICT_CODE=PRO.DISTRICT_CODE
+	      LEFT JOIN T_BSE_DISTRICT AREA
+	      ON AREA.PARENT_DISTRICT_CODE=CITY.DISTRICT_CODE
+	      WHERE PRO.DISTRICT_NAME=#{provinceName,jdbcType=VARCHAR} 
+	      AND CITY.DISTRICT_NAME=#{cityName,jdbcType=VARCHAR} 
+	      AND AREA.DISTRICT_NAME=#{areaName,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="queryCity" parameterType="java.lang.String" resultType="map">
+		select DISTRICT_NAME AS NAME,DISTRICT_CODE AS CODE 
+		from T_BSE_DISTRICT where active='Y'
+		<if test="type!=null and type !=''">
+			and	DISTRICT_TYPE  =  #{type,jdbcType=VARCHAR} 
+		</if>
+	</select>
+	
+	<!-- 根据参数查询标准价格信息 (Excel导出时使用) -->
+	<select id="excelQueryListByParam" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultMap="districtPriceMapping">
+	  		SELECT 
+	  	<include refid="result_map_export"></include>
+	  	FROM
+	  	<![CDATA[(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,A.DISTRICT_CODE AS PROVINCE_CODE, B.DISTRICT_NAME AS CITY_NAME ,B.DISTRICT_CODE AS CITY_CODE, C.DISTRICT_NAME 
+			AS AREA_NAME,C.DISTRICT_CODE AS AREA_CODE, C.HAS_CORP AS HAS_CORP
+			FROM T_BSE_DISTRICT A 
+			LEFT JOIN  T_BSE_DISTRICT B ON A.DISTRICT_CODE=B.PARENT_DISTRICT_CODE 
+			LEFT JOIN T_BSE_DISTRICT C ON B.DISTRICT_CODE=C.PARENT_DISTRICT_CODE
+			WHERE A.DISTRICT_TYPE='PROVINCE' AND B.DISTRICT_TYPE='CITY' AND C.DISTRICT_TYPE='AREA')E]]>
+	  	LEFT JOIN 
+	  	<![CDATA[(SELECT]]>
+	    <include refid="aging_result_map"></include>
+	    <![CDATA[FROM  
+	    (SELECT TIME.NAME AS START_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.TIME_CITY AS START_CITY_CODE,MAPPING.CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE,MAPPING.ACTIVE AS ACTIVE
+		FROM T_TIME_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_TIME_CITY TIME ON TIME.CODE=MAPPING.TIME_CITY AND TIME.ACTIVE=MAPPING.ACTIVE 
+		AND TIME.TYPE='SEND' AND TIME.ACTIVE=MAPPING.ACTIVE 
+		WHERE MAPPING.ACTIVE='Y' )H
+		FULL JOIN 
+		(SELECT T1.NAME AS ARRIVE_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.TIME_CITY AS ARRIVE_CITY_CODE,MAPPING.CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE
+		FROM T_TIME_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_TIME_CITY T1 ON T1.CODE=MAPPING.TIME_CITY 
+		AND T1.ACTIVE=MAPPING.ACTIVE AND T1.TYPE='ARRIVAL' WHERE MAPPING.ACTIVE='Y' )G
+		ON H.PROVINCE_CODE=G.PROVINCE_CODE AND H.CITY_CODE=G.CITY_CODE AND H.AREA_CODE=G.AREA_CODE
+	    )D]]>
+	   <![CDATA[
+	   ON D.PROVINCE_CODE=E.PROVINCE_CODE AND D.CITY_CODE=E.CITY_CODE AND D.AREA_CODE=E.AREA_CODE
+	   ]]>
+	    <where>
+	        <include refid="aging_condition_param"></include>
+	    </where>
+	      ORDER BY  D.MODIFY_TIME ASC
+	</select>
+	
+	<select id="queryAgingCityInUpdate" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultMap="districtPriceMapping"> 
+		SELECT 
+	  	<include refid="result_map"></include>
+	  	FROM
+	  	<![CDATA[(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,A.DISTRICT_CODE AS PROVINCE_CODE, B.DISTRICT_NAME AS CITY_NAME ,B.DISTRICT_CODE AS CITY_CODE, C.DISTRICT_NAME 
+			AS AREA_NAME,C.DISTRICT_CODE AS AREA_CODE, C.HAS_CORP AS HAS_CORP
+			FROM T_BSE_DISTRICT A 
+			LEFT JOIN  T_BSE_DISTRICT B ON A.DISTRICT_CODE=B.PARENT_DISTRICT_CODE 
+			LEFT JOIN T_BSE_DISTRICT C ON B.DISTRICT_CODE=C.PARENT_DISTRICT_CODE]]>
+			<where>
+			A.DISTRICT_TYPE='PROVINCE' AND B.DISTRICT_TYPE='CITY' AND C.DISTRICT_TYPE='AREA'
+			<include refid="aging_condition_param_update"></include>
+			</where>
+			<![CDATA[)E]]>
+	  	LEFT JOIN 
+	  	<![CDATA[(SELECT]]>
+	    <include refid="aging_result_map"></include>
+	    <![CDATA[FROM  
+	    (SELECT TIME.NAME AS START_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.CITY_CODE,MAPPING.TIME_CITY AS START_CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE,MAPPING.ACTIVE AS ACTIVE
+		FROM T_TIME_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_TIME_CITY TIME ON TIME.CODE=MAPPING.TIME_CITY AND TIME.ACTIVE=MAPPING.ACTIVE 
+		AND TIME.TYPE='SEND' AND TIME.ACTIVE=MAPPING.ACTIVE 
+		WHERE MAPPING.ACTIVE='Y' )H
+		FULL JOIN 
+		(SELECT T1.NAME AS ARRIVE_CITY_NAME,MAPPING.PROVINCE_CODE,MAPPING.CITY_CODE,MAPPING.TIME_CITY AS ARRIVE_CITY_CODE,MAPPING.AREA_CODE,
+		MAPPING.REMARK AS REMARK, MAPPING.MODIFY_TIME AS MODIFY_TIME, MAPPING.MODIFY_USER_CODE 
+		AS MODIFY_USER_CODE
+		FROM T_TIME_CITY_MAPPING_DISTRICT MAPPING
+		RIGHT JOIN T_TIME_CITY T1 ON T1.CODE=MAPPING.TIME_CITY 
+		AND T1.ACTIVE=MAPPING.ACTIVE AND T1.TYPE='ARRIVAL' WHERE MAPPING.ACTIVE='Y' )G
+		ON H.PROVINCE_CODE=G.PROVINCE_CODE AND H.CITY_CODE=G.CITY_CODE AND H.AREA_CODE=G.AREA_CODE
+	    )D]]>
+	   <![CDATA[
+	   ON D.PROVINCE_CODE=E.PROVINCE_CODE AND D.CITY_CODE=E.CITY_CODE AND D.AREA_CODE=E.AREA_CODE
+	   ]]>
+	    <where>
+	        <include refid="aging_condition_param"></include>
+	    </where>
+	</select>
+	<sql id="start_city_name">
+	 	A.ACTIVE='Y' AND A.TYPE='SEND' AND B.ACTIVE='Y'
+	    <if test="agingCityName != null and agingCityName != ''">
+	        	AND NAME like CONCAT(CONCAT('%', #{agingCityName,jdbcType=VARCHAR}), '%') 
+	    </if>
+	</sql>
+	
+	<sql id="arrive_city_name">
+	 	A.ACTIVE='Y' AND A.TYPE='ARRIVAL' AND B.ACTIVE='Y'
+	    <if test="agingCityName != null and agingCityName != ''">
+	        	AND NAME like CONCAT(CONCAT('%', #{agingCityName,jdbcType=VARCHAR}), '%') 
+	    </if>
+	</sql>
+	<select id="queryStartAgingCityList" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultMap="timeCityMap">
+		SELECT DISTINCT CODE,NAME FROM T_TIME_CITY A
+		LEFT JOIN T_TIME_CITY_MAPPING_DISTRICT B
+		ON A.CODE=B.TIME_CITY
+		 <where>
+	        <include refid="start_city_name"></include>
+	    </where>
+	</select>
+	<select id="queryArriveAgingCityList" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultMap="timeCityMap">
+		SELECT DISTINCT CODE,NAME FROM T_TIME_CITY A
+		LEFT JOIN T_TIME_CITY_MAPPING_DISTRICT B
+		ON A.CODE=B.TIME_CITY
+		 <where>
+	        <include refid="arrive_city_name"></include>
+	    </where>
+	</select>
+	<select id="queryCountByParam" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultType="long">
+		SELECT COUNT(1) FROM T_TIME_CITY A
+		LEFT JOIN T_TIME_CITY_MAPPING_DISTRICT B
+		ON A.CODE=B.TIME_CITY
+		 <where>
+	        <include refid="start_city_name"></include>
+	    </where>
+	</select>
+	<select id="queryCountByParamArrive" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" resultType="long">
+		SELECT COUNT(1) FROM T_TIME_CITY A
+		LEFT JOIN T_TIME_CITY_MAPPING_DISTRICT B
+		ON A.CODE=B.TIME_CITY
+		 <where>
+	        <include refid="arrive_city_name"></include>
+	    </where>
+	</select>
+	
+	<!-- 此方法暂不能用 -->
+	<update id="deleteMapping" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity">
+		UPDATE T_TIME_CITY_MAPPING_DISTRICT C SET ACTIVE = 'N' 
+		 WHERE  
+		       <!-- TIME_CITY = #{code,jdbcType=VARCHAR} -->
+				PROVINCE_CODE=#{priceCityCode,jdbcType=VARCHAR}
+				AND CITY_CODE=#{cityCode,jdbcType=VARCHAR}
+				AND AREA_CODE=#{areaCode,jdbcType=VARCHAR}
+				AND ACTIVE = 'Y'
+	</update>
+	
+	<insert id="batchInsertTimeMapping" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityMappingEntity">
+		INSERT INTO t_time_city_mapping_district (ID, TIME_CITY, PROVINCE_CODE, 
+      CITY_CODE, AREA_CODE,REMARK,  
+      CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME,
+       MODIFY_USER_CODE, ACTIVE)
+     <foreach collection="list" item ="item" index="index"  separator ="union all"> 
+     SELECT
+     #{item.id,jdbcType=VARCHAR}, #{item.code,jdbcType=VARCHAR}, #{item.priceCityCode,jdbcType=VARCHAR}, 
+      #{item.cityCode,jdbcType=VARCHAR}, #{item.areaCode,jdbcType=VARCHAR},  #{item.remarks,jdbcType=VARCHAR}, #{item.createDate,jdbcType=TIMESTAMP}, 
+      #{item.createUser,jdbcType=VARCHAR}, #{item.modifyDate ,jdbcType=TIMESTAMP}, #{item.modifyUser,jdbcType=VARCHAR}, 
+      #{item.active,jdbcType=CHAR}
+     from dual
+    </foreach> 
+		
+	</insert>
+	
+	<insert id="batchInsertTimeCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.AgingCityEntity" >
+		INSERT INTO T_TIME_CITY (ID, CODE, NAME, 
+      TYPE, REMARK,  CREATE_TIME, 
+      CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, 
+      ACTIVE)
+     <foreach collection="list" item ="item" index="index"  separator ="union all"> 
+     SELECT
+     #{item.id,jdbcType=VARCHAR}, #{item.agingCityCode,jdbcType=VARCHAR}, #{item.agingCityName,jdbcType=VARCHAR}, 
+      #{item.cityType,jdbcType=VARCHAR}, #{item.remarks,jdbcType=VARCHAR}, #{item.createDate,jdbcType=TIMESTAMP}, 
+      #{item.createUser,jdbcType=VARCHAR}, #{item.modifyDate ,jdbcType=TIMESTAMP}, #{item.modifyUser,jdbcType=VARCHAR}, 
+      #{item.active,jdbcType=CHAR}
+     from dual
+    </foreach> 
+		
+	</insert>
+	
+	<select id="searchCurrentDateTime" resultType="java.util.Date">
+		select sysdate from dual
+	</select>
+</mapper>

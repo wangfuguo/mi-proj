@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceCollectDeliveryFeeTyDao">
+
+    <resultMap
+            type="com.hoau.miser.module.api.itf.api.shared.domain.PriceCollectDeliveryFeeEntity"
+            id="priceCollectDeliveryFeeResultMap">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+
+        <id column="BEGINPRICECITYCODE" property="beginPriceCityCode" jdbcType="VARCHAR"/>
+        <id column="BEGINPRICECITYNAME" property="beginPriceCityName" jdbcType="VARCHAR"/>
+
+        <id column="TRANSTYPECODE" property="transTypeCode" jdbcType="VARCHAR"/>
+        <id column="TRANSTYPENAME" property="transTypeName" jdbcType="VARCHAR"/>
+
+        <id column="COLLECTDELIVERYTYPE" property="collectDeliveryType" jdbcType="INTEGER"/>
+        <id column="COLLECTDELIVERYNAME" property="collectDeliveryName" jdbcType="VARCHAR"/>
+
+        <id column="COLLECTDELIVERYRATE" property="collectDeliveryRate" jdbcType="DECIMAL"/>
+        <id column="RATELOCKTYPE" property="rateLockType" jdbcType="INTEGER"/>
+        <id column="RATELOCKNAME" property="rateLockName" jdbcType="VARCHAR"/>
+
+
+        <id column="LOWESTCOLLECTDELIVERYFEE" property="lowestCollectDeliveryFee" jdbcType="DECIMAL"/>
+        <id column="HIGHESTCOLLECTDELIVERYFEE" property="highestCollectDeliveryFee" jdbcType="DECIMAL"/>
+
+        <id column="EFFECTIVETIME" property="effectiveTime" jdbcType="TIMESTAMP"/>
+        <id column="INVALIDTIME" property="invalidTime" jdbcType="TIMESTAMP"/>
+
+        <id column="EFFECTIVETIMESTR" property="effectiveTimeStr" jdbcType="VARCHAR"/>
+        <id column="INVALIDTIMESTR" property="invalidTimeStr" jdbcType="VARCHAR"/>
+
+
+        <id column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR"/>
+        <id column="CREATEUSERNAME" property="createUserName" jdbcType="VARCHAR"/>
+        <id column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <id column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR"/>
+        <id column="MODIFYUSERNAME" property="modifyUserName" jdbcType="VARCHAR"/>
+        <id column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <id column="STATUS" property="status" jdbcType="VARCHAR"/>
+        <id column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <id column="ACTIVE" property="active" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <sql id="mainSqlBody">
+	SELECT T.ID,
+           T.BEGINPRICECITYCODE,
+           T.TRANSTYPECODE,
+           T.COLLECTDELIVERYTYPE,
+           T.COLLECTDELIVERYRATE,
+           T.RATELOCKTYPE,
+           T.LOWESTCOLLECTDELIVERYFEE,
+           T.HIGHESTCOLLECTDELIVERYFEE,
+           T.REMARK,
+           T.CREATE_TIME,
+           T.CREATE_USER_CODE,
+           T.MODIFY_TIME,
+           T.MODIFY_USER_CODE,
+           T.EFFECTIVETIME,
+           T.INVALIDTIME,
+           TO_CHAR(T.EFFECTIVETIME,'yyyy-mm-dd hh24:mi:ss') EFFECTIVETIMESTR,
+           TO_CHAR(T.INVALIDTIME,'yyyy-mm-dd hh24:mi:ss') INVALIDTIMESTR
+	  FROM T_PRICE_COLLECTDELIVERY T
+	 WHERE
+	</sql>
+
+
+    <!-- 查询条件 -->
+    <sql id="mainSqlCondtion">
+            T.active='Y'
+            and (<![CDATA[T.EFFECTIVETIME<=]]>#{billTime,jdbcType=TIMESTAMP}
+            and (<![CDATA[nvl(T.INVALIDTIME,to_date('2999-12-31 23:59:59',
+                                     'yyyy-mm-dd hh24:mi:ss'))>=#{billTime,jdbcType=TIMESTAMP}]]>)
+            )
+        <if test="beginPriceCityCode != null and beginPriceCityCode != '' ">
+            and T.BEGINPRICECITYCODE = #{beginPriceCityCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="transTypeCode != null and transTypeCode != '' ">
+            and T.TRANSTYPECODE = #{transTypeCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="collectDeliveryType != null and collectDeliveryType != '' ">
+            and T.COLLECTDELIVERYTYPE = #{collectDeliveryType,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <!-- 根据查询条件查询明细  -->
+    <select id="queryListByParams"
+            parameterType="com.hoau.miser.module.api.itf.api.shared.domain.PriceCollectDeliveryFeeEntity"
+            resultMap="priceCollectDeliveryFeeResultMap">
+        <include refid="mainSqlBody"></include>
+        <include refid="mainSqlCondtion"></include>
+        ORDER BY T.MODIFY_TIME DESC
+    </select>
+
+</mapper>

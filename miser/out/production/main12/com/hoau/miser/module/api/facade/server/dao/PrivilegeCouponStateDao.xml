@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.facade.server.dao.PrivilegeCouponStateDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.CouponStateEntity"
+		id="couponStateEntity">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CONTRACT_CODE" property="contractCode" jdbcType="VARCHAR" />
+		<result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+		<result column="EXECUTE_STATE" property="executeState" jdbcType="VARCHAR" />
+		<result column="EXECUTE_STATE_DES" property="executeStateDes" jdbcType="VARCHAR" />
+		<result column="EXECUTE_USER" property="executeUser" jdbcType="VARCHAR" />
+		<result column="EXECUTE_TIME" property="executeTime" jdbcType="TIMESTAMP" />
+		<result column="EXECUTE_REMARK" property="executeRemark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="couponStateFields">
+	  PCS.ID AS ID,
+	  PCS.CONTRACT_CODE AS CONTRACT_CODE,
+	  PCS.RECORD_MONTH AS RECORD_MONTH,
+	  PCS.EXECUTE_STATE AS EXECUTE_STATE,
+	  PCS.EXECUTE_STATE_DES AS EXECUTE_STATE_DES,
+	  PCS.EXECUTE_USER AS EXECUTE_USER,
+	  PCS.EXECUTE_TIME AS EXECUTE_TIME,
+	  PCS.EXECUTE_REMARK AS EXECUTE_REMARK,
+	  PCS.ACTIVE AS ACTIVE,
+	  PCS.CREATE_TIME AS CREATE_TIME,
+	  PCS.CREATE_USER_CODE AS CREATE_USER_CODE,
+	  PCS.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+	  PCS.MODIFY_TIME AS MODIFY_TIME
+	</sql>
+	
+	<sql id="couponStateQueryCondition">
+	  <where>
+	    <if test="contractCode != null and contractCode != ''">
+	      AND PCS.CONTRACT_CODE=#{contractCode, jdbcType=VARCHAR}
+	    </if>
+	    <if test="recordMonth != null and recordMonth != ''">
+        AND PCS.RECORD_MONTH=#{recordMonth, jdbcType=TIMESTAMP}
+      </if>
+	  </where>
+	</sql>
+
+  <select id="findCouponStateEntity" resultMap="couponStateEntity" 
+    parameterType="com.hoau.miser.module.api.facade.shared.domain.CouponStateEntity">
+    SELECT <include refid="couponStateFields"></include>
+    FROM T_PRIVILEGE_COUPON_STATE PCS
+    <include refid="couponStateQueryCondition"></include>
+    ORDER BY EXECUTE_TIME ASC
+  </select>
+  
+  <insert id="saveCouponStateEntity" 
+    parameterType="com.hoau.miser.module.api.facade.shared.domain.CouponStateEntity">
+    INSERT INTO T_PRIVILEGE_COUPON_STATE(
+      ID,
+      CONTRACT_CODE,
+      RECORD_MONTH,
+      EXECUTE_STATE,
+      EXECUTE_STATE_DES,
+      EXECUTE_USER,
+      EXECUTE_TIME,
+      EXECUTE_REMARK,
+      ACTIVE,
+      CREATE_TIME,
+      CREATE_USER_CODE,
+      MODIFY_USER_CODE,
+      MODIFY_TIME
+    ) 
+    VALUES(
+      #{id, jdbcType=VARCHAR},
+      #{contractCode, jdbcType=VARCHAR},
+      #{recordMonth, jdbcType=TIMESTAMP},
+      #{executeState, jdbcType=VARCHAR},
+      #{executeStateDes, jdbcType=VARCHAR},
+      #{executeUser, jdbcType=VARCHAR},
+      #{executeTime, jdbcType=TIMESTAMP},
+      #{executeRemark, jdbcType=VARCHAR},
+      #{active, jdbcType=VARCHAR},
+      #{createDate, jdbcType=TIMESTAMP},
+      #{createUser, jdbcType=VARCHAR},
+      #{modifyUser, jdbcType=VARCHAR},
+      #{modifyDate, jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+</mapper>

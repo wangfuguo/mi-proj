@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceStandardSectionTyDao">
+	<resultMap
+		type="com.hoau.miser.module.api.itf.api.shared.domain.PriceStandardSectionTyEntity"
+		id="mainResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="trans_type_code" property="transTypeCode" jdbcType="VARCHAR" />
+		<result column="SEND_PRICE_CITY" property="sendPriceCityCode" jdbcType="VARCHAR" />
+		<result column="ARRIVE_PRICE_CITY" property="arrivePriceCityCode" jdbcType="VARCHAR" />
+		<!-- 一段首重 -->
+		<result column="FIRST_WEIGHT" property="firstWeight" jdbcType="DECIMAL" />
+		<!-- 一段首重单价 -->
+		<result column="FIRST_WEIGHT_PRICE" property="firstWeightPrice"
+			jdbcType="DECIMAL" />
+		<!-- 一段续重单价 -->
+		<result column="FIRST_ADD_WEIGHT_PRICE" property="firstAddWeightPrice"
+			jdbcType="DECIMAL" />
+		<!-- 二段首重 -->
+		<result column="SECOND_WEIGHT" property="secondWeight" jdbcType="DECIMAL" />
+		<!-- 二段首重单价 -->
+		<result column="SECOND_WEIGHT_PRICE" property="secondWeightPrice"
+			jdbcType="DECIMAL" />
+		<!-- 二段续重单价 -->
+		<result column="SECOND_ADD_WEIGHT_PRICE" property="secondAddWeightPrice"
+			jdbcType="DECIMAL" />
+		<!-- 三段首重 -->
+		<result column="THIRD_WEIGHT" property="thirdWeight" jdbcType="DECIMAL" />
+		<!-- 三段首重单价 -->
+		<result column="THIRD_WEIGHT_PRICE" property="thirdWeightPrice"
+			jdbcType="DECIMAL" />
+		<!-- 三段续重单价 -->
+		<result column="THIRD_ADD_WEIGHT_PRICE" property="thirdAddWeightPrice"
+			jdbcType="DECIMAL" />
+		<result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="create_user_code" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+
+
+	<sql id="query_mian_param">
+		PSS.ID,
+		PSS.TRANS_TYPE_CODE,
+		PSS.SEND_PRICE_CITY,
+		PSS.ARRIVE_PRICE_CITY,
+		PSS.FIRST_WEIGHT,
+		PSS.FIRST_WEIGHT_PRICE,
+		PSS.FIRST_ADD_WEIGHT_PRICE,
+		PSS.SECOND_WEIGHT,
+		PSS.SECOND_WEIGHT_PRICE,
+		PSS.SECOND_ADD_WEIGHT_PRICE,
+		PSS.THIRD_WEIGHT,
+		PSS.THIRD_WEIGHT_PRICE,
+		PSS.THIRD_ADD_WEIGHT_PRICE,
+		PSS.effective_time AS effective_time,
+		PSS.invalid_time AS invalid_time,
+		PSS.create_user_code AS create_user_code,
+		PSS.create_time AS create_time,
+		PSS.modify_time AS modify_time,
+		PSS.MODIFY_USER_CODE AS MODIFY_USER_CODE
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			PSS.SEND_PRICE_CITY =#{sendPriceCityCode,jdbcType=VARCHAR}
+			  	AND PSS.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR}
+				<![CDATA[ and PSS.active='Y']]>
+				and PSS.trans_type_code=#{baseTyParam.transTypeCode,jdbcType=VARCHAR}
+				and (<![CDATA[PSS.effective_time<=]]>#{baseTyParam.billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(PSS.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=#{baseTyParam.billTime,jdbcType=TIMESTAMP} ]]>)
+				)
+		</where>
+
+	</sql>
+
+	<!-- 根据参数查询标准价格信息  -->
+	<select id="queryByPriceSectionQueryParamInSide" resultMap="mainResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_STANDARD_SECTION PSS
+		<include refid="queryCondition"></include>
+		ORDER BY PSS.SEND_PRICE_CITY
+	</select>
+</mapper>

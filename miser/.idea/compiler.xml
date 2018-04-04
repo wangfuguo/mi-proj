@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="miser-api-facade" />
+        <module name="miser-api-itf" />
+        <module name="miser-api-itf-api" />
+        <module name="miser-api-web" />
+        <module name="miser-biz-base" />
+        <module name="miser-biz-base-api" />
+        <module name="miser-biz-discount" />
+        <module name="miser-biz-discount-api" />
+        <module name="miser-biz-extrafee" />
+        <module name="miser-biz-job" />
+        <module name="miser-biz-pricecard" />
+        <module name="miser-biz-pricecard-api" />
+        <module name="miser-biz-voucher" />
+        <module name="miser-biz-web" />
+        <module name="miser-common" />
+        <module name="miser-config" />
+        <module name="miser-job-web" />
+        <module name="miser-sys-base" />
+        <module name="miser-sys-base-api" />
+        <module name="miser-sys-job" />
+        <module name="miser-sys-login" />
+        <module name="miser-util" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="1.8">
+      <module name="miser" target="1.5" />
+      <module name="miser-api" target="1.5" />
+      <module name="miser-api-facade" target="1.6" />
+      <module name="miser-api-itf" target="1.6" />
+      <module name="miser-api-itf-api" target="1.6" />
+      <module name="miser-api-web" target="1.6" />
+      <module name="miser-biz" target="1.5" />
+      <module name="miser-biz-base" target="1.6" />
+      <module name="miser-biz-base-api" target="1.6" />
+      <module name="miser-biz-discount" target="1.6" />
+      <module name="miser-biz-discount-api" target="1.6" />
+      <module name="miser-biz-extrafee" target="1.6" />
+      <module name="miser-biz-job" target="1.6" />
+      <module name="miser-biz-pricecard" target="1.6" />
+      <module name="miser-biz-pricecard-api" target="1.6" />
+      <module name="miser-biz-voucher" target="1.6" />
+      <module name="miser-biz-web" target="1.6" />
+      <module name="miser-common" target="1.6" />
+      <module name="miser-config" target="1.6" />
+      <module name="miser-job" target="1.5" />
+      <module name="miser-job-web" target="1.6" />
+      <module name="miser-sys" target="1.5" />
+      <module name="miser-sys-base" target="1.6" />
+      <module name="miser-sys-base-api" target="1.6" />
+      <module name="miser-sys-job" target="1.6" />
+      <module name="miser-sys-login" target="1.6" />
+      <module name="miser-util" target="1.6" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

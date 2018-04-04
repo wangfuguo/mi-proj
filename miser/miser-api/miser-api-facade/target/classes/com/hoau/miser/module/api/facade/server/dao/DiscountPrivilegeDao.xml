@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.facade.server.dao.DiscountPrivilegeDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.DiscountPrivilegeEntity"
+		id="discountPrivilegeResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="START_AMOUNT" property="startAmount" jdbcType="DOUBLE" />
+		<result column="END_AMOUNT" property="endAmount" jdbcType="DOUBLE" />
+		<result column="DD_MIN_FREIGHT_DISCOUNT" property="ddMinFreightDiscount" jdbcType="DOUBLE" />
+		<result column="DU_MIN_FREIGHT_DISCOUNT" property="duMinFreightDiscount" jdbcType="DOUBLE" />
+		<result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+		<result column="MAX_COUPON_SCALE" property="maxCouponScale" jdbcType="DOUBLE" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="STATE" property="state" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="query_main_param">
+		TP.ID AS ID,
+		TP.START_AMOUNT AS START_AMOUNT,
+		TP.END_AMOUNT AS END_AMOUNT,
+		TP.DD_MIN_FREIGHT_DISCOUNT AS DD_MIN_FREIGHT_DISCOUNT,
+		TP.DU_MIN_FREIGHT_DISCOUNT AS DU_MIN_FREIGHT_DISCOUNT,
+		TP.HAS_COUPON AS HAS_COUPON,
+		TP.MAX_COUPON_SCALE AS MAX_COUPON_SCALE,
+		TP.EFFECTIVE_TIME AS EFFECTIVE_TIME,
+		TP.INVALID_TIME AS INVALID_TIME,
+		TP.REMARK AS REMARK,
+		TP.CREATE_TIME AS CREATE_TIME,
+		TP.CREATE_USER_CODE AS CREATE_USER_CODE,
+		TP.MODIFY_TIME AS MODIFY_TIME,
+		TP.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		<![CDATA[
+		CASE WHEN (TP.INVALID_TIME<SYSDATE AND TP.ACTIVE='Y') THEN '1'
+ 			   WHEN (TP.EFFECTIVE_TIME<=SYSDATE AND TP.ACTIVE='Y') THEN '2'
+ 			   WHEN (TP.EFFECTIVE_TIME>SYSDATE AND TP.ACTIVE='Y') THEN '3'
+ 			   WHEN (TP.ACTIVE='N') THEN '4'
+         ELSE ''
+    END AS STATE
+        ]]>
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="query_doupon_condition">
+		<where>
+			<![CDATA[ 
+        TP.ACTIVE='Y' AND HAS_COUPON='Y' AND (
+          (SYSDATE>=TP.EFFECTIVE_TIME AND TP.INVALID_TIME IS NULL)
+          OR 
+          (SYSDATE>=TP.EFFECTIVE_TIME  AND SYSDATE<TP.INVALID_TIME)
+        )
+      ]]>
+      <if test="ddMinFreightDiscount!=null and ddMinFreightDiscount!=''">
+        AND TP.DD_MIN_FREIGHT_DISCOUNT=#{ddMinFreightDiscount,jdbcType=VARCHAR}
+      </if>
+      <if test="duMinFreightDiscount!=null and duMinFreightDiscount!=''">
+        AND TP.DU_MIN_FREIGHT_DISCOUNT=#{duMinFreightDiscount,jdbcType=VARCHAR}
+      </if>
+		</where> 
+	</sql>
+	<sql id="query_discount_condition">
+    <where>
+      <![CDATA[ 
+        TP.ACTIVE='Y' AND HAS_COUPON='N' AND (
+          (SYSDATE>=TP.EFFECTIVE_TIME AND TP.INVALID_TIME IS NULL)
+          OR 
+          (SYSDATE>=TP.EFFECTIVE_TIME  AND SYSDATE<TP.INVALID_TIME)
+        )
+      ]]>
+    </where>
+  </sql>
+  <!-- 根据参数查询折扣数据  -->
+	<select id="queryDiscountListByParam" resultMap="discountPrivilegeResultMap" parameterType="map">
+		SELECT
+		<include refid="query_main_param"></include>
+		FROM T_PRIVILEGE TP
+		<include refid="query_discount_condition"></include>
+	</select>
+	<!-- 根据参数查询返券数据 -->
+	<select id="queryCouponListByParam" resultMap="discountPrivilegeResultMap" parameterType="map">
+		SELECT
+    <include refid="query_main_param"></include>
+    FROM T_PRIVILEGE TP
+    <include refid="query_doupon_condition"></include>
+	</select>
+
+</mapper>

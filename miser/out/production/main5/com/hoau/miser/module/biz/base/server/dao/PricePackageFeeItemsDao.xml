@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.PricePackageFeeItemsDao">
+    
+    <resultMap type="com.hoau.miser.module.biz.base.api.shared.domain.PricePackageFeeItemsEntity" id="ppfItemsMap">
+        <result column="ID"   property="id"  jdbcType="VARCHAR" />
+        <result column="CODE" property="code"  jdbcType="VARCHAR" />
+        <result column="NAME" property="name"  jdbcType="VARCHAR" />
+        <result column="REMARK" property="remark"  jdbcType="VARCHAR" />
+        <result column="ACTIVE" property="active"  jdbcType="VARCHAR" />
+        <result column="INVALID" property="invalid"  jdbcType="VARCHAR" />
+      	<result column="CREATE_TIME" property="createDate"  jdbcType="TIMESTAMP" />
+        <result column="CREATE_USER_CODE" property="createUser"  jdbcType="VARCHAR" />
+        <result column="MODIFY_TIME" property="modifyDate"  jdbcType="TIMESTAMP" />
+        <result column="MODIFY_USER_CODE" property="modifyUser"  jdbcType="VARCHAR" />
+
+    </resultMap>
+
+    <sql id="query_ppfitems_param">
+        T.ID AS ID,
+        T.CODE AS CODE,/** 编号**/
+        T.NAME AS NAME,/** 名称**/
+        T.REMARK AS REMARK,/** 备注**/
+        T.ACTIVE AS ACTIVE,/** 是否可用**/
+        T.INVALID AS INVALID,/** 是否删除**/
+        T.CREATE_TIME AS CREATE_TIME,/**创建时间**/
+	   	T.CREATE_USER_CODE AS CREATE_USER_CODE,/**创建人**/
+	    T.MODIFY_TIME AS MODIFY_TIME, /**更新时间**/
+	    T.MODIFY_USER_CODE AS MODIFY_USER_CODE /**更新人**/
+    </sql>
+    <sql id="query_ppfitems_where">
+		<where>
+			<if test="name!='' and name!=null">
+				<if test="isNoFuzzy==1">
+					AND T.NAME = #{name,jdbcType=VARCHAR}
+				</if>
+				<if test="isNoFuzzy!=1">
+					AND T.NAME LIKE CONCAT(CONCAT('%', #{name,jdbcType=VARCHAR}),'%')
+				</if>
+				
+			</if>
+			<if test="active!='' and active!=null">
+				and T.ACTIVE=#{active,jdbcType=VARCHAR}
+			</if>
+			<if test="invalid!='' and invalid!=null">
+				and T.invalid=#{invalid,jdbcType=VARCHAR}
+			</if>
+			<if test="id!='' and id!=null">
+				and T.id=#{id,jdbcType=VARCHAR}
+			</if>
+			<if test="code!='' and code!=null">
+				and T.code=#{code,jdbcType=VARCHAR}
+			</if>
+			
+		</where>
+	</sql>
+	
+	<!-- 根据参数查询包装费信息 -->
+    <select id="queryPricePackageFeeItemsByParam" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PricePackageFeeItemsEntity"
+            resultMap="ppfItemsMap">
+        SELECT 
+        <include refid="query_ppfitems_param"></include>
+        FROM T_PRICE_PACKAGE_FEE_ITEMS  T
+       <include refid="query_ppfitems_where"></include>
+       ORDER BY T.CODE
+    </select>
+    
+    <!-- 根据参数统计包装费信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PricePackageFeeItemsEntity">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_PACKAGE_FEE_ITEMS T
+		<include refid="query_ppfitems_where"></include>
+		ORDER BY T.CODE
+	</select>
+	<!-- 增加已提交包装费信息 -->
+	<insert id="addPricePackageFeeItemsByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PricePackageFeeItemsEntity">
+		INSERT INTO T_PRICE_PACKAGE_FEE_ITEMS
+	     (	
+	    	ID,
+        	CODE,/** 编号**/
+        	NAME,/** 名称**/
+        	REMARK,/** 备注**/
+        	ACTIVE,/** 是否可用**/
+        	INVALID,
+        	CREATE_TIME,/**创建时间**/
+	   		CREATE_USER_CODE,/**创建人**/
+	    	MODIFY_TIME, /**更新时间**/
+	    	MODIFY_USER_CODE/**更新人**/
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{code,jdbcType=VARCHAR},
+	    	#{name,jdbcType=VARCHAR},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{invalid,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改包装费信息 -->
+	<update id="updatePricePackageFeeItemsByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PricePackageFeeItemsEntity">
+	UPDATE T_PRICE_PACKAGE_FEE_ITEMS SET 
+	    <if test="active!='' and active!=null">
+	    	ACTIVE=#{active,jdbcType=VARCHAR},
+	    </if>
+	    <if test="invalid!='' and invalid!=null">
+	    	INVALID=#{invalid,jdbcType=VARCHAR},
+	    </if>
+	    <if test="name!='' and name!=null">
+	    	NAME=#{name,jdbcType=VARCHAR},
+	    </if>
+	    <if test="remark!='' and remark!=null">
+	    	remark=#{remark,jdbcType=VARCHAR},
+	    </if>
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<!-- 删除 包装费信息-->
+	<update id="deletePricePackageFeeItemsByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PricePackageFeeItemsEntity">
+	UPDATE T_PRICE_PACKAGE_FEE_ITEMS SET 
+	    ACTIVE=#{active,jdbcType=VARCHAR},
+	    INVALID=#{invalid,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

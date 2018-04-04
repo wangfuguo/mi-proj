@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.CustomerJobMapper">
+	<!-- 获取客户最大修改和创建时间 -->
+	<select id="queryMaxCustomerDate" resultType="com.hoau.miser.module.biz.job.shared.domain.CustomerExtVo">
+		<![CDATA[
+			SELECT MAX(CREATE_TIME) AS CREATEDATE,MAX(CRM_MODIFY_TIME) AS MODIFYDATE FROM T_BSE_CUSTOMER B
+		]]>
+	</select>
+	<!-- CUS.NAME,
+				CUS.ORG_CODE,
+				CUS.CREATE_TIME,
+				CUS.CREATE_USER_CODE,
+				CUS.MODIFY_TIME,
+				CUS.MODIFY_USER_CODE,
+				CUS.ACTIVE -->
+	<select id="getCustomerIDs" parameterType="java.util.List" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT
+				CUS.ID,
+				CUS.CODE
+			FROM
+				T_BSE_CUSTOMER CUS
+		]]>
+		<where>
+			 <foreach collection="list" item="item" index="index" separator="or">
+				CUS.ID = #{item.id}
+		  	</foreach>
+		</where>
+	</select>
+
+	<select id="getCustomerCodes" parameterType="java.util.List" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT
+				CUS.ID,
+				CUS.CODE
+			FROM
+				T_BSE_CUSTOMER CUS
+		]]>
+		<where>
+			<foreach collection="list" item="item" index="index" separator="or">
+				CUS.CODE = #{item.dcAccount}
+			</foreach>
+		</where>
+	</select>
+	
+	<!-- 批量修改客户 -->
+	<update id="updateCustomerEntity"  parameterType="java.util.List">
+       <foreach collection="list" item="item" index="index" open="begin" close="end;" separator="">
+              update T_BSE_CUSTOMER 
+              <set>
+                NAME=#{item.enterpriseName,jdbcType=VARCHAR},
+                ORG_CODE=#{item.tierCode,jdbcType=VARCHAR},
+				CRM_MODIFY_TIME=#{item.modifyDate,jdbcType=TIMESTAMP},
+				CRM_MODIFY_USER=#{item.modifyUser,jdbcType=VARCHAR},
+                CONTRACT_START_TIME=#{item.contractStartTime,jdbcType=TIMESTAMP},
+				CONTRACT_END_TIME=#{item.contractEndTime,jdbcType=TIMESTAMP},
+                ACTIVE=#{item.active,jdbcType=VARCHAR}
+              </set>
+              where id = #{item.id,jdbcType=VARCHAR} ;
+       </foreach>
+    </update>
+    <!-- 批量新增 -->
+    <insert id="addCustomerEntity" parameterType="java.util.List">
+		insert into T_BSE_CUSTOMER
+		(
+		ID,
+		CODE,
+		NAME,
+		ORG_CODE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE,
+		CRM_MODIFY_TIME,
+		CRM_MODIFY_USER,
+		CONTRACT_START_TIME,
+		CONTRACT_END_TIME,
+		ACTIVE,
+		YDJ_USE_DRD
+		)
+		<foreach collection="list" index="index" item="item" open="(" separator="union" close=")">
+		 select #{item.id,jdbcType=VARCHAR},
+			 #{item.dcAccount,jdbcType=VARCHAR},
+			 #{item.enterpriseName,jdbcType=VARCHAR},
+			 #{item.tierCode,jdbcType=VARCHAR},
+			 #{item.createDate,jdbcType=TIMESTAMP},
+			 #{item.createUser,jdbcType=VARCHAR},
+			 #{item.modifyDate,jdbcType=TIMESTAMP},
+			 #{item.modifyUser,jdbcType=VARCHAR},
+			 #{item.modifyDate,jdbcType=TIMESTAMP},
+			 #{item.modifyUser,jdbcType=VARCHAR},
+			 #{item.contractStartTime,jdbcType=TIMESTAMP},
+			 #{item.contractEndTime,jdbcType=TIMESTAMP},
+			 #{item.active,jdbcType=VARCHAR},
+			 'N' 
+		 from dual
+		</foreach>
+	</insert>
+</mapper>

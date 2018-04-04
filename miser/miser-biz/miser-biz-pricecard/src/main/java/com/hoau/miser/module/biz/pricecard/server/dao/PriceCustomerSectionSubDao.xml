@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.pricecard.server.dao.PriceCustomerSectionSubDao">
+	
+	<resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerSectionSubEntity" >
+	    <id column="ID" property="id" jdbcType="VARCHAR" />
+	    <result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+	    <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+	    <result column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+	    <result column="SEND_PRICE_CITY" property="sendPriceCity" jdbcType="VARCHAR" />
+	    <result column="ARRIVE_PRICE_CITY" property="arrivePriceCity" jdbcType="VARCHAR" />
+	    
+	    <result column="SEND_PRICE_CITY_NAME" property="sendPriceCityName" jdbcType="VARCHAR" />
+	    <result column="ARRIVE_PRICE_CITY_NAME" property="arrivePriceCityName" jdbcType="VARCHAR" />
+	    
+	    	    
+	    <result column="FIRST_WEIGHT" property="firstWeight" jdbcType="DECIMAL" />
+	    <result column="FIRST_WEIGHT_PRICE" property="firstWeightPrice" jdbcType="DECIMAL" />
+	    <result column="FIRST_ADD_WEIGHT_PRICE" property="firstAddWeightPrice" jdbcType="DECIMAL" />
+	    <result column="SECOND_WEIGHT" property="secondWeight" jdbcType="DECIMAL" />
+	    <result column="SECOND_WEIGHT_PRICE" property="secondWeightPrice" jdbcType="DECIMAL" />
+	    <result column="SECOND_ADD_WEIGHT_PRICE" property="secondAddWeightPrice" jdbcType="DECIMAL" />
+	    <result column="THIRD_WEIGHT" property="thirdWeight" jdbcType="DECIMAL" />
+	    <result column="THIRD_WEIGHT_PRICE" property="thirdWeightPrice" jdbcType="DECIMAL" />
+	    <result column="THIRD_ADD_WEIGHT_PRICE" property="thirdAddWeightPrice" jdbcType="DECIMAL" />
+	   
+	    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	    
+	    <result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+	    <result column="CREATE_USER_NAME" property="createUserName" jdbcType="VARCHAR" />
+	    
+	    
+	    <result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+	    
+	    <result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+	    <result column="MODIFY_USER_NAME" property="modifyUserName" jdbcType="VARCHAR" />
+	    
+	    
+	    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+	    
+	    <result column="FREIGHT_SECTION_CODE" property="freightSectionCode" jdbcType="VARCHAR" />
+	    <result column="FREIGHT_SECTION_CODE_NAME" property="freightSectionCodeName" jdbcType="VARCHAR" />
+	    
+	    <result column="DATAORIGN" property="dataOrign" jdbcType="VARCHAR" />
+	  </resultMap>
+	  
+	  <sql id="Base_Column_List" >
+		    ID, 
+		    PARENT_ID,
+		    TRANS_TYPE_CODE, 
+		    TRANS_TYPE_NAME, 
+		    send_price_city, 
+		    send_price_city_name, 		    
+		    arrive_price_city,
+		    arrive_price_city_name,		    
+		    WEIGHT_PRICE, 
+		    VOLUME_PRICE, 
+		    ADD_FEE, 
+		    LOWEST_FEE,
+		    FUEL_FEE_SECTION,
+		    FUEL_FEE_SECTION_NAME, 		     
+		    REMARK, 
+		    CREATE_TIME, 
+		    CREATE_USER_CODE,
+		    CREATE_USER_NAME, 		     
+		    MODIFY_TIME, 
+		    MODIFY_USER_CODE,
+		    MODIFY_USER_NAME,		     
+		    ACTIVE,
+		    FREIGHT_FEE_SECTION,
+		    FREIGHT_FEE_SECTION_NAME,
+		    WEIGHT_DISCOUNT,
+		    VOLUME_DISCOUNT,
+		    DATAORIGN		    
+	  </sql>
+	  
+	  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from T_PRICE_CUSTOMER_SECTION_SUB
+	    where ID = #{id,jdbcType=VARCHAR}
+	  </select>
+	  
+	  <insert id="insert" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerSectionSubEntity" >
+	    insert into T_PRICE_CUSTOMER_SECTION_SUB 
+	    (
+		    ID, 
+		    PARENT_ID,
+		    TRANS_TYPE_CODE, 
+		    TRANS_TYPE_NAME, 
+		    send_price_city, 
+		    arrive_price_city,
+		    FIRST_WEIGHT, 
+		    FIRST_WEIGHT_PRICE,
+		    FIRST_ADD_WEIGHT_PRICE,
+		    SECOND_WEIGHT, 
+		    SECOND_WEIGHT_PRICE,
+		    SECOND_ADD_WEIGHT_PRICE,
+		    THIRD_WEIGHT,
+		    THIRD_WEIGHT_PRICE,
+		    THIRD_ADD_WEIGHT_PRICE,
+		    FREIGHT_SECTION_CODE,
+		    REMARK, 
+		    CREATE_TIME, 
+		    CREATE_USER_CODE, 
+		    MODIFY_TIME, 
+		    MODIFY_USER_CODE, 
+		    ACTIVE,
+		    DATAORIGN     
+	     )
+	    values (
+	      #{id,jdbcType=VARCHAR},
+	      #{parentId,jdbcType=VARCHAR},  
+	      #{transTypeCode,jdbcType=VARCHAR}, 
+	      #{transTypeName,jdbcType=VARCHAR}, 
+	      #{sendPriceCity,jdbcType=VARCHAR}, 
+	      #{arrivePriceCity,jdbcType=VARCHAR}, 
+	      #{firstWeight,jdbcType=DECIMAL}, 
+	      #{firstWeightPrice,jdbcType=DECIMAL}, 
+	      #{firstAddWeightPrice,jdbcType=DECIMAL}, 
+	      #{secondWeight,jdbcType=DECIMAL}, 
+	      #{secondWeightPrice,jdbcType=DECIMAL}, 
+	      #{secondAddWeightPrice,jdbcType=DECIMAL}, 
+	      #{thirdWeight,jdbcType=DECIMAL}, 
+	      #{thirdWeightPrice,jdbcType=DECIMAL}, 
+	      #{thirdAddWeightPrice,jdbcType=DECIMAL}, 
+	      #{freightSectionCode,jdbcType=VARCHAR}, 
+	      #{remark,jdbcType=VARCHAR}, 
+	      #{createTime,jdbcType=DATE}, 
+	      #{createUserCode,jdbcType=VARCHAR}, 
+	      #{modifyTime,jdbcType=DATE}, 
+	      #{modifyUserCode,jdbcType=VARCHAR}, 
+	      #{active,jdbcType=CHAR},
+	      #{dataOrign,jdbcType=VARCHAR}      
+	      )
+	  </insert>
+	  
+	  <insert id="insertSelective" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerSectionSubEntity" >
+	    insert into T_PRICE_CUSTOMER_SECTION_SUB
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        ID,
+	      </if>
+	      <if test="parentId != null" >
+	        PARENT_ID,
+	      </if>	      
+	      <if test="transTypeCode != null" >
+	        TRANS_TYPE_CODE,
+	      </if>
+	      <if test="transTypeName != null" >
+	        TRANS_TYPE_NAME,
+	      </if>
+	      <if test="sendPriceCity != null" >
+	        send_price_city,
+	      </if>
+	      <if test="arrivePriceCity != null" >
+	        arrive_price_city,
+	      </if>
+	      <if test="firstWeight != null" >
+	        FIRST_WEIGHT,
+	      </if>
+	      <if test="firstWeightPrice != null" >
+	        FIRST_WEIGHT_PRICE,
+	      </if>
+	      <if test="firstAddWeightPrice != null" >
+	        FIRST_ADD_WEIGHT_PRICE,
+	      </if>
+	      <if test="secondWeight != null" >
+	        SECOND_WEIGHT,
+	      </if>
+	      <if test="secondWeightPrice != null" >
+	        SECOND_WEIGHT_PRICE,
+	      </if>
+	      <if test="secondAddWeightPrice != null" >
+	        SECOND_ADD_WEIGHT_PRICE,
+	      </if>
+	      <if test="thirdWeight != null" >
+	        THIRD_WEIGHT,
+	      </if>
+	      <if test="thirdWeightPrice != null" >
+	        THIRD_WEIGHT_PRICE,
+	      </if>
+	      <if test="firstWeight != null" >
+	        THIRD_ADD_WEIGHT_PRICE,
+	      </if>
+	      <if test="freightSectionCode != null" >
+	        FREIGHT_SECTION_CODE,
+	      </if>
+	      <if test="remark != null" >
+	        REMARK,
+	      </if>
+	      <if test="createTime != null" >
+	        CREATE_TIME,
+	      </if>
+	      <if test="createUserCode != null" >
+	        CREATE_USER_CODE,
+	      </if>
+	      <if test="modifyTime != null" >
+	        MODIFY_TIME,
+	      </if>
+	      <if test="modifyUserCode != null" >
+	        MODIFY_USER_CODE,
+	      </if>
+	      <if test="active != null" >
+	        ACTIVE,
+	      </if>
+	      <if test="dataOrign != null" >
+	        DATAORIGN
+	      </if>	      	  
+	      	      	      	      
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        #{id,jdbcType=VARCHAR},
+	      </if>
+	      <if test="parentId != null" >
+	        #{parentId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="transTypeCode != null" >
+	        #{transTypeCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="transTypeName != null" >
+	        #{transTypeName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sendPriceCity != null" >
+	        #{sendPriceCity,jdbcType=VARCHAR},
+	      </if>
+	      <if test="firstWeight != null" >
+	        #{firstWeight,jdbcType=DECIMAL},
+	      </if>
+	      <if test="firstWeightPrice != null" >
+	        #{firstWeightPrice,jdbcType=DECIMAL},
+	      </if>
+	      <if test="firstAddWeightPrice != null" >
+	        #{firstAddWeightPrice,jdbcType=DECIMAL},
+	      </if>
+	      <if test="secondWeight != null" >
+	        #{secondWeight,jdbcType=DECIMAL},
+	      </if>
+	      <if test="secondWeightPrice != null" >
+	        #{secondWeightPrice,jdbcType=DECIMAL},
+	      </if>
+	      <if test="secondAddWeightPrice != null" >
+	        #{secondAddWeightPrice,jdbcType=DECIMAL},
+	      </if>
+	      <if test="thirdWeight != null" >
+	        #{thirdWeight,jdbcType=DECIMAL},
+	      </if>
+	      <if test="thirdWeightPrice != null" >
+	        #{thirdWeightPrice,jdbcType=DECIMAL},
+	      </if>
+	      <if test="thirdAddWeightPrice != null" >
+	        #{thirdAddWeightPrice,jdbcType=DECIMAL},
+	      </if>
+	      <if test="freightSectionCode != null" >
+	        #{freightSectionCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="remark != null" >
+	        #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createTime != null" >
+	        #{createTime,jdbcType=DATE},
+	      </if>
+	      <if test="createUserCode != null" >
+	        #{createUserCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="modifyTime != null" >
+	        #{modifyTime,jdbcType=DATE},
+	      </if>
+	      <if test="modifyUserCode != null" >
+	        #{modifyUserCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="active != null" >
+	        #{active,jdbcType=CHAR},
+	      </if>
+	      <if test="dataOrign != null" >
+	        #{dataOrign,jdbcType=VARCHAR}
+	      </if>	      	      	      
+	      	      
+	    </trim>
+	  </insert>
+	  
+	  <update id="updateByPrimaryKeySelective" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerSectionSubEntity" >
+	    update T_PRICE_CUSTOMER_SECTION_SUB
+	    <set >
+	      <if test="parentId != null and parentId !=''" >
+	        PARENT_ID = #{parentId,jdbcType=VARCHAR},
+	      </if>	    
+	      <if test="transTypeCode != null  and transTypeCode != ''" >
+	        TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="transTypeName != null and transTypeName != '' " >
+	        TRANS_TYPE_NAME = #{transTypeName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sendPriceCity != null and sendPriceCity != '' " >
+	        send_price_city = #{sendPriceCity,jdbcType=VARCHAR},
+	      </if>
+	      <if test="arrivePriceCity != null  and arrivePriceCity !='' " >
+	        arrive_price_city = #{arrivePriceCity,jdbcType=VARCHAR},
+	      </if>
+	      <if test="weightPrice != null and weightPrice != ''" >
+	        WEIGHT_PRICE = #{weightPrice,jdbcType=DECIMAL},
+	      </if>
+	      <if test="volumePrice != null  and volumePrice != ''" >
+	        VOLUME_PRICE = #{volumePrice,jdbcType=DECIMAL},
+	      </if>
+	      <if test="addFee != null  and addFee != ''" >
+	        ADD_FEE = #{addFee,jdbcType=DECIMAL},
+	      </if>
+	      <if test="lowestFee != null and lowestFee != ''" >
+	        LOWEST_FEE = #{lowestFee,jdbcType=DECIMAL},
+	      </if>
+	      <if test="fuelFeeSection != null and fuelFeeSection !='' " >
+	        FUEL_FEE_SECTION = #{fuelFeeSection,jdbcType=VARCHAR},
+	      </if>
+	      <if test="remark != null  and remark != '' " >
+	        REMARK = #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createTime != null  and createTime != ''" >
+	        CREATE_TIME = #{createTime,jdbcType=DATE},
+	      </if>
+	      <if test="createUserCode != null  and createUserCode !='' " >
+	        CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="modifyTime != null and modifyTime != ''" >
+	        MODIFY_TIME = #{modifyTime,jdbcType=DATE},
+	      </if>
+	      <if test="modifyUserCode != null and modifyUserCode != ''" >
+	        MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="active != null  and active != ''" >
+	        ACTIVE = #{active,jdbcType=CHAR},
+	      </if>
+	      <if test="freightSectionCode != null  and freightSectionCode != ''" >
+	        FREIGHT_SECTION_CODE = #{freightSectionCode,jdbcType=VARCHAR},
+	      </if>
+	      
+	      <if test="weightDiscount != null  and weightDiscount != ''" >
+	        WEIGHT_DISCOUNT = #{weightDiscount,jdbcType=DECIMAL},
+	      </if>
+	      
+	      <if test="volumeDiscount != null  and volumeDiscount != ''" >
+	        VOLUME_DISCOUNT = #{volumeDiscount,jdbcType=DECIMAL}
+	      </if>	      	      
+	      
+	      	      
+	    </set>
+	    where ID = #{id,jdbcType=VARCHAR}
+	  </update>
+	  
+	  
+	  <update id="updateByPrimaryKey" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerSectionSubEntity" >
+	    update T_PRICE_CUSTOMER_SECTION_SUB
+	    set PARENT_ID = #{parentId,jdbcType=VARCHAR},
+	      TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR},
+	      TRANS_TYPE_NAME = #{transTypeName,jdbcType=VARCHAR},
+	      send_price_city = #{sendPriceCity,jdbcType=VARCHAR},
+	      arrive_price_city = #{arrivePriceCity,jdbcType=VARCHAR},
+	      WEIGHT_PRICE = #{weightPrice,jdbcType=DECIMAL},
+	      VOLUME_PRICE = #{volumePrice,jdbcType=DECIMAL},
+	      ADD_FEE = #{addFee,jdbcType=DECIMAL},
+	      LOWEST_FEE = #{lowestFee,jdbcType=DECIMAL},
+	      FUEL_FEE_SECTION = #{fuelFeeSection,jdbcType=VARCHAR},
+	      REMARK = #{remark,jdbcType=VARCHAR},
+	      CREATE_TIME = #{createTime,jdbcType=DATE},
+	      CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+	      MODIFY_TIME = #{modifyTime,jdbcType=DATE},
+	      MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+	      ACTIVE = #{active,jdbcType=CHAR},
+	      FREIGHT_SECTION_CODE = #{freightSectionCode,jdbcType=VARCHAR},
+	      WEIGHT_DISCOUNT = #{weightDiscount,jdbcType=DECIMAL},
+	      VOLUME_DISCOUNT = #{volumeDiscount,jdbcType=DECIMAL}
+	    where ID = #{id,jdbcType=VARCHAR}
+	  </update>
+
+
+	  <select id="selectCustomerSubListByParam" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerSectionSubEntity" >
+		SELECT  /*+ORDERED+*/ 
+		       T.ID,
+		       T.PARENT_ID,
+		       T.TRANS_TYPE_CODE,
+		       T.TRANS_TYPE_NAME,
+		       T.SEND_PRICE_CITY,
+		       A.NAME                AS SEND_PRICE_CITY_NAME,
+		       T.ARRIVE_PRICE_CITY,
+		       B.NAME                AS ARRIVE_PRICE_CITY_NAME,
+		       T.WEIGHT_PRICE,
+		       T.VOLUME_PRICE,
+		       T.ADD_FEE,
+		       T.LOWEST_FEE,
+		       T.FUEL_FEE_SECTION,
+		       C.NAME                AS FUEL_FEE_SECTION_NAME,
+		       T.REMARK,
+		       T.CREATE_TIME,
+		       T.CREATE_USER_CODE,
+		       E.EMP_NAME            AS CREATE_USER_NAME,
+		       T.MODIFY_TIME,
+		       T.MODIFY_USER_CODE,
+		       F.EMP_NAME            AS MODIFY_USER_NAME,
+		       T.ACTIVE,
+		       T.FREIGHT_FEE_SECTION,
+		       D.NAME                AS FREIGHT_FEE_SECTION_NAME,
+		       T.WEIGHT_DISCOUNT,
+		       T.VOLUME_DISCOUNT,
+		       T.DATAORIGN
+		  FROM T_PRICE_CUSTOMER_SECTION_SUB PARTITION(${partitionName}) T
+		  LEFT JOIN (SELECT CODE, NAME FROM T_PRICE_CITY) A
+		    ON A.CODE = T.SEND_PRICE_CITY
+		  INNER JOIN (SELECT CODE, NAME FROM T_PRICE_CITY) B
+		    ON B.CODE = T.ARRIVE_PRICE_CITY
+		  LEFT JOIN (SELECT CODE, NAME
+		               FROM T_PRICE_SECTION
+		              WHERE SECTIONED_ITEM = 'FUEL') C
+		    ON C.CODE = T.FUEL_FEE_SECTION
+		  LEFT JOIN (SELECT CODE, NAME
+		               FROM T_PRICE_SECTION
+		              WHERE SECTIONED_ITEM = 'FREIGHT') D
+		    ON D.CODE = T.FREIGHT_FEE_SECTION
+		  LEFT JOIN (SELECT EMP_NAME, USER_NAME FROM T_BSE_USER WHERE ACTIVE='Y') E
+		    ON E.USER_NAME = T.CREATE_USER_CODE
+		  LEFT JOIN (SELECT EMP_NAME, USER_NAME FROM T_BSE_USER WHERE ACTIVE='Y') F
+		    ON F.USER_NAME = T.MODIFY_USER_CODE
+	    WHERE 1=1
+	    <if test="parentId != null and parentId !='' ">
+	        and PARENT_ID = #{parentId,jdbcType=VARCHAR}
+	    </if>
+	    <if test="transTypeCode != null and transTypeCode !='' ">
+	        and TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR}
+	    </if>
+	    order by CREATE_TIME DESC	    
+	  </select>
+	  
+	  <update id="batchUpdateActiveByIdStr"   parameterType="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCustomerSubVo">
+	      update T_PRICE_CUSTOMER_SECTION_SUB set ACTIVE = 'N' where id in (${batchDeleteIdStr})
+	  </update>
+	  
+	 <insert id="batchInsertCustomerSub" parameterType="java.util.List" >
+	    insert into T_PRICE_CUSTOMER_SECTION_SUB (
+			ID, 
+		    PARENT_ID,
+		    TRANS_TYPE_CODE, 
+		    TRANS_TYPE_NAME, 
+		    send_price_city, 
+		    arrive_price_city,
+		    FIRST_WEIGHT, 
+		    FIRST_WEIGHT_PRICE,
+		    FIRST_ADD_WEIGHT_PRICE,
+		    SECOND_WEIGHT, 
+		    SECOND_WEIGHT_PRICE,
+		    SECOND_ADD_WEIGHT_PRICE,
+		    THIRD_WEIGHT,
+		    THIRD_WEIGHT_PRICE,
+		    THIRD_ADD_WEIGHT_PRICE,
+		    FREIGHT_SECTION_CODE,
+		    REMARK, 
+		    CREATE_TIME, 
+		    CREATE_USER_CODE, 
+		    MODIFY_TIME, 
+		    MODIFY_USER_CODE, 
+		    ACTIVE,
+		    DATAORIGN 
+		)
+		<foreach collection="list" item="item" index="index" separator="union all" >  
+			(
+			select
+		        #{item.id,jdbcType=VARCHAR},
+		        #{item.parentId,jdbcType=VARCHAR},
+		        #{item.transTypeCode,jdbcType=VARCHAR},
+		        #{item.transTypeName,jdbcType=VARCHAR},
+		        #{item.sendPriceCity,jdbcType=VARCHAR},
+		        #{item.arrivePriceCity,jdbcType=VARCHAR},
+		        #{item.firstWeight,jdbcType=DECIMAL},
+		        #{item.firstWeightPrice,jdbcType=DECIMAL},
+		        #{item.firstAddWeightPrice,jdbcType=DECIMAL},
+		        #{item.secondWeight,jdbcType=DECIMAL},
+		        #{item.secondWeightPrice,jdbcType=DECIMAL},
+		        #{item.secondAddWeightPrice,jdbcType=DECIMAL},
+		        #{item.thirdWeight,jdbcType=DECIMAL},
+		        #{item.thirdWeightPrice,jdbcType=DECIMAL},
+		        #{item.thirdAddWeightPrice,jdbcType=DECIMAL},
+		        #{item.freightSectionCode,jdbcType=VARCHAR},
+		        #{item.remark,jdbcType=VARCHAR},
+		        #{item.createTime,jdbcType=DATE},
+		        #{item.createUserCode,jdbcType=VARCHAR},
+		        #{item.modifyTime,jdbcType=DATE},
+		        #{item.modifyUserCode,jdbcType=VARCHAR},
+		        #{item.active,jdbcType=CHAR},
+		        #{item.dataOrign,jdbcType=VARCHAR}
+			 from dual
+			)  
+		</foreach>  
+	  </insert>
+	  
+	  
+	  
+	  <!-- 根据 parentId 更新对应的明细数据为失效 -->
+	  <update id="batchUpdateForInvalidByParentId" parameterType="java.util.Map">
+	  	UPDATE T_PRICE_CUSTOMER_SECTION_SUB T
+			   SET T.ACTIVE = 'N', 
+			           T.MODIFY_TIME = SYSDATE, 
+			           T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+			 WHERE T.PARENT_ID = #{parentId,jdbcType=VARCHAR}
+	  </update>
+	  
+	  <!--
+	      根据勾选的 客户专属记录的 id 拼接串 
+	      更新明细表的 active=N modifyUserCode=currentUser modifyTime=sysdate
+	  -->
+	  <update id="destoryPriceCustomerSubByParentIdStr" parameterType="java.util.Map">
+	  	UPDATE T_PRICE_CUSTOMER_SECTION_SUB T
+		        SET T.ACTIVE = 'N', 
+		               T.MODIFY_TIME = SYSDATE, 
+		               T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		 WHERE 1=1
+		 ${destoryIdStr}
+	  </update>
+	  
+	  <!--针对于 生效中 的副表记录进行更新操作-->
+	  <update id="batchUpdateForEffectiveByParentId" parameterType="java.util.Map">
+	  	UPDATE T_PRICE_CUSTOMER_SECTION_SUB T
+			   SET  T.MODIFY_TIME = #{modifyTime,jdbcType=TIMESTAMP}, 
+			           T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+			 WHERE T.PARENT_ID = #{parentId,jdbcType=VARCHAR}
+	  </update>	  
+	  
+	  	  
+	 <select id="listCustomerSubListByParam" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerSectionSubEntity" >
+		SELECT  /*+ORDERED+*/
+           T.ID,
+           T.PARENT_ID,
+           T.TRANS_TYPE_CODE,
+           T.TRANS_TYPE_NAME,
+           T.SEND_PRICE_CITY,
+           A.NAME                AS SEND_PRICE_CITY_NAME,
+           T.ARRIVE_PRICE_CITY,
+           B.NAME                AS ARRIVE_PRICE_CITY_NAME,
+           T.First_Weight,
+           T.FIRST_WEIGHT_PRICE,
+           T.FIRST_ADD_WEIGHT_PRICE,
+           T.SECOND_WEIGHT,
+           T.SECOND_WEIGHT_PRICE,
+           T.SECOND_ADD_WEIGHT_PRICE,
+           T.THIRD_WEIGHT,
+           T.THIRD_WEIGHT_PRICE,
+           T.THIRD_ADD_WEIGHT_PRICE,
+           C.NAME                AS FUEL_FEE_SECTION_NAME,
+           T.REMARK,
+           T.CREATE_TIME,
+           T.CREATE_USER_CODE,
+           E.EMP_NAME            AS CREATE_USER_NAME,
+           T.MODIFY_TIME,
+           T.MODIFY_USER_CODE,
+           F.EMP_NAME            AS MODIFY_USER_NAME,
+           T.ACTIVE,
+           T.FREIGHT_SECTION_CODE,
+           D.NAME                AS FREIGHT_SECTION_CODE_NAME,
+           T.DATAORIGN
+      FROM T_PRICE_CUSTOMER_SECTION_SUB T
+      LEFT JOIN (SELECT CODE, NAME FROM T_PRICE_CITY WHERE ACTIVE = 'Y') A
+        ON A.CODE = T.SEND_PRICE_CITY
+      INNER JOIN (SELECT CODE, NAME FROM T_PRICE_CITY WHERE ACTIVE = 'Y') B
+        ON B.CODE = T.ARRIVE_PRICE_CITY
+      LEFT JOIN (SELECT CODE, NAME
+                   FROM T_PRICE_SECTION
+                  WHERE ACTIVE = 'Y'
+                    AND SECTIONED_ITEM = 'FUEL') C
+        ON C.CODE = T.FREIGHT_SECTION_CODE
+      LEFT JOIN (SELECT CODE, NAME
+                   FROM T_PRICE_SECTION
+                  WHERE ACTIVE = 'Y'
+                    AND SECTIONED_ITEM = 'FREIGHT') D
+        ON D.CODE = T.FREIGHT_SECTION_CODE
+      LEFT JOIN (SELECT EMP_NAME, USER_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') E
+        ON E.USER_NAME = T.CREATE_USER_CODE
+      LEFT JOIN (SELECT EMP_NAME, USER_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') F
+        ON F.USER_NAME = T.MODIFY_USER_CODE
+      WHERE 1=1
+	    <if test="parentId != null and parentId !='' ">
+	        and PARENT_ID = #{parentId,jdbcType=VARCHAR}
+	    </if>
+	  </select>
+</mapper>

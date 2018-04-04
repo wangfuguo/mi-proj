@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.extrafee.server.dao.PricePickupFeeDao">
+    
+    <resultMap type="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity" id="pricePickupFeeMap">
+        <result column="PRICE_CITY_CODE" property="priceCityCode"  jdbcType="VARCHAR" />
+        <result column="PRICE_CITY_NAME" property="priceCityName"  jdbcType="VARCHAR" />
+        <result column="WEIGHT_PRICE" property="weightPrice"  jdbcType="VARCHAR" />
+        <result column="VOLUMN_PRICE" property="volumnPrice"  jdbcType="VARCHAR" />
+        <result column="MIN_MONEY" property="minMoney"  jdbcType="VARCHAR" />
+        <result column="EFFECTIVE_TIME" property="effectiveTime"  jdbcType="TIMESTAMP" />
+        <result column="INVALID_TIME" property="invalidTime"  jdbcType="TIMESTAMP" />
+        <result column="TRANS_TYPE_CODE" property="transportType"  jdbcType="VARCHAR" />
+        <result column="TRANS_TYPE_NAME" property="transportTypeName"  jdbcType="VARCHAR" />
+        <result column="REMARK" property="remark"  jdbcType="VARCHAR" />
+        <result column="ACTIVE" property="active"  jdbcType="VARCHAR" />
+      	<result column="CREATE_TIME" property="createDate"  jdbcType="TIMESTAMP" />
+        <result column="CREATE_USER_CODE" property="createUser"  jdbcType="VARCHAR" />
+        <result column="MODIFY_TIME" property="modifyDate"  jdbcType="TIMESTAMP" />
+        <result column="MODIFY_USER_CODE" property="modifyUser"  jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="query_ppfitems_param">
+        T.PRICE_CITY_CODE AS PRICE_CITY_CODE,/** 出发价格城市**/
+        T.WEIGHT_PRICE AS WEIGHT_PRICE,/** 重货单价**/
+        T.VOLUMN_PRICE AS VOLUMN_PRICE,/** 体积单价*/
+        T.MIN_MONEY AS MIN_MONEY,/**最低收费*/
+        T.TRANS_TYPE_CODE AS TRANS_TYPE_CODE,/**运输类型code*/
+        TRA.NAME AS TRANS_TYPE_NAME,/**运输类型名称*/
+        T.EFFECTIVE_TIME AS EFFECTIVE_TIME,/**生效时间*/
+        T.INVALID_TIME AS INVALID_TIME,/**时效时间*/
+        T.REMARK AS REMARK,/** 备注**/
+        T.ACTIVE AS ACTIVE,/** 是否可用**/
+        T.CREATE_TIME AS CREATE_TIME,/**创建时间**/
+	   	T.CREATE_USER_CODE AS CREATE_USER_CODE,/**创建人**/
+	    T.MODIFY_TIME AS MODIFY_TIME, /**更新时间**/
+	    T.MODIFY_USER_CODE AS MODIFY_USER_CODE, /**更新人**/
+	    <![CDATA[
+		case when (T.invalid_time<sysdate and T.active='Y') then 'PASSED'
+ 			                     when (T.effective_time<=sysdate and T.active='Y') then 'EFFECTIVE'
+ 			                     when (T.effective_time>sysdate and T.active='Y') then 'WAIT'
+ 			                     when (T.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as STATE,
+        ]]>
+        A.NAME AS PRICE_CITY_NAME
+    </sql>
+    
+    <sql id="query_ppfitems_param_export">
+        T.PRICE_CITY_CODE AS PRICE_CITY_CODE,/** 出发价格城市**/
+        T.WEIGHT_PRICE AS WEIGHT_PRICE,/** 重货单价**/
+        T.VOLUMN_PRICE AS VOLUMN_PRICE,/** 体积单价*/
+        T.MIN_MONEY AS MIN_MONEY,/**最低收费*/
+        T.TRANS_TYPE_CODE AS TRANS_TYPE_CODE,/**运输类型code*/
+        TRA.NAME AS TRANS_TYPE_NAME,/**运输类型名称*/
+        T.EFFECTIVE_TIME AS EFFECTIVE_TIME,/**生效时间*/
+        T.INVALID_TIME AS INVALID_TIME,/**时效时间*/
+        T.REMARK AS REMARK,/** 备注**/
+        T.ACTIVE AS ACTIVE,/** 是否可用**/
+        T.CREATE_TIME AS CREATE_TIME,/**创建时间**/
+	   	T.CREATE_USER_CODE AS CREATE_USER_CODE,/**创建人**/
+	    T.MODIFY_TIME AS MODIFY_TIME, /**更新时间**/
+	    T.MODIFY_USER_CODE AS MODIFY_USER_CODE, /**更新人**/
+	    <![CDATA[
+		case when (T.invalid_time<sysdate and T.active='Y') then '已过期'
+ 			                     when (T.effective_time<=sysdate and T.active='Y') then '生效中'
+ 			                     when (T.effective_time>sysdate and T.active='Y') then '待生效'
+ 			                     when (T.active='N') then '已废弃'
+                           else 
+                                ''
+        end as STATE,
+        ]]>
+        A.NAME AS PRICE_CITY_NAME
+    </sql>
+    <sql id="query_ppfitems_where">
+		<where>
+			<if test="priceCityCode!='' and priceCityCode!=null">
+				AND T.PRICE_CITY_CODE = #{priceCityCode,jdbcType=VARCHAR}
+			</if>
+			AND T.ACTIVE='Y' 
+		</where>
+	</sql>
+	 <sql id="query_ppfitems_where_1">
+		<where>
+			<if test="priceCityCode!='' and priceCityCode!=null">
+				AND T.PRICE_CITY_CODE = #{priceCityCode,jdbcType=VARCHAR}
+			</if>
+			<if test="transportType != null and transportType != ''">
+				AND T.TRANS_TYPE_CODE = #{transportType,jdbcType=VARCHAR}
+			</if>
+       		<include refid="query_where_condition"></include>
+		</where>
+	</sql>
+	<sql id="query_where_condition">
+		<!-- 1:已失效,2:生效中,3:待生效,4:已废弃  -->
+			<if test="state!=null and state!=''">
+				<choose>
+					<when test='state=="PASSED"'>
+						<![CDATA[ and (sysdate>T.invalid_time and T.active='Y')]]>
+					</when>
+					<when test='state=="EFFECTIVE"'>
+						<![CDATA[ 
+							and (
+								(sysdate>=T.effective_time and T.invalid_time is null and T.active='Y')
+								or 
+								(sysdate>=T.effective_time  and T.invalid_time is not null and sysdate<T.invalid_time and T.active='Y')
+							)
+						]]>
+					</when>
+					<when test='state=="WAIT"'>
+						<![CDATA[ and (sysdate<=T.effective_time and T.active='Y')]]>
+					</when>
+					<when test='state=="DELETED"'>
+						<![CDATA[ and T.active='N']]>
+					</when>
+					<otherwise>
+					</otherwise>
+				</choose>
+			</if>
+	</sql>
+	<select id="queryPricePickupFeeByEntity" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity" 
+		resultMap="pricePickupFeeMap">
+	SELECT 
+	  <include refid="query_ppfitems_param"></include>
+		FROM T_PRICE_PICKUP_FEE_PC  T
+		  LEFT JOIN T_PRICE_CITY A
+        ON A.CODE=T.PRICE_CITY_CODE
+        LEFT JOIN T_BSE_TRANS_TYPE TRA
+        ON T.TRANS_TYPE_CODE=TRA.CODE
+        <where>
+        	<include refid="query_where_condition"></include>
+        AND	T.TRANS_TYPE_CODE=#{transportType,jdbcType=VARCHAR}
+		AND T.PRICE_CITY_CODE=#{priceCityCode,jdbcType=VARCHAR}
+		AND T.ACTIVE=#{active,jdbcType=VARCHAR}
+		AND TRA.ACTIVE='Y'
+        </where>
+	</select>
+	<!-- 根据参数查询提货费信息 -->
+    <select id="queryPricePickupFeeByParam" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity"
+            resultMap="pricePickupFeeMap">
+        SELECT 
+        <include refid="query_ppfitems_param"></include>
+        FROM T_PRICE_PICKUP_FEE_PC  T
+        LEFT JOIN T_PRICE_CITY A
+        ON A.CODE=T.PRICE_CITY_CODE
+        LEFT JOIN T_BSE_TRANS_TYPE TRA
+        ON T.TRANS_TYPE_CODE=TRA.CODE 	AND TRA.ACTIVE='Y'
+   		<include refid="query_ppfitems_where_1"></include>
+       ORDER BY T.MODIFY_TIME
+    </select>
+    
+    
+    
+    <!-- 根据参数统计提货费信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_PICKUP_FEE_PC T
+		<include refid="query_ppfitems_where_1"></include>
+	</select>
+	<!-- 增加已提交提货费信息 -->
+	<insert id="addPricePickupFeeByEntity" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity">
+		INSERT INTO T_PRICE_PICKUP_FEE_PC
+	     (	
+	    	ID,
+        	PRICE_CITY_CODE,/** 价格城市编号**/
+        	WEIGHT_PRICE,/** 重量单价**/
+        	VOLUMN_PRICE,/** 体积单价**/
+        	MIN_MONEY,/**最低提货价*/
+        	TRANS_TYPE_CODE,/**运输类型*/
+        	EFFECTIVE_TIME,/**生效时间*/
+        	INVALID_TIME,/**失效时间*/
+        	REMARK,/**备注*/
+        	ACTIVE,/** 是否可用**/
+        	CREATE_TIME,/**创建时间**/
+	   		CREATE_USER_CODE,/**创建人**/
+	    	MODIFY_TIME, /**更新时间**/
+	    	MODIFY_USER_CODE/**更新人**/
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{priceCityCode,jdbcType=VARCHAR},
+	    	#{weightPrice,jdbcType=VARCHAR},
+	    	#{volumnPrice,jdbcType=VARCHAR},
+	    	#{minMoney,jdbcType=VARCHAR},
+	    	#{transportType,jdbcType=VARCHAR},
+	    	#{effectiveTime,jdbcType=TIMESTAMP},
+	    	#{invalidTime,jdbcType=TIMESTAMP},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改提货费信息 -->
+	<update id="updatePricePickupFeeByEntity" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity">
+	UPDATE T_PRICE_PICKUP_FEE_PC SET 
+	    <if test="minMoney!='' and minMoney!=null">
+	    	MIN_MONEY=#{minMoney,jdbcType=VARCHAR},
+	    </if>
+	    <if test="weightPrice!='' and weightPrice!=null">
+	    	WEIGHT_PRICE=#{weightPrice,jdbcType=VARCHAR},
+	    </if>
+	    <if test="volumnPrice!='' and volumnPrice!=null">
+	    	VOLUMN_PRICE=#{volumnPrice,jdbcType=VARCHAR},
+	    </if>
+	    <if test="effectiveTime!='' and effectiveTime!=null">
+	    	EFFECTIVE_TIME=#{effectiveTime,jdbcType=VARCHAR},
+	    </if>
+	    <if test="remark!='' and remark!=null">
+	    	REMARK=#{remark,jdbcType=VARCHAR},
+	    </if>
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE PRICE_CITY_CODE = #{priceCityCode,jdbcType=VARCHAR}
+	    AND TRANS_TYPE_CODE=#{transportType,jdbcType=VARCHAR}
+	    AND ACTIVE=#{active,jdbcType=VARCHAR}
+	</update>
+	<!-- 删除 提货费信息-->
+	<update id="deletePricePickupFeeByEntity" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity">
+		UPDATE T_PRICE_PICKUP_FEE_PC T SET 
+		    ACTIVE=#{active,jdbcType=VARCHAR},
+		    INVALID_TIME=#{modifyDate,jdbcType=VARCHAR},
+		    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+		    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	 	 <where>
+			<include refid="query_where_condition"></include>
+			AND T.PRICE_CITY_CODE=#{priceCityCode,jdbcType=VARCHAR}
+			AND T.TRANS_TYPE_CODE=#{transportType,jdbcType=VARCHAR}
+			AND T.ACTIVE='Y'
+		</where>
+	</update>
+	
+	<select id="queryPricePickupFeeByStats" parameterType="map" resultMap="pricePickupFeeMap">
+		SELECT 
+		<include refid="query_ppfitems_param"></include>
+		FROM T_PRICE_PICKUP_FEE_PC T
+		LEFT JOIN T_PRICE_CITY A
+        ON A.CODE=T.PRICE_CITY_CODE
+        LEFT JOIN T_BSE_TRANS_TYPE TRA
+        ON T.TRANS_TYPE_CODE=TRA.CODE
+		<where>
+			<include refid="query_where_condition"></include>
+			AND T.PRICE_CITY_CODE=#{priceCityCode,jdbcType=VARCHAR}
+			AND T.TRANS_TYPE_CODE=#{transportType,jdbcType=VARCHAR}
+			AND T.ACTIVE='Y' AND TRA.ACTIVE='Y'
+		</where>
+		
+	</select>
+	
+	<update id="updatePricePickupFeeByState3" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity">
+		UPDATE T_PRICE_PICKUP_FEE_PC T
+		SET T.ACTIVE='N',
+		T.MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+		T.MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+		<where>
+			<include refid="query_where_condition"></include>
+			AND T.PRICE_CITY_CODE=#{priceCityCode,jdbcType=VARCHAR}
+			AND T.TRANS_TYPE_CODE=#{transportType,jdbcType=VARCHAR}
+			AND T.ACTIVE='Y'
+		</where>
+	</update>
+	
+	<update id="updatePricePickupFeeByState2" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity">
+		UPDATE T_PRICE_PICKUP_FEE_PC T
+		SET T.INVALID_TIME=#{effectiveTime,jdbcType=VARCHAR},
+			T.MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+			T.MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+		<where>
+			<include refid="query_where_condition"></include>
+			AND T.PRICE_CITY_CODE=#{priceCityCode,jdbcType=VARCHAR}
+			AND T.TRANS_TYPE_CODE=#{transportType,jdbcType=VARCHAR}
+			AND T.ACTIVE='Y'
+		</where>
+	</update>
+	
+	 <select id="queryPricePickupFeeByParamExport" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PricePickupFeeEntity"
+            resultMap="pricePickupFeeMap">
+        SELECT 
+        <include refid="query_ppfitems_param_export"></include>
+        FROM T_PRICE_PICKUP_FEE_PC  T
+        LEFT JOIN T_PRICE_CITY A
+        ON A.CODE=T.PRICE_CITY_CODE
+        LEFT JOIN T_BSE_TRANS_TYPE TRA
+        ON T.TRANS_TYPE_CODE=TRA.CODE 	AND TRA.ACTIVE='Y'
+   		<include refid="query_ppfitems_where_1"></include>
+       ORDER BY T.MODIFY_TIME
+    </select>
+</mapper>

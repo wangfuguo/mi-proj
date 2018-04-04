@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hoau.miser.module.api.itf.server.dao.PriceDeliveryFeeCityTypeTyDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.itf.api.shared.domain.PriceDeliveryFeeCityTypeEntity"
+		id="priceDeliveryFeeCityTypeResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+
+		<id column="CITY_TYPE" property="cityType" jdbcType="VARCHAR" />
+		<id column="SECTION_ITEM_CODE" property="sectionItemCode" jdbcType="VARCHAR" />
+
+		<id column="PS_NAME" property="sectionItemName" jdbcType="VARCHAR" />
+
+		<id column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<id column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<id column="remark" property="remark" jdbcType="VARCHAR" />
+		<id column="active" property="active" jdbcType="VARCHAR" />
+		<id column="create_user_code" property="createUser" jdbcType="TIMESTAMP" />
+		<id column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<id column="state" property="state" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="query_mian_param">
+		PDFCT.ID AS ID,
+		PDFCT.CITY_TYPE AS CITY_TYPE,
+		PDFCT.SECTION_ITEM_CODE AS
+		SECTION_ITEM_CODE,
+
+		PDFCT.effective_time AS effective_time,
+		PDFCT.invalid_time AS invalid_time,
+		PDFCT.remark AS
+		remark,
+		PDFCT.active AS active,
+		PDFCT.create_user_code AS
+		create_user_code,
+		PDFCT.create_time AS create_time,
+		PDFCT.modify_time AS
+		modify_time,
+		PDFCT.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		<![CDATA[
+		case when (PDFCT.invalid_time<sysdate and PDFCT.active='Y') then 'PASSED'
+ 			                     when (PDFCT.effective_time<=sysdate and PDFCT.active='Y') then 'EFFECTIVE'
+ 			                     when (PDFCT.effective_time>sysdate and PDFCT.active='Y') then 'WAIT'
+ 			                     when (PDFCT.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+
+	</sql>
+
+	<sql id="query_price_section_param">
+		PS.ID AS PS_ID,
+		PS.CODE AS PS_CODE,
+		PS.NAME AS PS_NAME
+	</sql>
+	<sql id="query_transTypeCode_param">
+		tt.name AS TRANS_TYPE_NAME,
+		tt.code AS TRANS_TYPE_CODE
+	</sql>
+
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			PDFCT.active='Y'
+			<if test="cityType != null and cityType  != ''">
+				and PDFCT.CITY_TYPE=#{cityType,jdbcType=VARCHAR}
+			</if>
+			and (<![CDATA[PDFCT.effective_time<=]]>#{billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(PDFCT.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=#{billTime,jdbcType=TIMESTAMP} ]]>)
+				)
+			<if test="transTypeCode!=null and transTypeCode!=''">
+				and
+				PDFCT.TRANS_TYPE_CODE=#{transTypeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+
+	</sql>
+
+	<!-- 根据参数查询送货费信息 -->
+	<select id="queryListByParam" resultMap="priceDeliveryFeeCityTypeResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		,
+		<include refid="query_price_section_param"></include>
+		,
+		<include refid="query_transTypeCode_param"></include>
+		FROM T_PRICE_DELIVERY_FEE_CITYTYPE PDFCT
+		Left join T_PRICE_SECTION PS
+		on PDFCT.SECTION_ITEM_CODE=PS.CODE
+		Left join T_BSE_TRANS_TYPE tt on
+		tt.CODE=PDFCT.TRANS_TYPE_CODE and tt.Active='Y'
+		<include refid="queryCondition"></include>
+		ORDER BY PDFCT.CREATE_TIME
+	</select>
+
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.CityTypeTyDao">
+
+	<resultMap id="cityTypeResult"
+		type="com.hoau.miser.module.api.itf.api.shared.domain.CityTypeEntity">
+		<result column="PROVINCE_CODE" property="provinceCode"
+			jdbcType="VARCHAR" />
+		<result column="PROVINCE_NAME" property="provinceName"
+			jdbcType="VARCHAR" />
+		<result column="CITY_CODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+		<result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR" />
+		<result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+		<result column="CITY_TYPE" property="cityType" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUserCode"
+			jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode"
+			jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 查询参数 -->
+	<sql id="cityType_condition_param">
+		<if test="provinceCode != null and provinceCode != ''">
+			AND V.PROVINCE_CODE = #{provinceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="cityCode != null and cityCode != ''">
+			AND V.CITY_CODE = #{cityCode,jdbcType=VARCHAR}
+		</if>
+		<if test="areaCode != null and areaCode != ''">
+			AND V.AREA_CODE = #{areaCode,jdbcType=VARCHAR}
+		</if>
+		<if test="cityType != null and cityType != ''">
+			AND X.CITY_TYPE = #{cityType,jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	<sql id="result_map">
+		X.REMARK AS REMARK,
+		X.CREATE_TIME AS CREATE_TIME,
+		X.CREATE_USER_CODE AS CREATE_USER_CODE,
+		X.MODIFY_TIME AS MODIFY_TIME,
+		X.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		V.PROVINCE_CODE AS
+		PROVINCE_CODE,
+		V.CITY_CODE AS CITY_CODE,
+		V.AREA_CODE AS AREA_CODE,
+		V.PROVINCE_NAME AS PROVINCE_NAME,
+		V.CITY_NAME AS CITY_NAME,
+		V.AREA_NAME
+		AS AREA_NAME,
+		X.CITY_TYPE AS CITY_TYPE
+	</sql>
+
+	<select id="queryCityTypeByEntity"
+		parameterType="com.hoau.miser.module.api.itf.api.shared.domain.CityTypeEntity"
+		resultMap="cityTypeResult">
+		SELECT
+		<include refid="result_map"></include>
+		FROM
+		(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,
+		A.DISTRICT_CODE AS
+		PROVINCE_CODE,
+		B.DISTRICT_NAME AS CITY_NAME,
+		B.DISTRICT_CODE AS
+		CITY_CODE,
+		C.DISTRICT_NAME AS AREA_NAME,
+		C.DISTRICT_CODE AS AREA_CODE
+		FROM
+		T_BSE_DISTRICT A
+		LEFT JOIN T_BSE_DISTRICT B
+		ON A.DISTRICT_CODE =
+		B.PARENT_DISTRICT_CODE
+		LEFT JOIN T_BSE_DISTRICT C
+		ON B.DISTRICT_CODE =
+		C.PARENT_DISTRICT_CODE
+		WHERE A.DISTRICT_TYPE = 'PROVINCE'
+		AND
+		B.DISTRICT_TYPE = 'CITY'
+		AND C.DISTRICT_TYPE = 'AREA'
+		AND A.ACTIVE='Y'
+		AND B.ACTIVE='Y'
+		AND C.ACTIVE='Y')V
+		LEFT JOIN
+		T_PRICE_DISTRICT_CITY_TYPE
+		X
+		ON V.PROVINCE_CODE=X.PROVINCE_CODE AND
+		V.CITY_CODE=X.CITY_CODE AND
+		V.AREA_CODE=X.AREA_CODE AND
+		X.ACTIVE='Y'
+		<where>
+			<include refid="cityType_condition_param"></include>
+		</where>
+	</select>
+
+</mapper>

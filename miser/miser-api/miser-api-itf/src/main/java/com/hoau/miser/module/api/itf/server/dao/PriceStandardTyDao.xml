@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceStandardTyDao">
+
+
+	<resultMap
+		type="com.hoau.miser.module.api.itf.api.shared.domain.PriceStandardTyEntity"
+		id="priceStandardResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="trans_type_code" property="transType" jdbcType="VARCHAR" />
+		<result column="SEND_PRICE_CITY" property="sendPriceCityCode" jdbcType="VARCHAR" />
+		<result column="ARRIVE_PRICE_CITY" property="arrivePriceCityCode" jdbcType="VARCHAR" />
+		<result column="weight_price" property="weightPrice" jdbcType="DECIMAL" />
+		<result column="volume_price" property="volumePrice" jdbcType="DECIMAL" />
+		<result column="add_fee" property="addFee" jdbcType="DECIMAL" />
+		<result column="FUEL_FEE_SECTION" property="fuelFeeSection" jdbcType="VARCHAR" />
+		<result column="lowest_fee" property="lowestFee" jdbcType="DECIMAL" />
+		<result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="create_user_code" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+
+
+	<sql id="query_mian_param">
+		PSE.ID AS ID,
+		PSE.Trans_Type_Code AS trans_type_code,
+		PSE.weight_price AS weight_price,
+		PSE.volume_price AS volume_price,
+		PSE.add_fee AS add_fee,
+		PSE.FUEL_FEE_SECTION,
+		PSE.lowest_fee AS lowest_fee,
+		PSE.effective_time AS effective_time,
+		PSE.invalid_time AS invalid_time,
+		PSE.create_user_code AS create_user_code,
+		PSE.create_time AS create_time,
+		PSE.modify_time AS modify_time,
+		PSE.MODIFY_USER_CODE AS MODIFY_USER_CODE
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			  PSE.SEND_PRICE_CITY =#{sendPriceCityCode,jdbcType=VARCHAR}
+			  	AND PSE.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR}
+				<![CDATA[ and PSE.active='Y']]>
+				and PSE.trans_type_code=#{baseTyParam.transTypeCode,jdbcType=VARCHAR}
+				and (<![CDATA[PSE.effective_time<=]]>#{baseTyParam.billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(PSE.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=#{baseTyParam.billTime,jdbcType=TIMESTAMP} ]]>)
+				)
+		</where>
+
+	</sql>
+
+	<!-- 根据参数查询标准价格信息  -->
+	<select id="queryPriceStandardTyByParamInSide" resultMap="priceStandardResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_STANDARD PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.SEND_PRICE_CITY
+	</select>
+</mapper>

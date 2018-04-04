@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.CityTypeDao">
+
+	<resultMap id="cityTypeResult" type="com.hoau.miser.module.biz.base.api.shared.domain.CityTypeEntity">
+		<result column="PROVINCE_CODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="PROVINCE_NAME" property="provinceName" jdbcType="VARCHAR" />
+		<result column="CITY_CODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+		<result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR" />
+		<result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+		<result column="CITY_TYPE" property="cityType" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap  id="dictionaryValueResult" type="com.hoau.miser.module.sys.base.api.shared.domain.DataDictionaryValueEntity">
+		<result column="TERMS_CODE" property="termsCode" jdbcType="VARCHAR" />
+		<result column="VALUE_CODE" property="valueCode" jdbcType="VARCHAR" />
+		<result column="VALUE_NAME" property="valueName" jdbcType="VARCHAR" />
+		<result column="VALUE_SEQ" property="valueSeq" jdbcType="DECIMAL" />
+		<result column="LANGUAGE" property="language" jdbcType="VARCHAR" />
+		<result column="NOTES" property="notes" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />	
+		<result column="VERSION_NO" property="versionNo" jdbcType="DECIMAL" />
+		<result column="IS_APP_USE" property="isAppUse" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 以下是web界面使用sql -->
+	<!-- 模糊查询参数 -->
+	<sql id="cityType_condition_param">
+		<if test="provinceCode != null and provinceCode != ''">
+			AND V.PROVINCE_CODE like CONCAT(CONCAT('%',
+			#{provinceCode,jdbcType=VARCHAR}), '%')
+		</if>
+		<if test="cityCode != null and cityCode != ''">
+			AND V.CITY_CODE like CONCAT(CONCAT('%',
+			#{cityCode,jdbcType=VARCHAR}),
+			'%')
+		</if>
+		<if test="areaCode != null and areaCode != ''">
+			AND V.AREA_CODE like CONCAT(CONCAT('%',
+			#{areaCode,jdbcType=VARCHAR}),
+			'%')
+		</if>
+		<if test="cityType != null and cityType != ''">
+			AND X.CITY_TYPE = #{cityType,jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	<sql id="result_map">
+		X.REMARK AS REMARK,
+		X.CREATE_TIME AS CREATE_TIME,
+		X.CREATE_USER_CODE AS CREATE_USER_CODE,
+		X.MODIFY_TIME AS MODIFY_TIME,
+		X.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		V.PROVINCE_CODE AS PROVINCE_CODE,
+		V.CITY_CODE AS CITY_CODE,
+		V.AREA_CODE AS AREA_CODE,
+		V.PROVINCE_NAME AS PROVINCE_NAME,
+		V.CITY_NAME AS CITY_NAME,
+		V.AREA_NAME AS AREA_NAME,
+		X.CITY_TYPE AS CITY_TYPE
+	</sql>
+	
+	
+		<!-- 按照省市区名称查找 是否存在数据-->
+	<select id="queryBySSQ" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CityTypeEntity" resultMap="cityTypeResult">
+		SELECT 
+    A.DISTRICT_CODE AS PROVINCE_CODE,
+    B.DISTRICT_CODE AS CITY_CODE,
+    C.DISTRICT_CODE AS AREA_CODE,
+    D.ID AS ID,
+    D.ACTIVE AS ACTIVE
+    FROM
+    T_BSE_DISTRICT A
+    LEFT JOIN T_BSE_DISTRICT B
+    ON A.DISTRICT_CODE =
+    B.PARENT_DISTRICT_CODE
+    LEFT JOIN T_BSE_DISTRICT C
+    ON B.DISTRICT_CODE =
+    C.PARENT_DISTRICT_CODE
+    LEFT JOIN T_PRICE_DISTRICT_CITY_TYPE D 
+    ON D.PROVINCE_CODE=A.DISTRICT_CODE
+    AND D.CITY_CODE=B.DISTRICT_CODE
+    AND D.AREA_CODE=C.DISTRICT_CODE
+    AND D.ACTIVE='Y'
+    WHERE A.DISTRICT_TYPE = 'PROVINCE'
+    AND B.DISTRICT_TYPE = 'CITY'
+    AND C.DISTRICT_TYPE = 'AREA'
+    AND A.ACTIVE='Y'
+    AND B.ACTIVE='Y'
+    AND C.ACTIVE='Y'
+    AND A.DISTRICT_NAME = #{provinceName,jdbcType=VARCHAR} 
+    AND B.DISTRICT_NAME = #{cityName,jdbcType=VARCHAR} 
+    AND C.DISTRICT_NAME = #{areaName,jdbcType=VARCHAR} 
+	</select>	
+		
+		
+		
+		
+	<select id="queryCityTypeByEntity"
+		parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CityTypeEntity"
+		resultMap="cityTypeResult">
+		SELECT
+		<include refid="result_map"></include>
+		FROM
+		(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,
+		A.DISTRICT_CODE AS
+		PROVINCE_CODE,
+		B.DISTRICT_NAME AS CITY_NAME,
+		B.DISTRICT_CODE AS
+		CITY_CODE,
+		C.DISTRICT_NAME AS AREA_NAME,
+		C.DISTRICT_CODE AS AREA_CODE
+		FROM
+		T_BSE_DISTRICT A
+		LEFT JOIN T_BSE_DISTRICT B
+		ON A.DISTRICT_CODE =
+		B.PARENT_DISTRICT_CODE
+		LEFT JOIN T_BSE_DISTRICT C
+		ON B.DISTRICT_CODE =
+		C.PARENT_DISTRICT_CODE
+		WHERE A.DISTRICT_TYPE = 'PROVINCE'
+		AND
+		B.DISTRICT_TYPE = 'CITY'
+		AND C.DISTRICT_TYPE = 'AREA'
+		AND A.ACTIVE='Y'
+		AND B.ACTIVE='Y'
+		AND C.ACTIVE='Y')V
+		LEFT JOIN
+		T_PRICE_DISTRICT_CITY_TYPE X
+		ON V.PROVINCE_CODE=X.PROVINCE_CODE AND
+		V.CITY_CODE=X.CITY_CODE AND
+		V.AREA_CODE=X.AREA_CODE AND
+		X.ACTIVE='Y'
+		<where>
+			<include refid="cityType_condition_param"></include>
+		</where>
+	</select>
+
+	<select id="countCityTypeByEntity"
+		parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CityTypeEntity"
+		resultType="long">
+		SELECT COUNT(1) FROM (
+		SELECT A.DISTRICT_NAME AS PROVINCE_NAME,
+		A.DISTRICT_CODE AS PROVINCE_CODE,
+		B.DISTRICT_NAME AS CITY_NAME,
+		B.DISTRICT_CODE AS CITY_CODE,
+		C.DISTRICT_NAME AS AREA_NAME,
+		C.DISTRICT_CODE AS AREA_CODE
+		FROM T_BSE_DISTRICT A
+		LEFT JOIN T_BSE_DISTRICT B
+		ON A.DISTRICT_CODE = B.PARENT_DISTRICT_CODE
+		LEFT JOIN T_BSE_DISTRICT C
+		ON B.DISTRICT_CODE = C.PARENT_DISTRICT_CODE
+		WHERE A.DISTRICT_TYPE = 'PROVINCE'
+		AND B.DISTRICT_TYPE = 'CITY'
+		AND C.DISTRICT_TYPE = 'AREA'
+		AND A.ACTIVE='Y' AND B.ACTIVE='Y' AND C.ACTIVE='Y')V
+		LEFT JOIN T_PRICE_DISTRICT_CITY_TYPE X
+		ON V.PROVINCE_CODE=X.PROVINCE_CODE AND V.CITY_CODE=X.CITY_CODE AND
+		V.AREA_CODE=X.AREA_CODE AND X.ACTIVE='Y'
+		<where>
+			<include refid="cityType_condition_param"></include>
+		</where>
+	</select>
+
+	 
+	
+	<select id="queryCityTypeInUpdate" resultMap="cityTypeResult" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CityTypeEntity">
+		SELECT 
+		<include refid="result_map"></include>
+		FROM 
+		(SELECT A.DISTRICT_NAME AS PROVINCE_NAME,
+		A.DISTRICT_CODE AS
+		PROVINCE_CODE,
+		B.DISTRICT_NAME AS CITY_NAME,
+		B.DISTRICT_CODE AS
+		CITY_CODE,
+		C.DISTRICT_NAME AS AREA_NAME,
+		C.DISTRICT_CODE AS AREA_CODE
+		FROM
+		T_BSE_DISTRICT A
+		LEFT JOIN T_BSE_DISTRICT B
+		ON A.DISTRICT_CODE =
+		B.PARENT_DISTRICT_CODE
+		LEFT JOIN T_BSE_DISTRICT C
+		ON B.DISTRICT_CODE =
+		C.PARENT_DISTRICT_CODE
+		WHERE A.DISTRICT_TYPE = 'PROVINCE'
+		AND
+		B.DISTRICT_TYPE = 'CITY'
+		AND C.DISTRICT_TYPE = 'AREA')V
+		LEFT JOIN
+		T_PRICE_DISTRICT_CITY_TYPE X
+		ON V.PROVINCE_CODE=X.PROVINCE_CODE AND
+		V.CITY_CODE=X.CITY_CODE AND
+		V.AREA_CODE=X.AREA_CODE 
+		WHERE X.PROVINCE_CODE=#{provinceCode, jdbcType=VARCHAR} 
+		AND X.CITY_CODE=#{cityCode,jdbcType=VARCHAR} 
+		AND X.AREA_CODE=#{areaCode,jdbcType=VARCHAR}
+		
+	</select>
+<!-- 按省市区code修改城市类别表中的active为N -->
+		<update id="updateActiveBySSQ" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CityTypeEntity" >
+		update T_PRICE_DISTRICT_CITY_TYPE T
+		set T.ACTIVE='N',
+		T.MODIFY_TIME=#{modifyTime,jdbcType=VARCHAR},
+		T.MODIFY_USER_CODE=#{modifyUserCode,jdbcType=VARCHAR}
+		where T.PROVINCE_CODE=#{provinceCode, jdbcType=VARCHAR} 
+		AND T.CITY_CODE=#{cityCode,jdbcType=VARCHAR} 
+		AND T.AREA_CODE=#{areaCode,jdbcType=VARCHAR}
+		</update>
+<!-- 新增一条数据在城市类别表 -->
+		<insert id="insertCityType" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.CityTypeEntity" >
+		insert into T_PRICE_DISTRICT_CITY_TYPE(ID,PROVINCE_CODE,
+		CITY_CODE,
+		AREA_CODE,
+		CITY_TYPE,REMARK,
+		CREATE_TIME,CREATE_USER_CODE,
+		MODIFY_TIME,MODIFY_USER_CODE,
+		ACTIVE)
+		values(#{id,jdbcType=VARCHAR},
+		#{provinceCode,jdbcType=VARCHAR},
+		#{cityCode,jdbcType=VARCHAR},
+		#{areaCode,jdbcType=VARCHAR},
+		#{cityType,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUserCode,jdbcType=VARCHAR},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{modifyUserCode,jdbcType=VARCHAR},
+		#{active,jdbcType=VARCHAR})
+		</insert>
+
+<select id="queryCityTypeCode" resultMap="dictionaryValueResult" 
+parameterType="com.hoau.miser.module.sys.base.api.shared.domain.DataDictionaryValueEntity">
+select  
+TERMS_CODE,
+VALUE_CODE,VALUE_NAME,
+VALUE_SEQ,LANGUAGE,
+NOTES,ACTIVE,VERSION_NO,IS_APP_USE
+from t_bse_data_dictionary_value 
+where terms_code='CITYTYPE'
+and active='Y'
+</select>
+		
+		
+		
+		
+		
+</mapper>

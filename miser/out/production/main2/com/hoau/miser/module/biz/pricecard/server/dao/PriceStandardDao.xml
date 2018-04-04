@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.pricecard.server.dao.PriceStandardDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.pricecard.api.shared.domain.ExcelPriceStandardEntity"
+		id="excelPriceStandardResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="trans_type_code" property="transTypeCode" jdbcType="VARCHAR" />
+		<id column="trans_type_name" property="transTypeName" jdbcType="VARCHAR" />
+		<id column="SPCE_CODE" property="sendPriceCityCode" jdbcType="VARCHAR" />
+		<id column="APCE_CODE" property="arrivePriceCityCode" jdbcType="VARCHAR" />
+		<id column="SPCE_NAME" property="sendPriceCityName" jdbcType="VARCHAR" />
+		<id column="APCE_NAME" property="arrivePriceCityName" jdbcType="VARCHAR" />
+		<id column="weight_price" property="weightPrice" jdbcType="DOUBLE" />
+		<id column="volume_price" property="volumePrice" jdbcType="DOUBLE" />
+		<id column="add_fee" property="addFee" jdbcType="DOUBLE" />
+		<id column="lowest_fee" property="lowestFee" jdbcType="DOUBLE" />
+		<id column="fuel_fee_section" property="fuelFeeSection" jdbcType="VARCHAR" />
+		<id column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<id column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<id column="remark" property="remark" jdbcType="VARCHAR" />
+		<id column="active" property="active" jdbcType="VARCHAR" />
+		<id column="create_user_code" property="createUser" jdbcType="VARCHAR" />
+		<id column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<id column="state" property="state" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap
+		type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceStandardEntity"
+		id="priceStandardResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="trans_type_code" property="transTypeCode" jdbcType="VARCHAR" />
+		<id column="trans_type_name" property="transTypeName" jdbcType="VARCHAR" />
+		<id column="weight_price" property="weightPrice" jdbcType="DOUBLE" />
+		<id column="volume_price" property="volumePrice" jdbcType="DOUBLE" />
+		<id column="add_fee" property="addFee" jdbcType="DOUBLE" />
+		<id column="lowest_fee" property="lowestFee" jdbcType="DOUBLE" />
+		<id column="fuel_fee_section" property="fuelFeeSection" jdbcType="VARCHAR" />
+		<id column="fuel_fee_section_name" property="fuelFeeSectionName" jdbcType="VARCHAR" />
+		<id column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<id column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<id column="remark" property="remark" jdbcType="VARCHAR" />
+		<id column="active" property="active" jdbcType="VARCHAR" />
+		<id column="create_user_code" property="createUser" jdbcType="VARCHAR" />
+		<id column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<id column="state" property="state" jdbcType="VARCHAR" />
+		<association property="sendPriceCity"   resultMap="send_districtChildResultMap"/>
+		<association property="arrivePriceCity"  resultMap="arrive_districtChildResultMap"/>
+	</resultMap>
+	
+	<resultMap id="send_districtChildResultMap" type="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity" >
+		<result property="id" column="SPCE_ID" jdbcType="VARCHAR"/>
+		<result property="code" column="SPCE_CODE" jdbcType="VARCHAR"/>
+		<result property="name" column="SPCE_NAME" jdbcType="VARCHAR"/>
+		<result property="remark" column="SPCE_REMARK" jdbcType="VARCHAR"/>
+		<result property="active" column="SPCE_ACTIVE" jdbcType="VARCHAR"/>
+	</resultMap>
+	<resultMap id="arrive_districtChildResultMap" type="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity" >
+		<result property="id" column="APCE_ID" jdbcType="VARCHAR"/>
+		<result property="code" column="APCE_CODE" jdbcType="VARCHAR"/>
+		<result property="name" column="APCE_NAME" jdbcType="VARCHAR"/>
+		<result property="remark" column="APCE_REMARK" jdbcType="VARCHAR"/>
+		<result property="active" column="APCE_ACTIVE" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="query_mian_param">
+		PSE.ID AS ID,
+		PSE.trans_type_code AS trans_type_code,
+		PSE.trans_type_name AS trans_type_name,
+		PSE.weight_price AS weight_price,
+		PSE.volume_price AS volume_price,
+		PSE.add_fee AS add_fee,
+		PSE.lowest_fee AS lowest_fee,
+		PSE.fuel_fee_section AS fuel_fee_section,
+		PSE.effective_time AS effective_time,
+		PSE.invalid_time AS invalid_time,
+		PSE.remark AS remark,
+		PSE.active AS active,
+		PSE.create_user_code AS create_user_code,
+		PSE.create_time AS create_time,
+		PSE.modify_time AS modify_time,
+		PSE.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		SECTION.name as fuel_fee_section_name,
+		<![CDATA[
+		case when (PSE.invalid_time<sysdate and PSE.active='Y') then 'PASSED'
+ 			                     when (PSE.effective_time<=sysdate and PSE.active='Y') then 'EFFECTIVE'
+ 			                     when (PSE.effective_time>sysdate and PSE.active='Y') then 'WAIT'
+ 			                     when (PSE.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+		
+	</sql>
+	<sql id="query_send_pricecisty_param">
+		SPCE.ID AS SPCE_ID,
+		SPCE.CODE AS SPCE_CODE,
+		SPCE.NAME AS SPCE_NAME,
+		SPCE.REMARK AS SPCE_REMARK,
+		SPCE.ACTIVE AS SPCE_ACTIVE
+	</sql>
+	<sql id="query_arrive_pricecisty_param">
+		APCE.ID AS APCE_ID,
+		APCE.CODE AS APCE_CODE,
+		APCE.NAME AS APCE_NAME,
+		APCE.REMARK AS APCE_REMARK,
+		APCE.ACTIVE AS APCE_ACTIVE
+	</sql>
+	
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			<if test="priceStandardEntity.sendPriceCity != null and priceStandardEntity.sendPriceCity.code != null and priceStandardEntity.sendPriceCity.code != ''">
+					and PSE.SEND_PRICE_CITY =#{priceStandardEntity.sendPriceCity.code,jdbcType=VARCHAR}
+			 </if>
+
+			 <if test="(sendProvinceCode != null and sendProvinceCode != '') or (sendCityCode != null and sendCityCode != '') or (sendAreaCode != null and sendAreaCode != '')">
+					and PSE.SEND_PRICE_CITY in (select PRICE_CITY from T_PRICE_CITY_MAPPING_DISTRICT
+				 <where>
+					and ACTIVE='Y'
+					 <if test="sendProvinceCode != null and sendProvinceCode != ''">
+						and PROVINCE_CODE=#{sendProvinceCode,jdbcType=VARCHAR}
+					 </if>
+					 <if test="sendCityCode != null and sendCityCode != ''">
+						and CITY_CODE=#{sendCityCode,jdbcType=VARCHAR}
+					 </if>
+					 <if test="sendAreaCode != null and sendAreaCode != ''">
+						and AREA_CODE=#{sendAreaCode,jdbcType=VARCHAR}
+					 </if>
+				 </where>
+				GROUP BY PRICE_CITY)
+			 </if>
+					
+			<if test="priceStandardEntity.arrivePriceCity != null and priceStandardEntity.arrivePriceCity.code != null and priceStandardEntity.arrivePriceCity.code != ''">
+					and PSE.ARRIVE_PRICE_CITY=#{priceStandardEntity.arrivePriceCity.code,jdbcType=VARCHAR}
+			</if>
+
+			<if test="(arriveProvinceCode != null and arriveProvinceCode != '') or (arriveCityCode != null and arriveCityCode != '') or (arriveAreaCode != null and arriveAreaCode != '')">
+
+				 and PSE.ARRIVE_PRICE_CITY in (select PRICE_CITY from T_PRICE_CITY_MAPPING_DISTRICT
+				<where>
+					and ACTIVE='Y'
+
+					 <if test="arriveProvinceCode != null and arriveProvinceCode != ''">
+						and  PROVINCE_CODE=#{arriveProvinceCode,jdbcType=VARCHAR}
+					 </if>
+					 <if test="arriveCityCode != null and arriveCityCode != ''">
+						 and CITY_CODE=#{arriveCityCode,jdbcType=VARCHAR}
+					 </if>
+					 <if test="arriveAreaCode != null and arriveAreaCode != ''">
+						and  AREA_CODE=#{arriveAreaCode,jdbcType=VARCHAR}
+					 </if>
+				</where>
+				GROUP BY PRICE_CITY)
+			</if>
+			<if test="priceStandardEntity.state==null or priceStandardEntity.state==''">
+				<![CDATA[ and PSE.active='Y']]>
+			</if>
+			<if test="priceStandardEntity.state!=null and priceStandardEntity.state!=''">
+				
+				<choose>
+					<when test='priceStandardEntity.state=="PASSED"'>
+						<![CDATA[ and (sysdate>PSE.invalid_time and PSE.active='Y')]]>
+					</when>
+					<when test='priceStandardEntity.state=="EFFECTIVE"'>
+						<![CDATA[ 
+							and (
+								(sysdate>=PSE.effective_time and nvl(PSE.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=sysdate and PSE.active='Y')
+								
+							)
+						]]>
+					</when>
+					<when test='priceStandardEntity.state=="WAIT"'>
+						<![CDATA[ and (sysdate<=PSE.effective_time and PSE.active='Y')]]>
+					</when>
+					<when test='priceStandardEntity.state=="DELETED"'>
+						<![CDATA[ and PSE.active='N']]>
+					</when>
+					<otherwise>
+					</otherwise>
+				</choose>
+			</if>
+			<if test="priceStandardEntity.transTypeCode!=null and priceStandardEntity.transTypeCode!=''">
+				and PSE.trans_type_code=#{priceStandardEntity.transTypeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="priceStandardEntity.id!=null and priceStandardEntity.id!=''">
+				and PSE.id=#{priceStandardEntity.id,jdbcType=VARCHAR}
+			</if>
+			<if test="effectiveTime!=null and effectiveTime!=''">
+				and (<![CDATA[PSE.effective_time<=to_date]]>(#{effectiveTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+						and (<![CDATA[nvl(PSE.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=to_date]]>(#{effectiveTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'))
+					)
+			</if>
+		</where> 
+
+	</sql>
+
+	<!-- 根据参数查询标准价格信息  -->
+	<select id="queryListByParam" resultMap="priceStandardResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		,
+		<include refid="query_send_pricecisty_param"></include>
+		,
+		<include refid="query_arrive_pricecisty_param"></include>
+		FROM T_PRICE_STANDARD PSE
+		Left join T_PRICE_CITY SPCE on PSE.SEND_PRICE_CITY=SPCE.CODE
+		Left join T_PRICE_CITY APCE on PSE.ARRIVE_PRICE_CITY=APCE.CODE
+		Left join T_PRICE_SECTION SECTION on PSE.fuel_fee_section=SECTION.CODE and SECTION.active='Y'
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.SEND_PRICE_CITY 
+		<if test="order!=null and order!=''">
+				 #{order,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<!-- 根据参数查询标准价格信息 (Excel导出时使用) -->
+	<select id="excelQueryListByParam" resultMap="excelPriceStandardResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		,
+		<include refid="query_send_pricecisty_param"></include>
+		,
+		<include refid="query_arrive_pricecisty_param"></include>
+		FROM T_PRICE_STANDARD PSE
+		Left join T_PRICE_CITY SPCE on PSE.SEND_PRICE_CITY=SPCE.CODE
+		Left join T_PRICE_CITY APCE on PSE.ARRIVE_PRICE_CITY=APCE.CODE
+		Left join T_PRICE_SECTION SECTION on PSE.fuel_fee_section=SECTION.CODE and SECTION.active='Y'
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.SEND_PRICE_CITY 
+		<if test="order!=null and order!=''">
+				 #{order,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<!-- 根据参数统计标准价格信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_STANDARD PSE
+		Left join T_PRICE_CITY SPCE on PSE.SEND_PRICE_CITY=SPCE.CODE
+		Left join T_PRICE_CITY APCE on PSE.ARRIVE_PRICE_CITY=APCE.CODE
+		Left join T_PRICE_SECTION SECTION on PSE.fuel_fee_section=SECTION.CODE and SECTION.active='Y'
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.SEND_PRICE_CITY
+		<if test="order!=null and order!=''">
+				 #{order,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<!-- 增加一条标准价格 -->
+	<insert id="addPriceStandard" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceStandardEntity">
+	    INSERT INTO T_PRICE_STANDARD
+	     (	
+	    	ID,
+			trans_type_code,
+			trans_type_name,
+			weight_price,
+			volume_price,
+			add_fee,
+			lowest_fee,
+			fuel_fee_section,
+			effective_time,
+			invalid_time,
+			remark,
+			SEND_PRICE_CITY,
+			ARRIVE_PRICE_CITY,
+			active,
+			create_time,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{transTypeCode,jdbcType=VARCHAR},
+	    	#{transTypeName,jdbcType=VARCHAR},
+	    	#{weightPrice,jdbcType=DOUBLE},
+	    	#{volumePrice,jdbcType=DOUBLE},
+	    	#{addFee,jdbcType=DOUBLE},
+	    	#{lowestFee,jdbcType=DOUBLE},
+	    	#{fuelFeeSection,jdbcType=VARCHAR},
+	    	#{effectiveTime,jdbcType=TIMESTAMP},
+	    	#{invalidTime,jdbcType=TIMESTAMP},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{sendPriceCity.code,jdbcType=VARCHAR},
+	    	#{arrivePriceCity.code,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改 -->
+	<update id="updatePriceStandard" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceStandardEntity">
+	    UPDATE T_PRICE_STANDARD SET 
+	    <if test="state=='setNullInvalidTime'">
+	    	<![CDATA[ INVALID_TIME=NULL,]]>
+	    </if>
+	    <if test="invalidTime!=null">
+	    	INVALID_TIME=#{invalidTime,jdbcType=VARCHAR},
+	    </if>
+	    <if test="remark!=null">
+	    	remark=#{remark,jdbcType=VARCHAR},
+	    </if>
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="searchEffectTimeData"  resultMap="priceStandardResultMap">
+		SELECT * FROM (
+		SELECT 
+		PSE.ID AS ID,
+		PSE.trans_type_code AS trans_type_code,
+		PSE.trans_type_name AS trans_type_name,
+		PSE.weight_price AS weight_price,
+		PSE.volume_price AS volume_price,
+		PSE.add_fee AS add_fee,
+		PSE.lowest_fee AS lowest_fee,
+		PSE.fuel_fee_section AS fuel_fee_section,
+		PSE.effective_time AS effective_time,
+		PSE.invalid_time AS invalid_time,
+		PSE.remark AS remark,
+		PSE.active AS active,
+		PSE.create_user_code AS create_user_code,
+		PSE.create_time AS create_time,
+		PSE.modify_time AS modify_time,
+		PSE.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+			<![CDATA[
+				CASE WHEN (PSE.INVALID_TIME<SYSDATE AND PSE.ACTIVE='Y') THEN 'PASSED'
+ 			                     WHEN (PSE.EFFECTIVE_TIME<=SYSDATE AND PSE.ACTIVE='Y') THEN 'EFFECTIVE'
+ 			                     WHEN (PSE.EFFECTIVE_TIME>SYSDATE AND PSE.ACTIVE='Y') THEN 'WAIT'
+ 			                     WHEN (PSE.ACTIVE='N') THEN 'DELETED'
+                           ELSE 
+                                ''
+        END AS STATE
+         ]]>
+		FROM T_PRICE_STANDARD PSE
+		WHERE PSE.SEND_PRICE_CITY = #{priceStandardEntity.sendPriceCity.code,jdbcType=VARCHAR}
+		AND PSE.ARRIVE_PRICE_CITY = #{priceStandardEntity.arrivePriceCity.code,jdbcType=VARCHAR}
+		AND PSE.TRANS_TYPE_CODE=#{priceStandardEntity.transTypeCode,jdbcType=VARCHAR}
+		) M WHERE STATE IN ('EFFECTIVE','WAIT')
+	</select>
+	
+	<select id="searchCurrentDateTime" resultType="date">
+		SELECT SYSDATE FROM DUAL
+	</select>
+	
+</mapper>

@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.sys.job.server.dao.OrgSyncDao">
+    	
+   <update id="updateMergeOrg">
+	MERGE INTO T_BSE_ORG BU
+	USING (SELECT CODE,
+	              NAME,
+	              PARENT_CODE,
+	              PARENT_NAME,
+	              NATURE,
+	              LOGIST_CODE,
+	              MANAGER_CODE,
+	              MANAGER_NAME,
+	              PROVINCE,
+	              PROVINCE_CODE,
+	              CITY,
+	              CITY_CODE,
+	              COUNTY,
+	              COUNTY_CODE,
+	              AREA_CODE,
+	              PHONE,
+	              FAX,
+	              ADDRESS_DETAIL,
+	              LNG,
+	              LAT,
+	              DECODE(BITAND(NATURE, 64), 64, 'Y', 'N') AS IS_DIVISION,
+	              DIVISION_CODE,
+	              DECODE(BITAND(NATURE, 32), 32, 'Y', 'N') AS IS_BIG_REGION,
+	              BIG_REGION_CODE,
+	              DECODE(BITAND(NATURE, 16), 16, 'Y', 'N') AS IS_TRANSFER_CENTER,
+	              DECODE(BITAND(NATURE, 4), 4, 'Y', 'N') AS IS_ROAD_AREA,
+	              DECODE(BITAND(NATURE, 8), 8, 'Y', 'N') AS IS_FLEET,
+	              DECODE(BITAND(NATURE, 2), 2, 'Y', 'N') AS IS_PLATFORM,
+	              DECODE(BITAND(NATURE, 1), 1, 'Y', 'N') AS IS_SALES_DEPARTMENT,
+	              ACTIVE,
+	              DECODE(BITAND(NATURE, 256), 256, 'Y', 'N') AS IS_BIG_REGION_FINANCE,
+	              DECODE(BITAND(NATURE, 512), 512, 'Y', 'N') AS IS_DIVISION_FINANCE,
+	              DECODE(BITAND(NATURE, 128), 128, 'Y', 'N') AS IS_FINANCE,
+	              DECODE(BITAND(NATURE, 1024), 1024, 'Y', 'N') AS IS_FRANCHISE
+	         FROM T_BSE_ORG_MDM
+	       MINUS
+	       SELECT CODE,
+	              NAME,
+	              PARENT_CODE,
+	              PARENT_NAME,
+	              NATURE,
+	              LOGIST_CODE,
+	              MANAGER_CODE,
+	              MANAGER_NAME,
+	              PROVINCE,
+	              PROVINCE_CODE,
+	              CITY,
+	              CITY_CODE,
+	              COUNTY,
+	              COUNTY_CODE,
+	              AREA_CODE,
+	              PHONE,
+	              FAX,
+	              ADDRESS_DETAIL,
+	              LNG,
+	              LAT,
+	              IS_DIVISION,
+	              DIVISION_CODE,
+	              IS_BIG_REGION,
+	              BIG_REGION_CODE,
+	              IS_TRANSFER_CENTER,
+	              IS_ROAD_AREA,
+	              IS_FLEET,
+	              IS_PLATFORM,
+	              IS_SALES_DEPARTMENT,
+	              ACTIVE,
+	              IS_BIG_REGION_FINANCE,
+	              IS_DIVISION_FINANCE,
+	              IS_FINANCE,
+	              IS_FRANCHISE
+	         FROM T_BSE_ORG) MU
+	ON (BU.CODE = MU.CODE)
+	WHEN MATCHED THEN
+	  UPDATE
+	     SET BU.NAME                = MU.NAME,
+	         BU.PARENT_CODE         = MU.PARENT_CODE,
+	         BU.PARENT_NAME         = MU.PARENT_NAME,
+	         BU.NATURE              = MU.NATURE,
+	         BU.LOGIST_CODE         = MU.LOGIST_CODE,
+	         BU.MANAGER_CODE        = MU.MANAGER_CODE,
+	         BU.MANAGER_NAME        = MU.MANAGER_NAME,
+	         BU.PROVINCE            = MU.PROVINCE,
+	         BU.PROVINCE_CODE       = MU.PROVINCE_CODE,
+	         BU.CITY                = MU.CITY,
+	         BU.CITY_CODE           = MU.CITY_CODE,
+	         BU.COUNTY              = MU.COUNTY,
+	         BU.COUNTY_CODE         = MU.COUNTY_CODE,
+	         BU.AREA_CODE           = MU.AREA_CODE,
+	         BU.PHONE               = MU.PHONE,
+	         BU.FAX                 = MU.FAX,
+	         BU.ADDRESS_DETAIL      = MU.ADDRESS_DETAIL,
+	         BU.LNG                 = MU.LNG,
+	         BU.LAT                 = MU.LAT,
+	         BU.IS_DIVISION         = MU.IS_DIVISION,
+	         BU.DIVISION_CODE       = MU.DIVISION_CODE,
+	         BU.IS_BIG_REGION       = MU.IS_BIG_REGION,
+	         BU.BIG_REGION_CODE     = MU.BIG_REGION_CODE,
+	         BU.IS_TRANSFER_CENTER  = MU.IS_TRANSFER_CENTER,
+	         BU.IS_ROAD_AREA        = MU.IS_ROAD_AREA,
+	         BU.IS_FLEET            = MU.IS_FLEET,
+	         BU.IS_PLATFORM         = MU.IS_PLATFORM,
+	         BU.IS_SALES_DEPARTMENT = MU.IS_SALES_DEPARTMENT,
+	         BU.ACTIVE              = MU.ACTIVE,
+	         BU.IS_BIG_REGION_FINANCE = MU.IS_BIG_REGION_FINANCE,
+	         BU.IS_DIVISION_FINANCE = MU.IS_DIVISION_FINANCE,
+	         BU.IS_FINANCE = MU.IS_FINANCE,
+	         BU.IS_FRANCHISE = MU.IS_FRANCHISE,
+	         BU.VERSION_NO          = #{versionNo,jdbcType=NUMERIC},
+	         BU.MODIFY_TIME         = #{date,jdbcType=TIMESTAMP},
+	         BU.MODIFY_USER_CODE    = 'JOB'
+	WHEN NOT MATCHED THEN
+	  INSERT
+	    (BU.ID,
+	     BU.CODE,
+	     BU.NAME,
+	     BU.PARENT_CODE,
+	     BU.PARENT_NAME,
+	     BU.NATURE,
+	     BU.LOGIST_CODE,
+	     BU.MANAGER_CODE,
+	     BU.MANAGER_NAME,
+	     BU.PROVINCE,
+	     BU.PROVINCE_CODE,
+	     BU.CITY,
+	     BU.CITY_CODE,
+	     BU.COUNTY,
+	     BU.COUNTY_CODE,
+	     BU.AREA_CODE,
+	     BU.PHONE,
+	     BU.FAX,
+	     BU.ADDRESS_DETAIL,
+	     BU.LNG,
+	     BU.LAT,
+	     BU.IS_DIVISION,
+	     BU.DIVISION_CODE,
+	     BU.IS_BIG_REGION,
+	     BU.BIG_REGION_CODE,
+	     BU.IS_TRANSFER_CENTER,
+	     BU.IS_ROAD_AREA,
+	     BU.IS_FLEET,
+	     BU.IS_PLATFORM,
+	     BU.IS_SALES_DEPARTMENT,
+	     BU.ACTIVE,
+	     BU.IS_BIG_REGION_FINANCE,
+	     BU.IS_DIVISION_FINANCE,
+	     BU.IS_FINANCE,
+	     BU.IS_FRANCHISE,
+	     BU.VERSION_NO,
+	     BU.CREATE_TIME,
+	     BU.CREATE_USER_CODE,
+	     BU.MODIFY_TIME,
+	     BU.MODIFY_USER_CODE)
+	  VALUES
+	    (SYS_GUID(),
+	     MU.CODE,
+	     MU.NAME,
+	     MU.PARENT_CODE,
+	     MU.PARENT_NAME,
+	     MU.NATURE,
+	     MU.LOGIST_CODE,
+	     MU.MANAGER_CODE,
+	     MU.MANAGER_NAME,
+	     MU.PROVINCE,
+	     MU.PROVINCE_CODE,
+	     MU.CITY,
+	     MU.CITY_CODE,
+	     MU.COUNTY,
+	     MU.COUNTY_CODE,
+	     MU.AREA_CODE,
+	     MU.PHONE,
+	     MU.FAX,
+	     MU.ADDRESS_DETAIL,
+	     MU.LNG,
+	     MU.LAT,
+	     MU.IS_DIVISION,
+	     MU.DIVISION_CODE,
+	     MU.IS_BIG_REGION,
+	     MU.BIG_REGION_CODE,
+	     MU.IS_TRANSFER_CENTER,
+	     MU.IS_ROAD_AREA,
+	     MU.IS_FLEET,
+	     MU.IS_PLATFORM,
+	     MU.IS_SALES_DEPARTMENT,
+	     MU.ACTIVE,
+	     MU.IS_BIG_REGION_FINANCE,
+	     MU.IS_DIVISION_FINANCE,
+	     MU.IS_FINANCE,
+	     MU.IS_FRANCHISE,
+	     #{versionNo,jdbcType=NUMERIC},
+	     #{date,jdbcType=TIMESTAMP},
+	     'JOB',
+	     #{date,jdbcType=TIMESTAMP},
+	     'JOB')
+   </update>
+   <!-- 更新组织网点信息 针对于存在网点的数据 -->
+   <update id="updateBseDistrictCorp">
+   	update T_BSE_DISTRICT
+	set HAS_CORP='Y'
+		where 
+		exists(
+		      select 1 from (
+		             select m.COUNTY_CODE,m.state from (
+		                    select t.id,t.COUNTY_CODE,t.code,case  when (t.IS_SALES_DEPARTMENT='Y' or t.IS_PLATFORM='Y' or t.IS_TRANSFER_CENTER='Y') then 'Y' else 'N'end as state
+		                          from T_BSE_ORG t
+		                     where exists (select 1
+		                              from (select CODE, max(VERSION_NO) VERSION_NO
+		                                      from T_BSE_ORG
+		                                     where active = 'Y'and COUNTY_CODE is not null
+		                                     group by code) temp
+		                             where temp.code = t.code
+		                               and temp.VERSION_NO=t.VERSION_NO
+		                        )
+		                     and t.active='Y'and t.COUNTY_CODE is not null) m
+		                 where m.state='Y'
+		      ) temp where temp.COUNTY_CODE=DISTRICT_CODE
+		)
+   </update>
+   
+   
+   
+     <!-- 更新组织网点信息 针对于不存在网点的数据 -->
+   <update id="updateBseDistrictWithOutCorp">
+   	update T_BSE_DISTRICT
+	set HAS_CORP='N'
+	where not exists(
+		      select 1 from (
+		             select m.COUNTY_CODE,m.state from (
+		                    select t.id,t.COUNTY_CODE,t.code,case  when (t.IS_SALES_DEPARTMENT='Y' or t.IS_PLATFORM='Y' or t.IS_TRANSFER_CENTER='Y') then 'Y' else 'N'end as state
+		                          from T_BSE_ORG t
+		                     where exists (select 1
+		                              from (select CODE, max(VERSION_NO) VERSION_NO
+		                                      from T_BSE_ORG
+		                                     where active = 'Y'and COUNTY_CODE is not null
+		                                     group by code) temp
+		                             where temp.code = t.code
+		                               and temp.VERSION_NO=t.VERSION_NO
+		                        )
+		                     and t.active='Y'and t.COUNTY_CODE is not null) m
+		                 where m.state='Y'
+		      ) temp where temp.COUNTY_CODE=DISTRICT_CODE
+		)
+   </update>
+   
+   
+   <update id="updateMergeTranferCenter">
+	    MERGE INTO T_BSE_TRANSFER_CENTER BU
+	    USING (SELECT CODE, NAME, LOGIST_CODE, ACTIVE
+	             FROM T_BSE_ORG_MDM
+	            WHERE BITAND(NATURE, 16) = 16
+	           MINUS
+	           SELECT CODE, NAME, LOGIST_CODE, ACTIVE FROM T_BSE_TRANSFER_CENTER) MU
+	    ON (BU.CODE = MU.CODE)
+	    WHEN MATCHED THEN
+	      UPDATE
+	         SET BU.NAME             = MU.NAME,
+	             BU.LOGIST_CODE      = MU.LOGIST_CODE,
+	             BU.ACTIVE           = MU.ACTIVE,
+	             BU.VERSION_NO       = #{versionNo,jdbcType=NUMERIC},
+	             BU.MODIFY_TIME      = #{date,jdbcType=TIMESTAMP},
+	             BU.MODIFY_USER_CODE = 'JOB'
+	    WHEN NOT MATCHED THEN
+	      INSERT
+	        (BU.ID,
+	         BU.CODE,
+	         BU.NAME,
+	         BU.LOGIST_CODE,
+	         BU.VERSION_NO,
+	         BU.ACTIVE,
+	         BU.CREATE_TIME,
+	         BU.CREATE_USER_CODE,
+	         BU.MODIFY_TIME,
+	         BU.MODIFY_USER_CODE)
+	      VALUES
+	        (SYS_GUID(),
+	         MU.CODE,
+	         MU.NAME,
+	         MU.LOGIST_CODE,
+	         #{versionNo,jdbcType=NUMERIC},
+	         MU.ACTIVE,
+	         #{date,jdbcType=TIMESTAMP},
+	         'JOB',
+	         #{date,jdbcType=TIMESTAMP},
+	         'JOB')
+   </update>
+   <update id="deleteInvalidTranferCenter">
+        MERGE INTO T_BSE_TRANSFER_CENTER BU
+	    USING (SELECT CODE
+	             FROM T_BSE_TRANSFER_CENTER
+	           MINUS
+	           SELECT CODE
+	             FROM T_BSE_ORG_MDM
+	            WHERE  BITAND(NATURE, 16) = 16) MU
+	    ON (BU.CODE = MU.CODE)
+	    WHEN MATCHED THEN
+	      UPDATE
+	         SET BU.MODIFY_TIME = #{date,jdbcType=TIMESTAMP},
+	             BU.ACTIVE      = 'N',
+	             BU.VERSION_NO = #{versionNo,jdbcType=NUMERIC}
+   </update>
+   <update id="updateMergePlatform">
+        MERGE INTO T_BSE_PLATFORM BU
+	    USING (SELECT CODE,
+	                  NAME,
+	                  LOGIST_CODE,
+	                  IS_SPECIFIEDTIME AS IS_SPECIFIED_TIME,
+	                  IS_SHIPMENT,
+	                  IS_DELIVERY,
+	                  IS_PICKUP        AS IS_PICK_UP,
+	                  ACTIVE
+	             FROM T_BSE_ORG_MDM
+	            WHERE BITAND(NATURE, 2) = 2
+	           MINUS
+	           SELECT CODE,
+	                  NAME,
+	                  LOGIST_CODE,
+	                  IS_SPECIFIED_TIME,
+	                  IS_SHIPMENT,
+	                  IS_DELIVERY,
+	                  IS_PICK_UP,
+	                  ACTIVE
+	             FROM T_BSE_PLATFORM) MU
+	    ON (BU.CODE = MU.CODE)
+	    WHEN MATCHED THEN
+	      UPDATE
+	         SET BU.NAME              = MU.NAME,
+	             BU.LOGIST_CODE       = MU.LOGIST_CODE,
+	             BU.IS_SPECIFIED_TIME = MU.IS_SPECIFIED_TIME,
+	             BU.IS_SHIPMENT       = MU.IS_SHIPMENT,
+	             BU.IS_DELIVERY       = MU.IS_DELIVERY,
+	             BU.IS_PICK_UP        = MU.IS_PICK_UP,
+	             BU.ACTIVE            = MU.ACTIVE,
+	             BU.VERSION_NO       = #{versionNo,jdbcType=NUMERIC},
+	             BU.MODIFY_TIME       = #{date,jdbcType=TIMESTAMP},
+	             BU.MODIFY_USER_CODE  = 'JOB'
+	    WHEN NOT MATCHED THEN
+	      INSERT
+	        (BU.ID,
+	         BU.CODE,
+	         BU.NAME,
+	         BU.LOGIST_CODE,
+	         BU.IS_SPECIFIED_TIME,
+	         BU.IS_SHIPMENT,
+	         BU.IS_DELIVERY,
+	         BU.IS_PICK_UP,
+	         BU.VERSION_NO,
+	         BU.ACTIVE,
+	         BU.CREATE_TIME,
+	         BU.CREATE_USER_CODE,
+	         BU.MODIFY_TIME,
+	         BU.MODIFY_USER_CODE)
+	      VALUES
+	        (SYS_GUID(),
+	         MU.CODE,
+	         MU.NAME,
+	         MU.LOGIST_CODE,
+	         MU.IS_SPECIFIED_TIME,
+	         MU.IS_SHIPMENT,
+	         MU.IS_DELIVERY,
+	         MU.IS_PICK_UP,
+	         #{versionNo,jdbcType=NUMERIC},
+	         MU.ACTIVE,
+	         #{date,jdbcType=TIMESTAMP},
+	         'JOB',
+	         #{date,jdbcType=TIMESTAMP},
+	         'JOB')
+   </update>
+   <update id="deleteInvalidPlatform">
+		MERGE INTO T_BSE_PLATFORM BU
+	    USING (SELECT CODE
+	             FROM T_BSE_PLATFORM
+	           MINUS
+	           SELECT CODE
+	             FROM T_BSE_ORG_MDM
+	            WHERE BITAND(NATURE, 2) = 2) MU
+	    ON (BU.CODE = MU.CODE)
+	    WHEN MATCHED THEN
+	      UPDATE
+	         SET BU.MODIFY_TIME = #{date,jdbcType=TIMESTAMP},
+	             BU.ACTIVE      = 'N',
+	             BU.VERSION_NO = #{versionNo,jdbcType=NUMERIC}
+   </update>
+   <update id="updateMergeSalesDepartment">
+        MERGE INTO T_BSE_SALES_DEPARTMENT BU
+	    USING (SELECT CODE,
+	                  NAME,
+	                  LOGIST_CODE,
+	                  IS_SPECIFIEDTIME AS IS_SPECIFIED_TIME,
+	                  IS_SHIPMENT,
+	                  IS_DELIVERY,
+	                  IS_PICKUP        AS IS_PICK_UP,
+	                  ACTIVE
+	             FROM T_BSE_ORG_MDM
+	            WHERE BITAND(NATURE, 1) = 1
+	           MINUS
+	           SELECT CODE,
+	                  NAME,
+	                  LOGIST_CODE,
+	                  IS_SPECIFIED_TIME,
+	                  IS_SHIPMENT,
+	                  IS_DELIVERY,
+	                  IS_PICK_UP,
+	                  ACTIVE
+	             FROM T_BSE_SALES_DEPARTMENT) MU
+	    ON (BU.CODE = MU.CODE)
+	    WHEN MATCHED THEN
+	      UPDATE
+	         SET BU.NAME              = MU.NAME,
+	             BU.LOGIST_CODE       = MU.LOGIST_CODE,
+	             BU.IS_SPECIFIED_TIME = MU.IS_SPECIFIED_TIME,
+	             BU.IS_SHIPMENT       = MU.IS_SHIPMENT,
+	             BU.IS_DELIVERY       = MU.IS_DELIVERY,
+	             BU.IS_PICK_UP        = MU.IS_PICK_UP,
+	             BU.ACTIVE            = MU.ACTIVE,
+	             BU.VERSION_NO       = #{versionNo,jdbcType=NUMERIC},
+	             BU.MODIFY_TIME       = #{date,jdbcType=TIMESTAMP},
+	             BU.MODIFY_USER_CODE  = 'JOB'
+	    WHEN NOT MATCHED THEN
+	      INSERT
+	        (BU.ID,
+	         BU.CODE,
+	         BU.NAME,
+	         BU.LOGIST_CODE,
+	         BU.IS_SPECIFIED_TIME,
+	         BU.IS_SHIPMENT,
+	         BU.IS_DELIVERY,
+	         BU.IS_PICK_UP,
+	         BU.VERSION_NO,
+	         BU.ACTIVE,
+	         BU.CREATE_TIME,
+	         BU.CREATE_USER_CODE,
+	         BU.MODIFY_TIME,
+	         BU.MODIFY_USER_CODE)
+	      VALUES
+	        (SYS_GUID(),
+	         MU.CODE,
+	         MU.NAME,
+	         MU.LOGIST_CODE,
+	         MU.IS_SPECIFIED_TIME,
+	         MU.IS_SHIPMENT,
+	         MU.IS_DELIVERY,
+	         MU.IS_PICK_UP,
+	         #{versionNo,jdbcType=NUMERIC},
+	         MU.ACTIVE,
+	         #{date,jdbcType=TIMESTAMP},
+	         'JOB',
+	         #{date,jdbcType=TIMESTAMP},
+	         'JOB')
+   </update>
+   <update id="deleteInvalidSalesDepartment">
+        MERGE INTO T_BSE_SALES_DEPARTMENT BU
+	    USING (SELECT CODE
+	             FROM T_BSE_SALES_DEPARTMENT
+	           MINUS
+	           SELECT CODE
+	             FROM T_BSE_ORG_MDM
+	            WHERE BITAND(NATURE, 1) = 1) MU
+	    ON (BU.CODE = MU.CODE)
+	    WHEN MATCHED THEN
+	      UPDATE
+	         SET BU.MODIFY_TIME = #{date,jdbcType=TIMESTAMP},
+	             BU.ACTIVE      = 'N',
+	             BU.VERSION_NO = #{versionNo,jdbcType=NUMERIC}
+   </update>
+   
+</mapper>

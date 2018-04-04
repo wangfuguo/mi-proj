@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+<!-- 文件上传大小限制 -->
+	<constant name="struts.multipart.maxSize" value="20000000"></constant>
+	<package name="discount" namespace="/discount"
+		extends="miser-default">
+		<result-types>
+			<result-type name="streamx"
+				class="com.sunspoter.lib.web.struts2.dispatcher.StreamResultX" />
+		</result-types>
+		<action name="index" class="loginAction" method="index">
+			<result name="success">discount.jsp</result>
+		</action>
+		<action name="queryUser" class="loginAction" method="queryUser">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>		    
+		</action>
+		
+		<!-- chenqiyong_add 客户折扣管理 -->
+		<action name="discountCustomer" class="discountCustomerAction">
+			<result name="index">discountCustomer.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		<!-- chenqiyong_add 网点折扣管理 -->
+		<action name="discountCorp" class="discountCorpAction">
+			<result name="index">discountCorp.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+
+		<!-- 越发越惠定义 -->
+		<action name="discountPrivilege" class="discountPrivilegeAction">
+			<result name="index">discountPrivilege.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		<!-- yulingfu_add 越发越惠客户合同管理 -->
+    <action name="privilegeContract" class="privilegeContractAction">
+      <result name="index">privilegeContract.jsp</result>
+      <result name="stateQuery">privilegeStateQuery.jsp</result>
+      <result name="success" type="json"></result>
+      <result name="error" type="json"></result>
+    </action>
+    <action name="privilegeStateQuery" class="privilegeStateQueryAction">
+      <result name="index">privilegeStateQuery.jsp</result>
+      <result name="success" type="json"></result>
+      <result name="error" type="json"></result>
+    </action>
+    <action name="privilegeCouponCheck" class="privilegeCouponCheckAction">
+      <result name="index">privilegeCouponCheck.jsp</result>
+      <result name="success" type="json"></result>
+      <result name="error" type="json"></result>
+    </action>
+		<!-- 活动管理Action -->
+		<action name="priceEvnetAction" class="priceEvnetAction">
+			<result name="success" type="json" />
+			<result name="error" type="json" />
+		</action>
+		<!-- 进入活动管理界面 -->
+		<action name="priceEvnetIndex" class="priceEvnetAction" method="index">
+			<result name="success">priceEvnet.jsp</result>
+		</action>
+		<action name="priceEvnetAdd" class="priceEvnetAction">
+			<result name="success">priceEvnetAdd.jsp</result>
+		</action>
+		<!-- 批量上传 -->
+		<!--<action name="upload" class="priceEvnetAction" method="tableUpload">
+			<result name="success" type="json" />
+			<result name="error" type="json" />
+		</action>-->
+		<!-- 模板下载 -->
+		<action name="downloadCustomerTemplate" class="priceEvnetAction"
+			method="downloadFile">
+			<result name="download" type="streamx">
+				<param name="contentType">application/x-download</param>
+				<param name="contentDisposition">attachment;filename=${fileName}</param>
+				<param name="inputName">inputStream</param>
+				<param name="bufferSize">4096</param>
+			</result>
+			<result name="fileNotExist">
+			</result>
+		</action>
+	</package>
+</struts>

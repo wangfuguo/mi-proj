@@ -1,0 +1,47 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>date.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+	<link rel="stylesheet" type="text/css"
+	href="http://10.39.251.124/ext/build/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css">
+<script type="text/javascript" src="http://10.39.251.124/ext/build/ext-all.js"></script>
+<script type="text/javascript"
+	src="http://10.39.251.124/ext/build/packages/ext-theme-crisp/build/ext-theme-crisp.js"></script>
+   
+	  <script type="text/javascript" src="ext-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="DateTimePicker.js"></script>
+    <script type="text/javascript" src="DateTime.js"></script>
+     <script type="text/javascript" src="ext-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+    	
+		
+		Ext.onReady(function(){
+			var form = Ext.create('Ext.form.Panel', {
+				renderTo: Ext.getBody(),
+				title: '简单示例',
+				height : 500,
+				items : [
+					{
+						xtype : 'datetimefield',
+						format : 'Y-m-d H:i:s'
+					},
+					{
+						xtype : 'datetimefield',
+						format : 'Y-m-d H:i:s'
+					}
+				]
+			});
+		});
+    </script>
+	
+  </head>
+  
+  <body>
+  </body>
+</html>

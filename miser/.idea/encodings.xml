@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-api/miser-api-facade" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-api/miser-api-itf" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-api/miser-api-itf-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-api/miser-api-web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-base" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-base-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-discount" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-discount-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-extrafee" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-job" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-pricecard" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-pricecard-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-voucher" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-biz/miser-biz-web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-config" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-job" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-job/miser-job-web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-sys" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-sys/miser-sys-base" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-sys/miser-sys-base-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-sys/miser-sys-job" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-sys/miser-sys-login" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/miser-util" charset="UTF-8" />
+  </component>
+</project>

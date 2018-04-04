@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceSectionTyDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.itf.api.shared.domain.PriceSectionSubEntity"
+		id="priceSectionSubResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="SUB_SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+		<id column="SUB_START_VALUE" property="startValue" jdbcType="DECIMAL" />
+		<id column="SUB_END_VALUE" property="endValue" jdbcType="DECIMAL" />
+		<id column="SUB_SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+		<id column="SUB_PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+		<id column="SUB_PRICE" property="price" jdbcType="DECIMAL" />
+		<id column="SUB_CALC_ALONE" property="calcAlone" jdbcType="VARCHAR" />
+		<id column="SUB_MIN_PRICE" property="minPrice" jdbcType="DECIMAL" />
+		<id column="SUB_MAX_PRICE" property="maxPrice" jdbcType="DECIMAL" />
+		<id column="SUB_REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="SUB_ACTIVE" property="active" jdbcType="VARCHAR" />
+		<id column="SUB_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="SUB_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<id column="SUB_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="SUB_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="query_main_paramSub">
+		PSE.ID AS id,
+		PSE.SECTION_ID AS SUB_SECTION_ID,
+		PSE.START_VALUE AS SUB_START_VALUE,
+		PSE.END_VALUE AS SUB_END_VALUE,
+		PSE.SECTION_ACCODING_ITEM AS SUB_SECTION_ACCODING_ITEM,
+		PSE.PRICE_TYPE AS SUB_PRICE_TYPE,
+		PSE.PRICE AS SUB_PRICE,
+		PSE.CALC_ALONE AS SUB_CALC_ALONE,
+		PSE.MIN_PRICE AS SUB_MIN_PRICE,
+		PSE.MAX_PRICE AS SUB_MAX_PRICE,
+		PSE.REMARK AS SUB_REMARK,
+		PSE.ACTIVE AS SUB_ACTIVE,
+		PSE.CREATE_TIME AS SUB_CREATE_TIME,
+		PSE.CREATE_USER_CODE AS SUB_CREATE_USER_CODE,
+		PSE.MODIFY_TIME AS SUB_MODIFY_TIME,
+		PSE.MODIFY_USER_CODE AS SUB_MODIFY_USER_CODE
+	</sql>
+
+	<!-- 查询条件 -->
+	<sql id="queryConditionSub">
+		<where>
+			SECTION.active = 'Y'
+				and SECTION.CODE=#{sectionCode,jdbcType=VARCHAR}
+		</where>
+	</sql>
+
+	<!-- 根据参数查询优惠分段信息 -->
+	<select id="querySectionDetailByCode" resultMap="priceSectionSubResultMap" parameterType="string">
+		SELECT
+		<include refid="query_main_paramSub"></include>
+		FROM T_PRICE_SECTION SECTION
+		LEFT JOIN T_PRICE_SECTION_SUB PSE ON SECTION.ID = PSE.SECTION_ID
+		<include refid="queryConditionSub"></include>
+		ORDER BY PSE.SECTION_ACCODING_ITEM, PSE.START_VALUE ASC
+	</select>
+
+</mapper>

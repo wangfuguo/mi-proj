@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.TranstypeDao">
+    <resultMap type="com.hoau.miser.module.biz.base.api.shared.domain.TranstypeEntity" id="transtypeMap">
+        <result column="ID"   property="id"  jdbcType="VARCHAR" />
+        <result column="CODE" property="code"  jdbcType="VARCHAR" />
+        <result column="NAME" property="name"  jdbcType="VARCHAR" />
+        <result column="OTHERNAME" property="otherName"  jdbcType="VARCHAR" />
+        <result column="SYMBOL" property="symbol"  jdbcType="NUMERIC" />
+        <result column="ORDER_NO" property="orderNo"  jdbcType="NUMERIC" />
+        <result column="REMARK" property="remark"  jdbcType="VARCHAR" />
+
+        <result column="ACTIVE" property="active"  jdbcType="VARCHAR" />
+      	<result column="CREATE_TIME" property="createDate" javaType="Date"  jdbcType="TIMESTAMP" />
+        <result column="CREATE_USER_CODE" property="createUser"  jdbcType="VARCHAR" />
+        <result column="MODIFY_TIME" property="modifyDate" javaType="Date" jdbcType="TIMESTAMP" />
+        <result column="MODIFY_USER_CODE" property="modifyUser"  jdbcType="VARCHAR" />
+        <result column="INVALID" property="invalid"  jdbcType="VARCHAR" />
+        <result column="PARENT_CODE" property="parentCode"  jdbcType="VARCHAR" />
+        <result column="PARENT_NAME" property="parentName"  jdbcType="VARCHAR" />
+
+    </resultMap>
+
+    <!-- 查询字段 -->
+    <sql id="query_transtype_param">
+        T.ID AS ID,
+        T.CODE AS CODE,/** 编号**/
+        T.NAME AS NAME,/** 名称**/
+        T.OTHERNAME AS OTHERNAME,/** 别名**/
+        T.SYMBOL AS SYMBOL,/** 代号**/
+	    T.ORDER_NO AS ORDER_NO, /**排序号*/
+        T.REMARK AS REMARK,/** 版本号**/
+        T.ACTIVE AS ACTIVE,/** 是否可用**/
+        T.CREATE_TIME AS CREATE_TIME,/**创建时间**/
+	   	T.CREATE_USER_CODE AS CREATE_USER_CODE,/**创建人**/
+	    T.MODIFY_TIME AS MODIFY_TIME, /**更新时间**/
+	    T.MODIFY_USER_CODE AS MODIFY_USER_CODE, /**更新人**/
+	    T.INVALID AS INVALID, /** 是否作废 */
+	    T.PARENT_CODE AS PARENT_CODE, /** 父级产品 */
+	    P.NAME AS PARENT_NAME /** 父级产品 */
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="query_transtype_filter">
+        <if test="code != null and code != ''">
+            AND T.CODE LIKE CONCAT(CONCAT('%', #{code,jdbcType=VARCHAR}), '%')
+        </if>
+        <if test="name != null and name != ''">
+            AND T.NAME LIKE CONCAT(CONCAT('%', #{name,jdbcType=VARCHAR}), '%')
+        </if>
+        <if test="invalid != null and invalid != ''">
+            AND T.INVALID = #{invalid, jdbcType=VARCHAR}
+        </if>
+        <if test="active != null and active != ''">
+            AND T.ACTIVE = #{active, jdbcType=VARCHAR}
+        </if>
+        <if test="active == null or active == ''">
+            AND T.ACTIVE = 'Y'
+        </if>
+        <if test='containsRoot == null or containsRoot == "" or containsRoot == "N"'>
+        	AND T.PARENT_CODE IS NOT NULL 
+        </if>
+    </sql>
+
+    <!--查询运输类型列表-->
+    <select id="queryTranstypes" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TranstypeEntity"
+            resultMap="transtypeMap">
+        SELECT 
+        <include refid="query_transtype_param"></include>
+        FROM T_BSE_TRANS_TYPE T LEFT JOIN T_BSE_TRANS_TYPE P ON T.PARENT_CODE = P.CODE AND P.INVALID = 'N'
+        <where>
+            <include refid="query_transtype_filter"></include>
+        </where>
+    </select>
+
+    <!--新增运输类型-->
+    <insert id="addTranstype" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TranstypeEntity">
+        INSERT INTO T_BSE_TRANS_TYPE (ID,
+        CODE,
+        NAME,
+        OTHERNAME,
+        SYMBOL,
+        ORDER_NO,
+        REMARK,
+        CREATE_TIME,
+        CREATE_USER_CODE,
+        MODIFY_TIME,
+        MODIFY_USER_CODE,
+        ACTIVE,
+        INVALID,
+        PARENT_CODE)
+        VALUES (
+          #{id, jdbcType=VARCHAR},
+          #{code, jdbcType=VARCHAR},
+          #{name, jdbcType=VARCHAR},
+          #{otherName, jdbcType=VARCHAR},
+          #{symbol, jdbcType=VARCHAR},
+          #{orderNo, jdbcType=NUMERIC},
+          #{remark, jdbcType=VARCHAR},
+          #{createDate, jdbcType=DATE},
+          #{createUser, jdbcType=VARCHAR},
+          #{modifyDate, jdbcType=DATE},
+          #{modifyUser, jdbcType=VARCHAR},
+          #{active, jdbcType=VARCHAR},
+          #{invalid, jdbcType=VARCHAR},
+          <if test="parentCode == null or parentCode == ''">
+          	'00000000000000000000'
+          </if>
+          <if test="parentCode != null and parentCode != ''">
+          	#{parentCode, jdbcType=VARCHAR}
+          </if>
+        )
+    </insert>
+
+    <!--修改运输类型-->
+    <update id="updateTranstype" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TranstypeEntity">
+        UPDATE T_BSE_TRANS_TYPE T SET
+        T.NAME = #{name, jdbcType=VARCHAR},
+        T.OTHERNAME = #{otherName, jdbcType=VARCHAR},
+        T.SYMBOL = #{symbol, jdbcType=VARCHAR},
+        T.ORDER_NO = #{orderNo, jdbcType=NUMERIC},
+        T.REMARK = #{remark, jdbcType=VARCHAR},
+        T.MODIFY_TIME = #{modifyDate, jdbcType=DATE},
+        T.MODIFY_USER_CODE = #{modifyUser, jdbcType=VARCHAR},
+        T.ACTIVE = #{active, jdbcType=VARCHAR},
+        T.INVALID = #{invalid, jdbcType=VARCHAR},
+        PARENT_CODE = 
+        <if test="parentCode == null or parentCode == ''">
+          	'00000000000000000000'
+          </if>
+          <if test="parentCode != null and parentCode != ''">
+          	#{parentCode, jdbcType=VARCHAR}
+          </if>
+        WHERE T.ID =  #{id, jdbcType=VARCHAR}
+    </update>
+
+    <!--删除运输类型-->
+    <update id="deleteTranstype" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TranstypeEntity">
+        UPDATE T_BSE_TRANS_TYPE T SET
+        T.MODIFY_TIME = #{modifyDate, jdbcType=DATE},
+        T.MODIFY_USER_CODE = #{modifyUser, jdbcType=VARCHAR},
+        T.INVALID = #{invalid, jdbcType=VARCHAR},
+        T.ACTIVE = #{active, jdbcType=VARCHAR}
+        WHERE T.ID =  #{id, jdbcType=VARCHAR}
+    </update>
+
+    <select id="queryTranstypeById" resultMap="transtypeMap">
+        SELECT
+        <include refid="query_transtype_param"></include>
+        FROM T_BSE_TRANS_TYPE T LEFT JOIN T_BSE_TRANS_TYPE P ON T.PARENT_CODE = P.CODE AND P.INVALID = 'N'
+        WHERE T.ID = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="queryTranstypeByName" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TranstypeEntity"
+            resultMap="transtypeMap">
+        SELECT
+        <include refid="query_transtype_param"></include>
+        FROM T_BSE_TRANS_TYPE T LEFT JOIN T_BSE_TRANS_TYPE P ON T.PARENT_CODE = P.CODE AND P.INVALID = 'N'
+        WHERE T.NAME = #{name, jdbcType=VARCHAR} AND T.ACTIVE = #{active, jdbcType=VARCHAR} AND T.INVALID = #{invalid, jdbcType=VARCHAR}
+    </select>
+
+    <select id="queryTranstypeByCode" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TranstypeEntity"
+            resultMap="transtypeMap">
+        SELECT
+        <include refid="query_transtype_param"></include>
+        FROM T_BSE_TRANS_TYPE T LEFT JOIN T_BSE_TRANS_TYPE P ON T.PARENT_CODE = P.CODE AND P.INVALID = 'N'
+        WHERE T.CODE = #{code, jdbcType=VARCHAR} AND T.ACTIVE = #{active, jdbcType=VARCHAR} AND T.INVALID = #{invalid, jdbcType=VARCHAR}
+    </select>
+</mapper>

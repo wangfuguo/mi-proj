@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.sys.job.server.dao.EmployeeSyncDao">
+  
+	
+	<select id="queryEmployeeByCode" parameterType="string" resultType="String">
+		SELECT ID AS id
+		FROM T_BSE_EMPLOYEE
+		WHERE EMPLOYEE_CODE = #{employeeCode,jdbcType=VARCHAR}    
+	</select>
+	
+	
+	<insert id="addEmployee" parameterType="com.hoau.miser.module.sys.job.shared.domain.EmployeeEntity">	    
+	    						
+	    INSERT 
+	    INTO T_BSE_EMPLOYEE
+	    (	
+	    	ID,
+	    	EMPLOYEE_CODE,
+	    	EMPLOYEE_NAME,
+	    	GENDER,
+	    	PINYIN_NAME,
+	    	PINYIN_SHORT_NAME,
+	    	ACCOUNT,
+	    	PASSWORD,
+	    	DEPT_NAME,
+	    	JOB_NAME,
+	    	DEPT_CODE,
+	    	JOB_CODE,
+	    	MANAGER_CODE,
+	    	MOBILE,
+	    	EMAIL,
+	    	TELE_PHONE,
+	    	STATUS,
+	    	VERSION_NO,
+	    	ACTIVE,
+	    	CREATE_TIME,
+	    	CREATE_USER_CODE,
+	    	MODIFY_TIME,
+	    	MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{employeeCode,jdbcType=VARCHAR},
+	    	#{employeeName,jdbcType=VARCHAR},
+	    	#{gender,jdbcType=VARCHAR},
+	    	#{pinYinName,jdbcType=VARCHAR},
+	    	#{pinYinShortName,jdbcType=VARCHAR},
+	    	#{account,jdbcType=VARCHAR},
+	    	#{password,jdbcType=VARCHAR},
+	    	#{deptName,jdbcType=VARCHAR},
+	    	#{jobName,jdbcType=VARCHAR},
+	    	#{deptCode,jdbcType=VARCHAR},
+	    	#{jobCode,jdbcType=VARCHAR},
+	    	#{managerCode,jdbcType=VARCHAR},
+	    	#{mobile,jdbcType=VARCHAR},
+	    	#{email,jdbcType=VARCHAR},
+	    	#{telePhone,jdbcType=VARCHAR},
+	    	#{status,jdbcType=VARCHAR},
+	    	#{versionNo,jdbcType=NUMERIC},
+	    	#{active,jdbcType=NUMERIC},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<update id="updateEmployee" parameterType="com.hoau.miser.module.sys.job.shared.domain.EmployeeEntity">
+	    UPDATE T_BSE_EMPLOYEE SET
+	    	ID = #{id,jdbcType=VARCHAR},
+	    	EMPLOYEE_CODE= #{employeeCode,jdbcType=VARCHAR},
+	    	GENDER = #{gender,jdbcType=VARCHAR},
+	    	PINYIN_NAME = #{pinYinName,jdbcType=VARCHAR},
+	    	PINYIN_SHORT_NAME = #{pinYinShortName,jdbcType=VARCHAR},
+	    	ACCOUNT = #{account,jdbcType=VARCHAR},
+	    	PASSWORD = #{password,jdbcType=VARCHAR},
+	    	DEPT_NAME = #{deptName,jdbcType=VARCHAR},
+	    	JOB_NAME = #{jobName,jdbcType=VARCHAR},
+	    	DEPT_CODE = #{deptCode,jdbcType=VARCHAR},
+	    	JOB_CODE = #{jobCode,jdbcType=VARCHAR},
+	    	MANAGER_CODE = #{managerCode,jdbcType=VARCHAR},
+	    	MOBILE = #{mobile,jdbcType=VARCHAR},
+	    	EMAIL = #{email,jdbcType=VARCHAR},
+	    	TELE_PHONE = #{telePhone,jdbcType=VARCHAR},
+	    	STATUS = #{status,jdbcType=VARCHAR},
+	    	VERSION_NO = #{versionNo,jdbcType=NUMERIC},
+	    	ACTIVE = #{active,jdbcType=NUMERIC},
+	    	CREATE_TIME=#{createDate,jdbcType=TIMESTAMP},
+	    	CREATE_USER_CODE=#{createUser,jdbcType=VARCHAR},
+	    	MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+	    	MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE EMPLOYEE_CODE= #{employeeCode,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getLastVersionNo" resultType="long">
+	    SELECT MAX(VERSION_NO) FROM T_BSE_EMPLOYEE 
+	</select>
+	
+	<select id="queryInvalidUser" resultType="string">
+	   SELECT U.USER_NAME AS USER_NAME/**查询无效用户**/
+		  FROM T_BSE_EMPLOYEE E
+		 INNER JOIN T_BSE_USER U
+		    ON E.ACCOUNT = U.USER_NAME
+		 WHERE E.ACTIVE = 'N'
+		   AND U.ACTIVE = 'Y'
+
+	</select>
+	
+	<update id="updateInvalidUser" parameterType="map">
+	    UPDATE T_BSE_USER SET
+	    ACTIVE = 'N',
+	    MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR},
+	    VERSION_NO = #{versionNo,jdbcType=NUMERIC}
+	    WHERE ACTIVE = 'Y' AND USER_NAME = #{userCode,jdbcType=VARCHAR}
+	</update>
+</mapper>

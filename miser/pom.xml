@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.hoau.miser</groupId>
+	<artifactId>miser</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>${project.artifactId}</name>
+	<properties>
+		<wro4j-version>1.6.2</wro4j-version>
+	</properties>
+
+	<dependencies>
+		<!-- <dependency> <groupId>com.sun</groupId> <artifactId>tools</artifactId> 
+			<scope>system</scope> <version>1.5.0</version> <systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath> 
+			</dependency> -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient-cache</artifactId>
+			<version>4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hoau.hbdp</groupId>
+			<artifactId>framework-shared</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hoau.hbdp</groupId>
+			<artifactId>framework-server</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hoau.hbdp</groupId>
+			<artifactId>hbdp-webservice</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hoau.hbdp</groupId>
+			<artifactId>framework-sso</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+			<scope>${environment.scope}</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc14</artifactId>
+			<version>10.2.0.1.0</version>
+			<scope>${environment.scope}</scope>
+		</dependency>
+		<dependency>
+			<groupId>ro.isdc.wro4j</groupId>
+			<artifactId>wro4j-core</artifactId>
+			<version>${wro4j-version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-all</artifactId>
+			<version>5.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>3.2.4.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sunspoter.lib</groupId>
+			<artifactId>struts2-sunspoter-stream</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>hoau release repository</name>
+			<url>http://10.39.251.124:8080/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>hoau snapshot repository</name>
+			<url>http://10.39.251.124:8080/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>hoau-repo</id>
+			<name>Repository for hoau</name>
+			<url>http://10.39.251.124:8080/nexus</url>
+			<releases>
+			</releases>
+			<snapshots>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>ignore</checksumPolicy>
+			</snapshots>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+					<include>**/*</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>${project.basedir}/src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+						<outputDirectory>${warOutputDirectory}</outputDirectory>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.tomcat.maven</groupId>
+					<artifactId>tomcat6-maven-plugin</artifactId>
+					<version>2.0-beta-1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>1.7</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>ro.isdc.wro4j</groupId>
+										<artifactId>wro4j-maven-plugin</artifactId>
+										<versionRange>[1.6.0,)</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute/>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>ro.isdc.wro4j</groupId>
+					<artifactId>wro4j-maven-plugin</artifactId>
+					<version>${wro4j-version}</version>
+					<executions>
+						<execution>
+							<phase>process-resources</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<minimize>${minimize}</minimize>
+						<extraConfigFile>${basedir}/src/main/resources/com/hoau/miser/module/${moduleContext}/server/META-INF/wro.properties</extraConfigFile>
+						<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+						<cssDestinationFolder>${project.build.directory}/classes/com/hoau/miser/module/${moduleContext}/server/META-INF/styles/wro/</cssDestinationFolder>
+						<jsDestinationFolder>${project.build.directory}/classes/com/hoau/miser/module/${moduleContext}/server/META-INF/scripts/wro/</jsDestinationFolder>
+						<wroFile>${basedir}/src/main/resources/com/hoau/miser/module/${moduleContext}/server/META-INF/wro.xml</wroFile>
+						<groupNameMappingFile>${project.build.directory}/classes/com/hoau/miser/module/${moduleContext}/server/META-INF/wromapping.properties</groupNameMappingFile>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8.1</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>src/main/webapp/images</directory>
+						</fileset>
+						<fileset>
+							<directory>src/main/webapp/scripts</directory>
+						</fileset>
+						<fileset>
+							<directory>src/main/webapp/styles</directory>
+						</fileset>
+						<fileset>
+							<directory>src/main/webapp/WEB-INF/pages</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<!-- 开发环境 -->
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<minimize>false</minimize>
+				<environment>dev</environment>
+				<environment.scope>compile</environment.scope>
+				<warOutputDirectory>D:\miser\${project.version}</warOutputDirectory>
+				
+				<!-- add by dengyin 2016-7-15 9:42:22 pms 接入 sso -->
+				
+                <!--CAS Single Sign Out Filter-->
+                <cas.signout.serverUrlPrefix>https://nssotest.hoau.net/cas</cas.signout.serverUrlPrefix>
+                <cas.signout.serverLogoutUrl>/login/toPmsByCas.action</cas.signout.serverLogoutUrl>                				
+				
+                <!--CAS Validation Filter-->
+                <cas.validation.serverUrlPrefix>https://nssotest.hoau.net/cas</cas.validation.serverUrlPrefix>
+                <cas.validation.serverName>http://10.35.8.54:8081/miser-biz-web/login/toPmsByCas.action</cas.validation.serverName>
+                                				
+                <!--CAS Authentication Filter-->
+                <cas.authentication.serverLoginUrl>https://nssotest.hoau.net/cas/login</cas.authentication.serverLoginUrl>
+                <cas.authentication.serverName>http://10.35.8.54:8081/miser-biz-web/login/toPmsByCas.action</cas.authentication.serverName>
+                
+                <!-- end by dengyin 2016-7-15 9:42:22 pms 接入 sso -->
+                				
+			</properties>
+		</profile>
+		<profile>
+			<!-- 测试环境 -->
+			<id>test</id>
+			<properties>
+			
+				<environment>test</environment>
+				<environment.scope>provided</environment.scope>
+				<staticServer>https://statictest.hoau.net:8443/static</staticServer>
+				<warOutputDirectory>miser-test/${project.version}</warOutputDirectory>
+				
+				<!-- add by dengyin 2016-7-15 9:42:22 pms 接入 sso -->
+				
+                <!--CAS Single Sign Out Filter-->
+                <cas.signout.serverUrlPrefix>https://nssotest.hoau.net/cas</cas.signout.serverUrlPrefix>
+                <cas.signout.serverLogoutUrl>/login/toPmsByCas.action</cas.signout.serverLogoutUrl>                				
+				
+                <!--CAS Validation Filter-->
+                <cas.validation.serverUrlPrefix>https://nssotest.hoau.net/cas</cas.validation.serverUrlPrefix>
+                <cas.validation.serverName>https://pmstest.hoau.net/miser-biz-web/login/toPmsByCas.action</cas.validation.serverName>
+                
+                				
+                <!--CAS Authentication Filter-->
+                <cas.authentication.serverLoginUrl>https://nssotest.hoau.net/cas/login</cas.authentication.serverLoginUrl>
+                <cas.authentication.serverName>https://pmstest.hoau.net/miser-biz-web/login/toPmsByCas.action</cas.authentication.serverName>
+                
+                <!-- end by dengyin 2016-7-15 9:42:22 pms 接入 sso -->
+                				
+			</properties>
+		</profile>
+		<profile>
+			<!-- 生产环境 -->
+			<id>product</id>
+			<properties>
+				<environment>product</environment>
+				<environment.scope>provided</environment.scope>
+				<staticServer>https://static.hoau.net/static</staticServer>
+				<warOutputDirectory>miser-product/${project.version}</warOutputDirectory>
+				
+				<!-- add by dengyin 2016-7-15 9:42:22 pms 接入 sso -->
+				
+                <!--CAS Single Sign Out Filter-->
+                <cas.signout.serverUrlPrefix>https://nsso.hoau.net/cas</cas.signout.serverUrlPrefix>
+                <cas.signout.serverLogoutUrl>/login/toPmsByCas.action</cas.signout.serverLogoutUrl>
+                								
+                <!--CAS Validation Filter-->
+                <cas.validation.serverUrlPrefix>https://nsso.hoau.net/cas</cas.validation.serverUrlPrefix>
+                <cas.validation.serverName>http://pms.hoau.net/miser-biz-web/login/toPmsByCas.action</cas.validation.serverName>
+                                				
+                <!--CAS Authentication Filter-->
+                <cas.authentication.serverLoginUrl>https://nsso.hoau.net/cas/login</cas.authentication.serverLoginUrl>
+                <cas.authentication.serverName>http://pms.hoau.net/miser-biz-web/login/toPmsByCas.action</cas.authentication.serverName>
+                				
+                <!-- end by dengyin 2016-7-15 9:42:22 pms 接入 sso -->
+                				
+			</properties>
+		</profile>
+	</profiles>
+	<modules>
+		<module>miser-job</module>
+		<module>miser-common</module>
+		<module>miser-config</module>
+		<module>miser-sys</module>
+		<module>miser-util</module>
+		<module>miser-biz</module>
+		<module>miser-api</module>
+  </modules>
+</project>

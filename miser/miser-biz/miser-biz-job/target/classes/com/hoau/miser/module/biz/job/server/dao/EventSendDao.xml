@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.EventSendDao">
+
+	<resultMap id="eventResultMap" type="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="EVENT_NAME" property="eventName" jdbcType="VARCHAR" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="IS_FORCE_COLSE" property="isForceColse" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 活动明细 -->
+	<resultMap id="priceEventDiscountSubResultMap" type="com.hoau.miser.module.biz.job.shared.domain.PriceEventDiscountSubSendEntity">
+		<id column="EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<result column="FREIGHT_SECTION_CODE" property="freightSectionCode" jdbcType="VARCHAR" />
+		<result column="ADD_SECTION_CODE" property="addSectionCode" jdbcType="VARCHAR" />
+		<result column="FUEL_SECTION_CODE" property="fuelSectionCode" jdbcType="VARCHAR" />
+		<result column="PICKUP_SECTION_CODE" property="pickupSectionCode" jdbcType="VARCHAR" />
+		<result column="DELIVERY_SECTION_CODE" property="deliverySectionCode" jdbcType="VARCHAR" />
+		<result column="UPSTAIR_SECTION_CODE" property="upstairSectionCode" jdbcType="VARCHAR" />
+		<result column="INSURANCE_RATE_SECTION_CODE" property="insuranceRateSectionCode" jdbcType="VARCHAR" />
+		<result column="INSURANCE_SECTION_CODE" property="insuranceSectionCode" jdbcType="VARCHAR" />
+		<result column="PAPER_SECTION_CODE" property="paperSectionCode" jdbcType="VARCHAR" />
+		<result column="SMS_SECTION_CODE" property="smsSectionCode" jdbcType="VARCHAR" />
+		<result column="COLLECTION_RATE_SECTION_CODE" property="collectionRateSectionCode" jdbcType="VARCHAR" />
+		<result column="COLLECTION_SECTION_CODE" property="collectionSectionCode" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<!-- 活动渠道范围 -->
+	<resultMap id="priceEventOrderchannelSubResultMap" type="com.hoau.miser.module.biz.job.shared.domain.PriceEventOrderchannelSubSendEntity">
+		<id column="SUB_CHANNEL_EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="SUB_CHANNEL_ID" property="id" jdbcType="VARCHAR" />
+		<result column="SUB_CHANNEL_CODE" property="channelCode" jdbcType="VARCHAR" />
+		<result column="SUB_CHANNEL_REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="SUB_CHANNEL_ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="SUB_CHANNEL_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="SUB_CHANNEL_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="SUB_CHANNEL_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="SUB_CHANNEL_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<!-- 活动线路范围 -->
+	<resultMap id="priceEventRouteSubResultMap" type="com.hoau.miser.module.biz.job.shared.domain.PriceEventRouteSubSendEntity">
+		<id column="SUB_ROUTE_EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="SUB_ROUTE_ID" property="id" jdbcType="VARCHAR" />
+		<result column="SUB_ROUTE_SEND" property="sendPriceCity" jdbcType="VARCHAR" />
+		<result column="SUB_ROUTE_ARRIVAL" property="arrivalPriceCity" jdbcType="VARCHAR" />
+		<result column="SUB_ROUTE_ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="SUB_ROUTE_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="SUB_ROUTE_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="SUB_ROUTE_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="SUB_ROUTE_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<!-- 活动网点范围 -->
+	<resultMap id="priceEventCorpSubResultMap" type="com.hoau.miser.module.biz.job.shared.domain.PriceEventCorpSubSendEntity">
+		<id column="SUB_CORP_EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="SUB_CORP_ID" property="id" jdbcType="VARCHAR" />
+		<result column="SUB_CORP_TYPE" property="corpType" jdbcType="VARCHAR" />
+		<!-- 次数的组织需要转换成物流代码 -->
+		<result column="SUB_CORP_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="SUB_CORP_ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="SUB_CORP_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="SUB_CORP_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="SUB_CORP_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="SUB_CORP_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<!-- 活动客户范围 -->
+	<resultMap id="priceEventCustomerSubResultMap" type="com.hoau.miser.module.biz.job.shared.domain.PriceEventCustomerSubSendEntity">
+		<id column="SUB_CUSTOMER_EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+		<result column="SUB_CUSTOMER_ID" property="id" jdbcType="VARCHAR" />
+		<result column="SUB_CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+		<result column="SUB_CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="SUB_CUSTOMER_ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="SUB_CUSTOMER_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="SUB_CUSTOMER_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="SUB_CUSTOMER_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="SUB_CUSTOMER_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<!-- 更新失败表中和本次需要发送的活动编码相同的数据 -->
+	<update id="updateFailureRepeatData" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		UPDATE T_JOB_SEND_FAILURE A SET A.ACTIVE = 'N', REMARK = #{remark, jdbcType=VARCHAR}
+		WHERE A.ACTIVE = #{active, jdbcType=VARCHAR}
+		AND A.TYPE = #{type, jdbcType=VARCHAR}
+		AND EXISTS(SELECT 1 FROM T_PRICE_EVENT B
+			WHERE B.ID = A.BUSINESS_ID AND EXISTS(SELECT 1 FROM T_PRICE_EVENT C WHERE C.EVENT_CODE = B.EVENT_CODE
+			<if test="lastSendTime != null and lastSendTime != ''">
+				<![CDATA[AND C.MODIFY_TIME >= #{lastSendTime, jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="sendTime != null and sendTime != ''">
+				<![CDATA[AND C.MODIFY_TIME < #{sendTime, jdbcType=TIMESTAMP}]]>
+			</if>))
+	</update>
+
+	<!-- 查询渠道范围 -->
+	<select id="queryEventOrderChannelCondition" resultMap="priceEventOrderchannelSubResultMap"
+			parameterType="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		SELECT ID AS SUB_CHANNEL_ID,
+		EVENT_CODE AS SUB_CHANNEL_EVENT_CODE,
+		CHANNEL_CODE AS SUB_CHANNEL_CODE,
+		REMARK AS SUB_CHANNEL_REMARK,
+		CREATE_TIME AS SUB_CHANNEL_CREATE_TIME,
+		CREATE_USER_CODE AS SUB_CHANNEL_CREATE_USER_CODE,
+		MODIFY_TIME AS SUB_CHANNEL_MODIFY_TIME,
+		MODIFY_USER_CODE AS SUB_CHANNEL_MODIFY_USER_CODE,
+		ACTIVE AS SUB_CHANNEL_ACTIVE
+		FROM T_PRICE_EVENT_ORDERCHANNEL_SUB
+		WHERE EVENT_CODE = #{eventCode, jdbcType=VARCHAR}
+	</select>
+
+	<!-- 查询线路范围 -->
+	<select id="queryEventRouteCondition" resultMap="priceEventRouteSubResultMap"
+			parameterType="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		SELECT ID AS SUB_ROUTE_ID,
+		EVENT_CODE AS SUB_ROUTE_EVENT_CODE,
+		SEND_PRICE_CITY AS SUB_ROUTE_SEND,
+		ARRIVAL_PRICE_CITY AS SUB_ROUTE_ARRIVAL,
+		REMARK AS SUB_ROUTE_REMARK,
+		CREATE_TIME AS SUB_ROUTE_CREATE_TIME,
+		CREATE_USER_CODE AS SUB_ROUTE_CREATE_USER_CODE,
+		MODIFY_TIME AS SUB_ROUTE_MODIFY_TIME,
+		MODIFY_USER_CODE AS SUB_ROUTE_MODIFY_USER_CODE,
+		ACTIVE AS SUB_ROUTE_ACTIVE
+		FROM T_PRICE_EVENT_ROUTE_SUB
+		WHERE EVENT_CODE = #{eventCode, jdbcType=VARCHAR}
+	</select>
+
+	<!-- 查询门店范围 -->
+	<select id="queryEventCorpCondition" resultMap="priceEventCorpSubResultMap"
+			parameterType="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		SELECT A.ID AS SUB_CORP_ID,
+		A.EVENT_CODE AS SUB_CORP_EVENT_CODE,
+		A.CORP_TYPE AS SUB_CORP_TYPE,
+		B.LOGIST_CODE AS SUB_CORP_CODE,
+		A.REMARK AS SUB_CORP_REMARK,
+		A.CREATE_TIME AS SUB_CORP_CREATE_TIME,
+		A.CREATE_USER_CODE AS SUB_CORP_CREATE_USER_CODE,
+		A.MODIFY_TIME AS SUB_CORP_MODIFY_TIME,
+		A.MODIFY_USER_CODE AS SUB_CORP_MODIFY_USER_CODE,
+		A.ACTIVE AS SUB_CORP_ACTIVE
+		FROM T_PRICE_EVENT_CORP_SUB A LEFT JOIN T_BSE_ORG B ON A.ORG_CODE = B.CODE
+		WHERE EVENT_CODE = #{eventCode, jdbcType=VARCHAR} AND B.ACTIVE = 'Y'
+	</select>
+
+	<!-- 查询客户范围 -->
+	<select id="queryEventCustomerCondition" resultMap="priceEventCustomerSubResultMap"
+			parameterType="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		SELECT ID AS SUB_CUSTOMER_ID,
+		EVENT_CODE AS SUB_CUSTOMER_EVENT_CODE,
+		CUSTOMER_CODE AS SUB_CUSTOMER_CODE,
+		CUSTOMER_NAME AS SUB_CUSTOMER_NAME,
+		REMARK AS SUB_CUSTOMER_REMARK,
+		CREATE_TIME AS SUB_CUSTOMER_CREATE_TIME,
+		CREATE_USER_CODE AS SUB_CUSTOMER_CREATE_USER_CODE,
+		MODIFY_TIME AS SUB_CUSTOMER_MODIFY_TIME,
+		MODIFY_USER_CODE AS SUB_CUSTOMER_MODIFY_USER_CODE,
+		ACTIVE AS SUB_CUSTOMER_ACTIVE
+		FROM T_PRICE_EVENT_CUSTOMER_SUB
+		WHERE EVENT_CODE = #{eventCode, jdbcType=VARCHAR}
+	</select>
+
+	<!-- 查询活动明细 -->
+	<select id="queryEventDiscount" resultMap="priceEventDiscountSubResultMap"
+			parameterType="com.hoau.miser.module.biz.job.shared.domain.PriceEventSendEntity">
+		SELECT EVENT_CODE AS EVENT_CODE,
+		ID AS ID,
+		TRANS_TYPE_CODE AS TRANS_TYPE_CODE,
+		FREIGHT_SECTION_CODE AS FREIGHT_SECTION_CODE,
+		ADD_SECTION_CODE AS ADD_SECTION_CODE,
+		FUEL_SECTION_CODE AS FUEL_SECTION_CODE,
+		PICKUP_SECTION_CODE AS PICKUP_SECTION_CODE,
+		DELIVERY_SECTION_CODE AS DELIVERY_SECTION_CODE,
+		UPSTAIR_SECTION_CODE AS UPSTAIR_SECTION_CODE,
+		INSURANCE_RATE_SECTION_CODE AS INSURANCE_RATE_SECTION_CODE,
+		INSURANCE_SECTION_CODE AS INSURANCE_SECTION_CODE,
+		PAPER_SECTION_CODE AS PAPER_SECTION_CODE,
+		SMS_SECTION_CODE AS SMS_SECTION_CODE,
+		COLLECTION_RATE_SECTION_CODE AS COLLECTION_RATE_SECTION_CODE,
+		COLLECTION_SECTION_CODE AS COLLECTION_SECTION_CODE,
+		REMARK AS REMARK,
+		ACTIVE AS ACTIVE,
+		CREATE_TIME AS CREATE_TIME,
+		CREATE_USER_CODE AS CREATE_USER_CODE,
+		MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		MODIFY_TIME AS MODIFY_TIME
+		FROM T_PRICE_EVENT_DISCOUNT_SUB
+		WHERE EVENT_CODE = #{eventCode, jdbcType=VARCHAR}
+	</select>
+
+	<sql id="priceEventMainColumns">
+		B.EVENT_CODE,
+		B.EVENT_NAME,
+		B.EFFECTIVE_TIME,
+		B.INVALID_TIME ,
+		B.IS_FORCE_COLSE,
+		B.REMARK,
+		B.ACTIVE,
+		B.CREATE_TIME,
+		B.CREATE_USER_CODE,
+		B.MODIFY_TIME,
+		B.MODIFY_USER_CODE
+	</sql>
+	
+	<!-- 查询需要发送的失败数据，由于第一步有对失败数据更新，此处不需要再进行去重处理 -->
+	<select id="queryFailureData" resultMap="eventResultMap"
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		SELECT
+		A.ID,
+		<include refid="priceEventMainColumns"></include>
+		FROM T_JOB_SEND_FAILURE A 
+		JOIN T_PRICE_EVENT B ON A.BUSINESS_ID = B.ID
+		<where>
+			<if test="retryTimes != null and retryTimes != ''">
+				AND RETRY_TIMES <![CDATA[ < ]]> #{retryTimes, jdbcType=INTEGER}
+			</if>
+			<if test="type != null and type != ''">
+				AND A.TYPE = #{type, jdbcType=VARCHAR}
+			</if>
+			<if test="active != null and active != ''">
+				AND A.ACTIVE = #{active, jdbcType=VARCHAR}
+			</if>
+		</where> 
+	</select>
+
+	<!-- 查询需要发送的活动明细, 优惠活动在迪晨中是新建的表，可以处理待生效及过期数据，所以这里根据修改时间进行同步 -->
+	<select id="queryNeedSendData" resultMap="eventResultMap"
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+		SELECT
+		B.ID,
+		<include refid="priceEventMainColumns"></include>
+		FROM T_PRICE_EVENT B
+		WHERE
+		/** 活动至少要有活动明细吧，否则这个活动是干什么用的 */
+		EXISTS (SELECT 1 FROM T_PRICE_EVENT_DISCOUNT_SUB WHERE EVENT_CODE = B.EVENT_CODE AND ACTIVE = 'Y')
+		/** 活动至少要有一个范围吧，否则算什么 */
+		AND (EXISTS(SELECT 1 FROM T_PRICE_EVENT_ROUTE_SUB WHERE EVENT_CODE = B.EVENT_CODE AND ACTIVE = 'Y')
+				OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CORP_SUB WHERE EVENT_CODE = B.EVENT_CODE AND ACTIVE = 'Y')
+				OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_ORDERCHANNEL_SUB WHERE EVENT_CODE = B.EVENT_CODE AND ACTIVE = 'Y')
+				OR EXISTS(SELECT 1 FROM T_PRICE_EVENT_CUSTOMER_SUB WHERE EVENT_CODE = B.EVENT_CODE AND ACTIVE = 'Y')
+		)
+		AND EXISTS (SELECT 1 FROM (
+		SELECT A.EVENT_CODE, MAX(CREATE_TIME) AS MAX_CREATE_TIME, MAX(A.MODIFY_TIME) AS MAX_MODIFY_TIME
+		FROM T_PRICE_EVENT A
+		<where>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND A.MODIFY_TIME >= #{startTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND A.MODIFY_TIME < #{endTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+		</where> 
+		GROUP BY A.EVENT_CODE )
+		WHERE EVENT_CODE = B.EVENT_CODE AND MAX_CREATE_TIME = B.CREATE_TIME AND MAX_MODIFY_TIME = B.MODIFY_TIME)
+		
+	</select>
+
+</mapper>

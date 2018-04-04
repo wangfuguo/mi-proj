@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceCustTyDao">
+
+	<resultMap type="com.hoau.miser.module.api.itf.api.shared.domain.PriceCustTyEntity"
+		id="customerPriceResultMap">
+		<id column="MainID" property="id" jdbcType="VARCHAR" />
+		<result column="customer_code" property="customerCode" jdbcType="VARCHAR" />
+		<!--<result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+-->		<result column="create_user_code" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<!-- 明细表 -->
+		<association property="priceCustSubTyEntity" javaType="com.hoau.miser.module.api.itf.api.shared.domain.PriceCustSubTyEntity">
+			<id column="ID" property="id" jdbcType="VARCHAR" />
+			<result column="trans_type_code" property="transType" jdbcType="VARCHAR" />
+			<result column="SEND_PRICE_CITY" property="sendPriceCityCode" jdbcType="VARCHAR" />
+			<result column="ARRIVE_PRICE_CITY" property="arrivePriceCityCode" jdbcType="VARCHAR" />
+			<result column="weight_price" property="weightPrice" jdbcType="DECIMAL" />
+			<result column="volume_price" property="volumePrice" jdbcType="DECIMAL" />
+			<result column="add_fee" property="addFee" jdbcType="DECIMAL" />
+			<result column="FUEL_FEE_SECTION" property="fuelFeeSection" jdbcType="VARCHAR" />
+			<result column="FREIGHT_FEE_SECTION" property="freightSectionCode" jdbcType="VARCHAR" />
+			<result column="lowest_fee" property="lowestFee" jdbcType="DECIMAL" />
+			<result column="WEIGHT_DISCOUNT" property="weightDiscount" jdbcType="DECIMAL" />
+			<result column="VOLUME_DISCOUNT" property="volumeDiscount" jdbcType="DECIMAL" />
+		</association>
+	</resultMap>
+
+	<select id="queryPriceCustTyByBaseTyParamInSide" parameterType="com.hoau.miser.module.api.itf.server.param.PriceQueryParamInSide" resultMap="customerPriceResultMap">
+				SELECT
+		 				t.id mainID,
+                         t.customer_code,
+                         t.ACTIVE,
+                         t.EFFECTIVE_TIME,
+                         t.CREATE_TIME,
+                         t.MODIFY_TIME,
+                         t.remark,
+                         t.CUSTOMERTYPE,
+                         t.INVALID_TIME
+						,TPCS.ID
+						,TPCS.TRANS_TYPE_CODE
+						,TPCS.ARRIVE_PRICE_CITY
+						,TPCS.LOWEST_FEE
+						,TPCS.WEIGHT_PRICE
+						,TPCS.VOLUME_PRICE
+						,TPCS.ADD_FEE
+						,TPCS.FUEL_FEE_SECTION
+						,TPCS.VOLUME_DISCOUNT
+						,TPCS.WEIGHT_DISCOUNT
+						,TPCS.FREIGHT_FEE_SECTION
+						,TPCS.SEND_PRICE_CITY
+                    FROM T_PRICE_CUSTOMER t
+                LEFT JOIN T_PRICE_CUSTOMER_SUB TPCS on t.id=TPCS.PARENT_ID
+                <where>
+					T.CUSTOMER_CODE = #{baseTyParam.custNo, jdbcType=VARCHAR}
+					AND TPCS.SEND_PRICE_CITY =#{sendPriceCityCode,jdbcType=VARCHAR}
+					AND TPCS.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR}
+
+					<![CDATA[ and T.active='Y']]>
+					and TPCS.trans_type_code=#{baseTyParam.transTypeCode,jdbcType=VARCHAR}
+					and (<![CDATA[T.effective_time<=]]>#{baseTyParam.billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(T.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=]]>#{baseTyParam.billTime,jdbcType=TIMESTAMP})
+					)
+				</where>
+	</select>
+</mapper>

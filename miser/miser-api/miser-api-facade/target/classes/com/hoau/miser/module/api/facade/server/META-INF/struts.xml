@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="facade" namespace="/facade" extends="miser-default">
+		<!-- 
+			  <interceptors>
+				  <interceptor name="ipCheck" 
+				 class="com.hoau.miser.module.api.facade.server.interceptor.IPCheckInterceptor"/>
+				<interceptor-stack name="miser-facade-stack">
+				  <interceptor-ref name="ipCheck"/>
+				  <interceptor-ref name="miserStack"/>
+				</interceptor-stack>
+			  </interceptors>
+
+			  <default-interceptor-ref name="miser-facade-stack"/> -->
+	  
+		<global-results>
+			<result name="success" type="json">
+				<param name="includeProperties">response</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">response</param>
+			</result>
+		</global-results>
+	  
+		<action name="privileges" class="oAAction" method="queryPrivileges"></action>
+		<action name="privilegeContract" class="oAAction" method="savePrivilegeContract"></action>
+		<action name="discountCustomer" class="oAToPmsAction" method="queryDiscountCustomer"></action>
+		<action name="syncDiscountCustomer" class="oAToPmsAction" method="syncDiscountCustomer"></action>
+		<action name="PriceAgingQuery" class="PriceAgingQueryAction" method="QueryPriceAging"></action>
+		<action name="queryPriceSections" class="dcAction" method="queryPriceSections"></action>
+		<action name="queryCustomerYdjUseDrd" class="dcAction" method="queryCustomerYdjUseDrd"></action>
+		<action name="couponApply" class="dcAction" method="couponApply">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+        
+	</package>
+</struts>

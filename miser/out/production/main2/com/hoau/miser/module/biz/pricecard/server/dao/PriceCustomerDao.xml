@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.pricecard.server.dao.PriceCustomerDao">
+	
+	<resultMap id="PriceCustomerResultMap" type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity" >
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="CHAR" />
+	    
+		<!-- 添加 查询结果扩展的列字段信息  -->
+		<result column="DIVISIONCODE" property="divisionCode" jdbcType="VARCHAR" />
+		<result column="DIVISIONNAME" property="divisionName" jdbcType="VARCHAR" />
+		<result column="BIGREGIONCODE" property="bigRegionCode" jdbcType="VARCHAR" />
+		<result column="BIGREGIONNAME" property="bigRegionName" jdbcType="VARCHAR" />
+		<result column="ROADAREACODE" property="roadAreaCode" jdbcType="VARCHAR" />
+		<result column="ROADAREANAME" property="roadAreaName" jdbcType="VARCHAR" />
+		<result column="SALEDEPARTCODE" property="saleDepartCode" jdbcType="VARCHAR" />
+		<result column="SALEDEPARTNAME" property="saleDepartName" jdbcType="VARCHAR" />
+		<result column="CREATEUSERNAME" property="createUserName" jdbcType="VARCHAR" />
+		<result column="MODIFYUSERNAME" property="modifyUserName" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="DATAORIGN" property="dataOrign" jdbcType="VARCHAR" />
+		
+		<result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR" />
+		<result column="LOGISTCODE" property="logistCode"  jdbcType="VARCHAR" />
+		
+	</resultMap>
+	<resultMap id="excelResultMap" type="com.hoau.miser.module.biz.pricecard.api.shared.domain.ExcelPriceCustomerEntity">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="DIVISION_NAME" property="divisionName" jdbcType="VARCHAR" />
+		<result column="BIGREGION_NAME" property="bigRegionName" jdbcType="VARCHAR" />
+		<result column="ROADAREA_NAME" property="roadAreaName" jdbcType="VARCHAR" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="LOGIST_CODE" property="logistCode"  jdbcType="VARCHAR" />
+		<result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="SENDCITY_NAME" property="sendCityName" jdbcType="VARCHAR" />
+		<result column="ARRIVECITY_NAME" property="arriveCityName" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+		<result column="WEIGHT_PRICE" property="weightPrice" jdbcType="DECIMAL" />
+		<result column="VOLUME_PRICE" property="volumePrice" jdbcType="DECIMAL" />
+		<result column="ADD_FEE" property="addFee" jdbcType="DECIMAL" />
+		<result column="LOWEST_FEE" property="lowestFee" jdbcType="DECIMAL" />
+		<result column="FUELFEE_SECTION_NAME" property="fuelFeeSectionName" jdbcType="VARCHAR" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="STATUS" property="state" jdbcType="VARCHAR"/>
+		<result column="FREIGHTFEE_SECTION_NAME" property="freightFeeSectionName" jdbcType="VARCHAR"/>
+		<result column="WEIGHT_DISCOUNT" property="weightDiscount" jdbcType="DECIMAL"/>
+		<result column="VOLUME_DISCOUNT" property="volumeDiscount" jdbcType="DECIMAL"/>
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	  	
+	
+
+
+	  
+	  
+	<sql id="Base_Column_List" >
+	    ID, 
+	    CUSTOMER_CODE, 
+	    CUSTOMER_NAME,
+	    EFFECTIVE_TIME, 
+	    INVALID_TIME,
+	    CUSTOMERTYPE, 
+	    REMARK, 
+	    CREATE_TIME, 
+	    CREATE_USER_CODE, 
+	    MODIFY_TIME, 
+	    MODIFY_USER_CODE, 
+	    ACTIVE,
+	    DATAORIGN
+	</sql>
+	  
+	<sql id="Base_Column_List_Extend">
+	  		    ID, 
+			    CUSTOMER_CODE, 
+			    CUSTOMER_NAME,
+			    EFFECTIVE_TIME, 
+			    INVALID_TIME, 
+			    REMARK, 
+			    CREATE_TIME, 
+			    CREATE_USER_CODE, 
+			    MODIFY_TIME, 
+			    MODIFY_USER_CODE, 
+			    ACTIVE,
+			    DIVISIONCODE,
+				DIVISIONNAME,
+				BIGREGIONCODE,
+				BIGREGIONNAME,
+				ROADAREACODE,
+				ROADAREANAME,
+				SALEDEPARTCODE,
+				SALEDEPARTNAME,
+				CREATEUSERNAME,
+				MODIFYUSERNAME,
+				STATUS,
+				DATAORIGN
+	</sql>
+	
+	<sql id="Excel_Column_List">
+		TPC.ID AS ID,
+		ORGDIVISION.NAME AS DIVISION_NAME, 
+		ORGBIGREGION.NAME AS BIGREGION_NAME, 
+		ORG.PARENT_NAME AS ROADAREA_NAME, 
+		ORG.NAME AS ORG_NAME,
+		ORG.LOGIST_CODE AS LOGIST_CODE,
+		TBC.CODE AS CUSTOMER_CODE, 
+		TBC.NAME AS CUSTOMER_NAME, 
+		TCSEND.NAME AS SENDCITY_NAME, 
+		TCARRIVE.NAME AS ARRIVECITY_NAME, 
+		TPCS.TRANS_TYPE_NAME,
+		TPCS.WEIGHT_PRICE, 
+		TPCS.VOLUME_PRICE, 
+		TPCS.ADD_FEE, 
+		TPCS.LOWEST_FEE,
+		TPS.NAME AS FUELFEE_SECTION_NAME,
+		TPC.EFFECTIVE_TIME, 
+		TPC.INVALID_TIME, 
+		TPC.REMARK,
+	<![CDATA[
+		CASE
+		  WHEN TPC.ACTIVE = 'N' THEN
+		   '已作废'
+		  WHEN TPC.INVALID_TIME IS NOT NULL AND
+			   TPC.INVALID_TIME < SYSDATE THEN
+		   '已失效'
+		  WHEN TPC.EFFECTIVE_TIME > SYSDATE THEN
+		   '待生效'
+		  ELSE
+		   '生效中'
+		END AS STATUS,
+	]]>
+		TPSFREIGHT.NAME AS FREIGHTFEE_SECTION_NAME,
+		TPCS.WEIGHT_DISCOUNT,
+		TPCS.VOLUME_DISCOUNT,
+		TPC.CREATE_USER_CODE, 
+		TPC.CREATE_TIME, 
+		TPC.MODIFY_USER_CODE, 
+		TPC.MODIFY_TIME
+	</sql>
+	<!-- 客户价格明细excel导出查询-->
+	<select id="excelQueryListByParam" resultMap="excelResultMap" parameterType="java.lang.String">
+		SELECT 
+		<include refid="Excel_Column_List" />
+	    FROM T_PRICE_CUSTOMER TPC 
+			LEFT JOIN T_PRICE_CUSTOMER_SUB TPCS 
+				ON TPC.ID=TPCS.PARENT_ID 
+			LEFT JOIN T_BSE_CUSTOMER TBC 
+				ON TPC.CUSTOMER_CODE=TBC.CODE
+			LEFT JOIN T_BSE_ORG ORG 
+				ON TBC.ORG_CODE=ORG.CODE
+			LEFT JOIN T_BSE_ORG ORGDIVISION
+				ON ORG.DIVISION_CODE=ORGDIVISION.CODE
+			LEFT JOIN T_BSE_ORG ORGBIGREGION 
+				ON ORG.BIG_REGION_CODE=ORGBIGREGION.CODE
+			LEFT JOIN T_PRICE_CITY TCSEND 
+				ON TPCS.SEND_PRICE_CITY=TCSEND.CODE AND TCSEND."TYPE"='SEND'
+			LEFT JOIN T_PRICE_CITY TCARRIVE
+				ON TPCS.ARRIVE_PRICE_CITY=TCARRIVE.CODE  AND TCARRIVE."TYPE"='ARRIVAL'
+			LEFT JOIN T_PRICE_SECTION TPS 
+				ON TPCS.FUEL_FEE_SECTION=TPS.CODE AND TPS.ACTIVE='Y'
+			LEFT JOIN T_PRICE_SECTION TPSFREIGHT
+				ON TPCS.FREIGHT_FEE_SECTION=TPSFREIGHT.CODE  AND TPSFREIGHT.ACTIVE='Y'
+	    	WHERE TPC.ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 客户价格明细 excel 导出查询:按新价格城市 -->
+	<select id="excelQueryListByParamForStandard" resultMap="excelResultMap" parameterType="java.lang.String">
+		SELECT A.ID,
+		       A.DIVISION_NAME,
+		       A.BIGREGION_NAME,
+		       A.ROADAREA_NAME,
+		       A.ORG_NAME,
+		       A.LOGIST_CODE,
+		       A.CUSTOMER_CODE,
+		       A.CUSTOMER_NAME,
+		       A.SENDCITY_NAME,
+		       A.ARRIVECITY_NAME,
+		       A.TRANS_TYPE_NAME,
+		       A.WEIGHT_PRICE,
+		       A.VOLUME_PRICE,
+		       A.ADD_FEE,
+		       A.LOWEST_FEE,
+		       A.FUELFEE_SECTION_NAME,
+		       A.EFFECTIVE_TIME,
+		       A.INVALID_TIME,
+		       A.REMARK,
+		       A.STATUS,
+		       A.FREIGHTFEE_SECTION_NAME,
+		       A.WEIGHT_DISCOUNT,
+		       A.VOLUME_DISCOUNT,
+		       A.CREATE_USER_CODE,
+		       A.CREATE_TIME,
+		       A.MODIFY_USER_CODE,
+		       A.MODIFY_TIME
+		  FROM (SELECT TPC.ID               AS ID,
+		               ORGDIVISION.NAME     AS DIVISION_NAME,
+		               ORGBIGREGION.NAME    AS BIGREGION_NAME,
+		               ORG.PARENT_NAME      AS ROADAREA_NAME,
+		               ORG.NAME             AS ORG_NAME,
+		               ORG.LOGIST_CODE      AS LOGIST_CODE,
+		               TBC.CODE             AS CUSTOMER_CODE,
+		               TBC.NAME             AS CUSTOMER_NAME,
+		               TCSEND.NAME          AS SENDCITY_NAME,
+		               TCARRIVE.NAME        AS ARRIVECITY_NAME,
+		               TPCS.TRANS_TYPE_NAME,
+		               TPCS.WEIGHT_PRICE,
+		               TPCS.VOLUME_PRICE,
+		               TPCS.ADD_FEE,
+		               TPCS.LOWEST_FEE,
+		               TPS.NAME             AS FUELFEE_SECTION_NAME,
+		               TPC.EFFECTIVE_TIME,
+		               TPC.INVALID_TIME,
+		               TPC.REMARK,
+						<![CDATA[
+							CASE
+							  WHEN TPC.ACTIVE = 'N' THEN
+							   '已作废'
+							  WHEN TPC.INVALID_TIME IS NOT NULL AND
+								   TPC.INVALID_TIME < SYSDATE THEN
+							   '已失效'
+							  WHEN TPC.EFFECTIVE_TIME > SYSDATE THEN
+							   '待生效'
+							  ELSE
+							   '生效中'
+							END AS STATUS,
+						]]>
+		               TPSFREIGHT.NAME      AS FREIGHTFEE_SECTION_NAME,
+		               TPCS.WEIGHT_DISCOUNT,
+		               TPCS.VOLUME_DISCOUNT,
+		               TPC.CREATE_USER_CODE,
+		               TPC.CREATE_TIME,
+		               TPC.MODIFY_USER_CODE,
+		               TPC.MODIFY_TIME
+		          FROM T_PRICE_CUSTOMER TPC
+		          LEFT JOIN T_PRICE_CUSTOMER_SUB TPCS
+		            ON TPC.ID = TPCS.PARENT_ID
+		          LEFT JOIN T_BSE_CUSTOMER TBC
+		            ON TPC.CUSTOMER_CODE = TBC.CODE
+		          LEFT JOIN T_BSE_ORG ORG
+		            ON TBC.ORG_CODE = ORG.CODE
+		          LEFT JOIN T_BSE_ORG ORGDIVISION
+		            ON ORG.DIVISION_CODE = ORGDIVISION.CODE
+		          LEFT JOIN T_BSE_ORG ORGBIGREGION
+		            ON ORG.BIG_REGION_CODE = ORGBIGREGION.CODE
+		          LEFT JOIN T_PRICE_CITY TCSEND
+		            ON TPCS.SEND_PRICE_CITY = TCSEND.CODE
+		           AND TCSEND."TYPE" = 'SEND'
+		          LEFT JOIN T_PRICE_CITY TCARRIVE
+		            ON TPCS.ARRIVE_PRICE_CITY = TCARRIVE.CODE
+		           AND TCARRIVE."TYPE" = 'ARRIVAL'
+		          LEFT JOIN T_PRICE_SECTION TPS
+		            ON TPCS.FUEL_FEE_SECTION = TPS.CODE
+		           AND TPS.ACTIVE = 'Y'
+		          LEFT JOIN T_PRICE_SECTION TPSFREIGHT
+		            ON TPCS.FREIGHT_FEE_SECTION = TPSFREIGHT.CODE
+		           AND TPSFREIGHT.ACTIVE = 'Y'
+		         WHERE TPC.ID = #{id,jdbcType=VARCHAR}) A
+		 INNER JOIN (SELECT B.NAME SENDCITY_NAME
+		               FROM T_PRICE_CITY B
+		              WHERE B.TYPE = 'SEND'
+		                AND B.PRICECITYSCOPE = 'STANDARD'
+		                AND B.NAME NOT LIKE '%_OLD') C
+		    ON A.SENDCITY_NAME = C.SENDCITY_NAME
+		 INNER JOIN (SELECT D.NAME ARRIVECITY_NAME
+		               FROM T_PRICE_CITY D
+		              WHERE D.TYPE = 'ARRIVAL'
+		                AND D.PRICECITYSCOPE = 'STANDARD'
+		                AND D.NAME NOT LIKE '%_OLD') E
+		    ON A.ARRIVECITY_NAME = E.ARRIVECITY_NAME
+	</select>
+	
+	<!-- 客户专属价格界面查询语句 -->
+	<select id="queryPriceCustomerMixed" resultMap="PriceCustomerResultMap" parameterType="java.util.Map" >
+		SELECT /*+ORDERED+*/
+		       M.DIVISIONCODE,
+		       M.DIVISIONNAME,
+		       M.BIGREGIONCODE,
+		       M.BIGREGIONNAME,
+		       M.ROADAREACODE,
+		       M.ROADAREANAME,
+		       M.SALEDEPARTCODE,
+		       M.SALEDEPARTNAME,
+		       M.LOGISTCODE,
+		       M.ID,
+		       M.CUSTOMERCODE,
+		       M.CUSTOMERNAME,
+		       M.EFFECTIVETIME,
+		       M.INVALIDTIME,
+		       M.CUSTOMERTYPE,
+		       M.REMARK,
+		       M.CREATETIME,
+		       M.CREATEUSERCODE,
+		       M.CREATEUSERCODE || M.CREATEUSERNAME AS CREATEUSERNAME,
+		       M.MODIFYTIME,
+		       M.MODIFYUSERCODE,
+		       M.MODIFYUSERCODE || M.MODIFYUSERNAME AS MODIFYUSERNAME,
+		       M.ACTIVE,
+		       M.STATUS,
+		       M.DATAORIGN
+		  FROM (
+		        SELECT ORG.DIVISIONCODE DIVISIONCODE,
+		                DIVISION.DIVISIONNAME,
+		                ORG.BIGREGIONCODE BIGREGIONCODE,
+		                REGION.BIGREGIONNAME,
+		                ORG.PARENTCODE ROADAREACODE,
+		                ORG.PARENTNAME ROADAREANAME,
+		                ORG.ORGCODE SALEDEPARTCODE,
+		                ORG.ORGNAME SALEDEPARTNAME,
+		                ORG.LOGISTCODE,
+		                TPC.ID,
+		                TPC.CUSTOMER_CODE CUSTOMERCODE,
+		                TBC.CUSTOMERNAME,
+		                TPC.EFFECTIVE_TIME EFFECTIVETIME,
+		                TPC.INVALID_TIME INVALIDTIME,
+		                TPC.CUSTOMERTYPE,
+		                TPC.REMARK,
+		                TPC.CREATE_TIME CREATETIME,
+		                TPC.CREATE_USER_CODE CREATEUSERCODE,
+		                A.EMP_NAME CREATEUSERNAME,
+		                TPC.MODIFY_TIME MODIFYTIME,
+		                TPC.MODIFY_USER_CODE MODIFYUSERCODE,
+		                B.EMP_NAME MODIFYUSERNAME,
+		                TPC.ACTIVE,
+						<![CDATA[
+							CASE
+							  WHEN TPC.ACTIVE = 'N' THEN
+							   'DELETED'
+							  WHEN TPC.INVALID_TIME IS NOT NULL AND
+								   TPC.INVALID_TIME < SYSDATE THEN
+							   'PASSED'
+							  WHEN TPC.EFFECTIVE_TIME > SYSDATE THEN
+							   'WAIT'
+							  ELSE
+							   'EFFECTIVE'
+							END AS STATUS,
+						]]>
+		                TPC.DATAORIGN
+		          FROM T_PRICE_CUSTOMER TPC
+		          INNER JOIN (SELECT CODE     CUSTOMERCODE,
+		                            NAME     CUSTOMERNAME,
+		                            ORG_CODE ORGCODE
+		                       FROM T_BSE_CUSTOMER) TBC
+		            ON TPC.CUSTOMER_CODE = TBC.CUSTOMERCODE
+		          LEFT JOIN (SELECT USER_NAME, EMP_NAME
+		                       FROM T_BSE_USER WHERE ACTIVE='Y') A
+		            ON TPC.CREATE_USER_CODE = A.USER_NAME
+		          LEFT JOIN (SELECT USER_NAME, EMP_NAME
+		                       FROM T_BSE_USER WHERE ACTIVE='Y') B
+		            ON TPC.MODIFY_USER_CODE = B.USER_NAME
+		          LEFT JOIN (SELECT CODE            ORGCODE,
+		                            NAME            ORGNAME,
+		                            PARENT_CODE     PARENTCODE,
+		                            PARENT_NAME     PARENTNAME,
+		                            BIG_REGION_CODE BIGREGIONCODE,
+		                            DIVISION_CODE   DIVISIONCODE,
+		                            LOGIST_CODE     LOGISTCODE
+		                       FROM T_BSE_ORG) ORG
+		            ON TBC.ORGCODE = ORG.ORGCODE
+		          LEFT JOIN (SELECT CODE BIGREGIONCODE, NAME BIGREGIONNAME
+		                       FROM T_BSE_ORG
+		                      WHERE IS_BIG_REGION = 'Y') REGION
+		            ON ORG.BIGREGIONCODE = REGION.BIGREGIONCODE
+		          LEFT JOIN (SELECT CODE DIVISIONCODE, NAME DIVISIONNAME
+		                       FROM T_BSE_ORG
+		                      WHERE  IS_DIVISION = 'Y') DIVISION
+		            ON ORG.DIVISIONCODE = DIVISION.DIVISIONCODE) M
+		 WHERE 1 = 1
+			
+		<if test="divisionCode != null and divisionCode !='' ">
+		        AND M.DIVISIONCODE = #{divisionCode,jdbcType=VARCHAR}
+		</if>
+			  
+		<if test="bigRegionCode != null and bigRegionCode !='' ">
+		        AND M.BIGREGIONCODE = #{bigRegionCode,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="roadAreaCode != null and roadAreaCode !='' ">
+		        AND M.ROADAREACODE = #{roadAreaCode,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="saleDepartCode != null and saleDepartCode !='' ">
+		        AND M.SALEDEPARTCODE = #{saleDepartCode,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="customerCode != null and customerCode !='' ">
+		        AND M.CUSTOMERCODE = #{customerCode,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="customerName != null and customerName !='' ">
+		        AND M.CUSTOMERNAME like CONCAT(CONCAT('%', #{customerName,jdbcType=VARCHAR}), '%') 
+		</if>		
+		      
+		<if test="status != null and status !='' ">
+		        AND M.STATUS = #{status,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="effectiveTime != null and effectiveTime !='' ">
+		        AND #{effectiveTime,jdbcType=TIMESTAMP} BETWEEN  M.EFFECTIVETIME AND M.INVALIDTIME
+		</if>
+		      
+		<if test="id != null and id !='' ">
+		        AND M.ID = #{id,jdbcType=VARCHAR}
+		</if>
+	    
+	</select>
+	
+	
+  <!-- 统计当前查询条件下的记录数  -->
+  <select id="countOfPriceCustomerMixed" resultType="Long" parameterType="java.util.Map" >
+			SELECT  /*+ORDERED+*/
+                         COUNT(1)
+		  FROM (		        
+		        SELECT ORG.DIVISIONCODE DIVISIONCODE,
+		                DIVISION.DIVISIONNAME,
+		                ORG.BIGREGIONCODE BIGREGIONCODE,
+		                REGION.BIGREGIONNAME,
+		                ORG.PARENTCODE ROADAREACODE,
+		                ORG.PARENTNAME ROADAREANAME,
+		                ORG.ORGCODE SALEDEPARTCODE,
+		                ORG.ORGNAME SALEDEPARTNAME,
+		                TPC.ID,
+		                TPC.CUSTOMER_CODE CUSTOMERCODE,
+		                TBC.CUSTOMERNAME,
+		                TPC.EFFECTIVE_TIME EFFECTIVETIME,
+		                TPC.INVALID_TIME INVALIDTIME,
+		                TPC.CUSTOMERTYPE,
+		                TPC.REMARK,
+		                TPC.CREATE_TIME CREATETIME,
+		                TPC.CREATE_USER_CODE CREATEUSERCODE,
+		                A.EMP_NAME CREATEUSERNAME,
+		                TPC.MODIFY_TIME MODIFYTIME,
+		                TPC.MODIFY_USER_CODE MODIFYUSERCODE,
+		                B.EMP_NAME MODIFYUSERNAME,
+		                TPC.ACTIVE,
+					<![CDATA[
+						CASE
+						  WHEN TPC.ACTIVE = 'N' THEN
+						   'DELETED'
+						  WHEN TPC.INVALID_TIME IS NOT NULL AND
+							   TPC.INVALID_TIME < SYSDATE THEN
+						   'PASSED'
+						  WHEN TPC.EFFECTIVE_TIME > SYSDATE THEN
+						   'WAIT'
+						  ELSE
+						   'EFFECTIVE'
+						END AS STATUS,
+					]]>
+	              TPC.DATAORIGN
+		          FROM T_PRICE_CUSTOMER TPC
+		          INNER JOIN (SELECT CODE     CUSTOMERCODE,
+		                            NAME     CUSTOMERNAME,
+		                            ORG_CODE ORGCODE
+		                       FROM T_BSE_CUSTOMER) TBC
+		            ON TPC.CUSTOMER_CODE = TBC.CUSTOMERCODE
+		          LEFT JOIN (SELECT USER_NAME, EMP_NAME
+		                       FROM T_BSE_USER WHERE ACTIVE='Y') A
+		            ON TPC.CREATE_USER_CODE = A.USER_NAME
+		          LEFT JOIN (SELECT USER_NAME, EMP_NAME
+		                       FROM T_BSE_USER WHERE ACTIVE='Y') B
+		            ON TPC.MODIFY_USER_CODE = B.USER_NAME
+		          LEFT JOIN (SELECT CODE            ORGCODE,
+		                            NAME            ORGNAME,
+		                            PARENT_CODE     PARENTCODE,
+		                            PARENT_NAME     PARENTNAME,
+		                            BIG_REGION_CODE BIGREGIONCODE,
+		                            DIVISION_CODE   DIVISIONCODE
+		                       FROM T_BSE_ORG) ORG
+		            ON TBC.ORGCODE = ORG.ORGCODE
+		          LEFT JOIN (SELECT CODE BIGREGIONCODE, NAME BIGREGIONNAME
+		                       FROM T_BSE_ORG
+		                      WHERE IS_BIG_REGION = 'Y') REGION
+		            ON ORG.BIGREGIONCODE = REGION.BIGREGIONCODE
+		          LEFT JOIN (SELECT CODE DIVISIONCODE, NAME DIVISIONNAME
+		                       FROM T_BSE_ORG
+		                      WHERE IS_DIVISION = 'Y') DIVISION
+		            ON ORG.DIVISIONCODE = DIVISION.DIVISIONCODE) M
+            WHERE 1=1
+			
+		<if test="divisionCode != null and divisionCode !='' ">
+		        AND M.DIVISIONCODE = #{divisionCode,jdbcType=VARCHAR}
+		</if>
+			  
+		<if test="bigRegionCode != null and bigRegionCode !='' ">
+		        AND M.BIGREGIONCODE = #{bigRegionCode,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="roadAreaCode != null and roadAreaCode !='' ">
+		        AND M.ROADAREACODE = #{roadAreaCode,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="saleDepartCode != null and saleDepartCode !='' ">
+		        AND M.SALEDEPARTCODE = #{saleDepartCode,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="customerCode != null and customerCode !='' ">
+		        AND M.CUSTOMERCODE = #{customerCode,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="customerName != null and customerName !='' ">
+		        AND M.CUSTOMERNAME like CONCAT(CONCAT('%', #{customerName,jdbcType=VARCHAR}), '%') 
+		</if>		
+		      
+		<if test="status != null and status !='' ">
+		        AND M.STATUS = #{status,jdbcType=VARCHAR}
+		</if>
+		      
+		<if test="effectiveTime != null and effectiveTime !='' ">
+		        AND #{effectiveTime,jdbcType=TIMESTAMP} BETWEEN  M.EFFECTIVETIME AND M.INVALIDTIME
+		</if>
+		      
+		<if test="id != null and id !='' ">
+		        AND M.ID = #{id,jdbcType=VARCHAR}
+		</if>
+	    
+	</select>
+	
+		
+	  
+	<select id="selectByPrimaryKey" resultMap="PriceCustomerResultMap" parameterType="java.lang.String" >
+	    select 
+		<include refid="Base_Column_List" />
+	    from T_PRICE_CUSTOMER
+	    where ID = #{id,jdbcType=VARCHAR}
+	</select>
+	  
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+	    delete from T_PRICE_CUSTOMER
+	    where ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	  
+	<insert id="insert" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity" >
+	    insert into T_PRICE_CUSTOMER 
+	    (
+	    	    ID, 
+			    CUSTOMER_CODE, 
+			    CUSTOMER_NAME,
+			    EFFECTIVE_TIME, 
+			    INVALID_TIME, 
+			    REMARK, 
+			    CREATE_TIME, 
+			    CREATE_USER_CODE, 
+			    MODIFY_TIME, 
+			    MODIFY_USER_CODE, 
+			    ACTIVE,
+			    DATAORIGN,
+			    CUSTOMERTYPE
+	    )
+	    values 
+	    (
+	      #{id,jdbcType=VARCHAR},
+	      #{customerCode,jdbcType=VARCHAR}, 
+	      #{customerName,jdbcType=VARCHAR}, 
+	      #{effectiveTime,jdbcType=TIMESTAMP}, 
+	      #{invalidTime,jdbcType=TIMESTAMP},
+	      #{remark,jdbcType=VARCHAR}, 
+	      SYSDATE, 
+	      #{createUserCode,jdbcType=VARCHAR}, 
+	      SYSDATE, 
+	      #{modifyUserCode,jdbcType=VARCHAR}, 
+	      #{active,jdbcType=CHAR},
+	      #{dataOrign,jdbcType=VARCHAR},
+	      #{customerType,jdbcType=VARCHAR}
+	     )
+	</insert>
+	  
+	<insert id="insertSelective" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity" >
+	    insert into T_PRICE_CUSTOMER
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+	        ID,
+			</if>
+			<if test="customerCode != null" >
+	        CUSTOMER_CODE,
+			</if>
+			<if test="customerName != null" >
+	        CUSTOMER_NAME,
+			</if>
+			<if test="effectiveTime != null" >
+	        EFFECTIVE_TIME,
+			</if>
+			<if test="invalidTime != null" >
+	        INVALID_TIME,
+			</if>
+			<if test="customerType != null" >
+	        CUSTOMERTYPE,
+			</if>			
+			<if test="remark != null" >
+	        REMARK,
+			</if>
+			<if test="createTime != null" >
+	        CREATE_TIME,
+			</if>
+			<if test="createUserCode != null" >
+	        CREATE_USER_CODE,
+			</if>
+			<if test="modifyTime != null" >
+	        MODIFY_TIME,
+			</if>
+			<if test="modifyUserCode != null" >
+	        MODIFY_USER_CODE,
+			</if>
+			<if test="active != null" >
+	        ACTIVE,
+			</if>
+			<if test="dataOrign != null" >
+	        DATAORIGN
+			</if>			
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+	        #{id,jdbcType=VARCHAR},
+			</if>
+			<if test="customerCode != null" >
+	        #{customerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="customerName != null" >
+	        #{customerName,jdbcType=VARCHAR},
+			</if>
+			<if test="effectiveTime != null" >
+	        #{effectiveTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="invalidTime != null" >
+	        #{invalidTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="customerType != null" >
+	        #{customerType,jdbcType=VARCHAR},
+			</if>		
+			<if test="remark != null" >
+	        #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null" >
+	        #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUserCode != null" >
+	        #{createUserCode,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyTime != null" >
+	        #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUserCode != null" >
+	        #{modifyUserCode,jdbcType=VARCHAR},
+			</if>
+			<if test="active != null" >
+	        #{active,jdbcType=CHAR},
+			</if>
+			<if test="dataOrign != null" >
+	        #{dataOrign,jdbcType=VARCHAR}
+			</if>			
+		</trim>
+	</insert>
+	  
+	<update id="updateByPrimaryKeySelective" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity" >
+	    update T_PRICE_CUSTOMER
+		<set >
+			<if test="customerCode != null" >
+	        CUSTOMER_CODE = #{customerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="customerName != null" >
+	        CUSTOMER_NAME = #{customerName,jdbcType=VARCHAR},
+			</if>
+			<if test="effectiveTime != null" >
+	        EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="invalidTime != null" >
+	        INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="remark != null" >
+	        REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null" >
+	        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUserCode != null" >
+	        CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyTime != null" >
+	        MODIFY_TIME = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyUserCode != null" >
+	        MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+			</if>
+			<if test="active != null" >
+	        ACTIVE = #{active,jdbcType=CHAR}
+			</if>
+		</set>
+	    where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	  
+	  
+	<update id="updateByPrimaryKey" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity" >
+	    update T_PRICE_CUSTOMER
+	    set
+	      CUSTOMER_CODE = #{customerCode,jdbcType=VARCHAR},
+	      CUSTOMER_NAME = #{customerName,jdbcType=VARCHAR},
+	      EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+	      INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+	      REMARK = #{remark,jdbcType=VARCHAR},
+	      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+	      CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+	      MODIFY_TIME = SYSDATE,
+	      MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+	      ACTIVE = #{active,jdbcType=CHAR}
+	    where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	  
+	<!-- 更新对应记录为 失效 -->
+	<update id="updateForInvalidById" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity" >
+	  	UPDATE T_PRICE_CUSTOMER T
+		        SET T.ACTIVE = 'N', 
+					   T.MODIFY_TIME = SYSDATE, 
+					   T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		WHERE T.ID = #{id,jdbcType=VARCHAR}
+	</update>
+	   
+   <update id="destoryPriceCustomerForEffectiveByIdStr" parameterType="java.util.Map">
+	  	UPDATE T_PRICE_CUSTOMER T
+		        SET T.INVALID_TIME = SYSDATE,
+		               T.MODIFY_TIME = SYSDATE, 
+		               T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		 WHERE 1=1 
+		 ${destoryIdStr}
+	</update>
+	
+	<update id="destoryPriceCustomerForWaitByIdStr" parameterType="java.util.Map">
+	  	UPDATE T_PRICE_CUSTOMER T
+		        SET T.ACTIVE = 'N',
+		               T.MODIFY_TIME = SYSDATE, 
+		               T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		 WHERE 1=1 
+		 ${destoryIdStr}
+	</update>
+	  
+	  
+	<!--
+				校验即将新增的 客户专属价格生效 失效时间段 是否存在重复的时间段
+				每个客户在生效中的专属价格只能有一个。
+				所以提交时需验证该客户在同一部门是否存在有效时间重合，且当前状态为生效中的数据
+				
+				修改时也需要有此校验  但需要排除自身的记录因此用上 id
+				
+				如下SQL：
+				原有数据时间段为 2016-04-01~2016-08-01
+				第一条判断  当前提交记录的生效时间是否已存在于现有数据的时间段
+				                     如 2016-05-01~2016-07-01  2016-05-01~2016-10-01
+				第二条判断  当前提交记录的失效时间是否已存在于现有数据的时间段
+				                     如 2016-02-01~2016-07-01  2016-05-01~2016-07-01
+				第三条判断  新增的记录是否完全包含了已有数据的时间段 
+				                     如 2016-01-01~2016-09-01
+		  -->
+	<select id="checkCustomerPriceDiscountExistRepeatTimezone" 
+		parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity"
+		resultType="java.lang.Integer">
+		SELECT (SELECT COUNT(1)
+		          FROM T_PRICE_CUSTOMER T
+		         WHERE #{effectiveTime,jdbcType=TIMESTAMP} > T.EFFECTIVE_TIME
+		           AND  T.INVALID_TIME > #{effectiveTime,jdbcType=TIMESTAMP} 
+		           AND T.CUSTOMER_CODE = #{customerCode,jdbcType=VARCHAR}
+		           AND T.ACTIVE = 'Y'
+		          <if test="id != null" >
+			           AND id != #{id,jdbcType=VARCHAR}
+				   </if>
+		           ) +
+		       (SELECT COUNT(1)
+		          FROM T_PRICE_CUSTOMER T
+		          WHERE
+		           #{invalidTime,jdbcType=TIMESTAMP} > T.EFFECTIVE_TIME
+		           AND T.INVALID_TIME > #{invalidTime,jdbcType=TIMESTAMP}
+		           AND T.CUSTOMER_CODE = #{customerCode,jdbcType=VARCHAR}
+		           AND T.ACTIVE = 'Y'
+		          <if test="id != null" >
+			           AND id != #{id,jdbcType=VARCHAR}
+				   </if>		           
+		           ) +
+		         (
+			         SELECT COUNT(1)
+			          FROM T_PRICE_CUSTOMER T
+			         WHERE 
+			           T.EFFECTIVE_TIME > #{effectiveTime,jdbcType = TIMESTAMP}
+			           AND #{invalidTime, jdbcType = TIMESTAMP} > T.EFFECTIVE_TIME
+			           AND T.CUSTOMER_CODE = #{customerCode, jdbcType = VARCHAR}
+			           AND T.ACTIVE = 'Y'
+			          <if test="id != null" >
+				           AND id != #{id,jdbcType=VARCHAR}
+					  </if>					           
+                 ) 
+		        AS countOfRows
+		  FROM DUAL
+	</select>
+	
+	<!-- 根据 id 串返回包含 状态 的记录 -->
+	<select id="selectPriceCustomerEntityIncludeStatusIdStr" 
+	             parameterType="java.util.Map" 
+	             resultType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity">
+			SELECT T.ID,
+			       T.CUSTOMER_CODE,
+			       T.CUSTOMER_NAME,
+			       T.EFFECTIVE_TIME,
+			       T.INVALID_TIME,
+			       T.REMARK,
+			       T.CREATE_TIME,
+			       T.CREATE_USER_CODE,
+			       T.MODIFY_TIME,
+			       T.MODIFY_USER_CODE,
+			       T.ACTIVE,
+			       <![CDATA[
+			       CASE
+			         WHEN T.ACTIVE = 'N' THEN
+			          'DELETED'
+			         WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN
+			          'PASSED'
+			         WHEN T.EFFECTIVE_TIME > SYSDATE THEN
+			          'WAIT'
+			         ELSE
+			          'EFFECTIVE'
+			       END AS STATUS
+			       ]]>
+			  FROM T_PRICE_CUSTOMER T
+			  WHERE 1=1
+  	          <if test="destoryIdStr != null" >
+	            ${destoryIdStr}
+			 </if>   
+	</select>
+	
+	<!-- 针对于 生效中 的记录进行更新操作 -->
+	<update id="updateForEffectiveById" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity" >
+		UPDATE T_PRICE_CUSTOMER T
+		   SET T.INVALID_TIME    = #{invalidTime,jdbcType=TIMESTAMP},
+		       T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+		       T.MODIFY_TIME      = #{modifyTime,jdbcType=TIMESTAMP}
+		 WHERE T.ID = #{id,jdbcType=VARCHAR}
+	</update>	
+	
+	<!--查询某一具体客户最近非作废的记录-->
+	<select id="selectPriceCustomerListForLastByCode" 
+	             parameterType="java.lang.String" 
+	             resultType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCustomerEntity">
+		SELECT 
+                   ID,
+			       CUSTOMER_CODE as customerCode,
+			       CUSTOMER_NAME as customerName,
+			       EFFECTIVE_TIME as effectiveTime,
+			       INVALID_TIME as invalidTime,
+			       REMARK,
+			       CREATE_TIME as createTime,
+			       CREATE_USER_CODE as createUserCode,
+			       MODIFY_TIME as modifyTime,
+			       MODIFY_USER_CODE as modifyUseCode,
+			       ACTIVE,
+			       CUSTOMERTYPE,
+			       STATUS
+		  FROM (SELECT 
+		                   T.ID,
+					       T.CUSTOMER_CODE,
+					       T.CUSTOMER_NAME,
+					       T.EFFECTIVE_TIME,
+					       T.INVALID_TIME,
+					       T.REMARK,
+					       T.CREATE_TIME,
+					       T.CREATE_USER_CODE,
+					       T.MODIFY_TIME,
+					       T.MODIFY_USER_CODE,
+					       T.ACTIVE,
+					       T.CUSTOMERTYPE,
+					       <![CDATA[
+					       CASE
+					         WHEN T.ACTIVE = 'N' THEN
+					          'DELETED'
+					         WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN
+					          'PASSED'
+					         WHEN T.EFFECTIVE_TIME > SYSDATE THEN
+					          'WAIT'
+					         ELSE
+					          'EFFECTIVE'
+					       END AS STATUS
+					       ]]>
+		          FROM T_PRICE_CUSTOMER T
+		         WHERE T.CUSTOMER_CODE = #{customerCode,jdbcType=VARCHAR}
+		           AND T.ACTIVE = 'Y'
+		         ORDER BY T.INVALID_TIME DESC)
+		 WHERE ROWNUM = 1
+	</select>
+
+</mapper>

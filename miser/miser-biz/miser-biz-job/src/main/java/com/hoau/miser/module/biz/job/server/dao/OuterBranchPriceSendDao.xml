@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.OuterBranchPriceSendDao">
+	<resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.job.shared.domain.OuterBranchPriceSendEntity">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="SENDID" jdbcType="VARCHAR" property="sendId" />
+		<result column="PROVINCE_CODE" jdbcType="VARCHAR" property="provinceCode" />
+		<result column="CITY_CODE" jdbcType="VARCHAR" property="cityCode" />
+		<result column="AREA_CODE" jdbcType="VARCHAR" property="areaCode" />
+		<result column="LOWEST_FEE" jdbcType="DECIMAL" property="lowestFee" />
+		<result column="WEIGHT_FEE" jdbcType="DECIMAL" property="weightRate" />
+		<result column="VOLUME_FEE" jdbcType="DECIMAL" property="volumeRate" />
+		<result column="REMARK" jdbcType="VARCHAR" property="remark" />
+		<result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+		<result column="CREATE_USER_CODE" jdbcType="VARCHAR" property="createUserCode" />
+		<result column="MODIFY_TIME" jdbcType="DATE" property="modifyTime" />
+		<result column="MODIFY_USER_CODE" jdbcType="VARCHAR" property="modifyUserCode" />
+		<result column="ACTIVE" jdbcType="CHAR" property="active" />
+	</resultMap>  
+	<select id="searchOuterBranchPriceSendFailure" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.job.shared.domain.OuterBranchPriceSendEntity">		
+SELECT BSETABLE.ID AS SENDID, BSETABLE.PROVINCE_CODE, BSETABLE.CITY_CODE,BSETABLE.AREA_CODE, BSETABLE.LOWEST_FEE, 
+BSETABLE.WEIGHT_FEE, BSETABLE.VOLUME_FEE, BSETABLE.REMARK, BSETABLE.CREATE_TIME, 
+BSETABLE.CREATE_USER_CODE, BSETABLE.MODIFY_TIME, BSETABLE.MODIFY_USER_CODE,BSETABLE.ACTIVE,BSETABLE.ID  
+FROM T_PRICE_OUTER_BRANCH BSETABLE 
+INNER JOIN 
+(
+	SELECT PROVINCE_CODE, CITY_CODE, AREA_CODE, MAX(PR.CREATE_TIME) AS MAXCREATE_TIME, MAX(PR.MODIFY_TIME) AS MAXMODIFY_TIME 
+	FROM T_PRICE_OUTER_BRANCH PR 
+	INNER JOIN T_JOB_SEND_FAILURE FAIL 
+	ON PR.ID=FAIL.BUSINESS_ID	
+	WHERE
+		<if test="active != null and active !=''">
+			 FAIL.ACTIVE = #{active}
+		</if>
+		<if test="type != null and type !=''">
+			AND FAIL.TYPE = #{type}
+		</if>
+	GROUP BY PR.PROVINCE_CODE, PR.CITY_CODE, PR.AREA_CODE 
+) MAXTABLE 
+ON BSETABLE.CREATE_TIME=MAXTABLE.MAXCREATE_TIME AND BSETABLE.MODIFY_TIME=MAXTABLE.MAXMODIFY_TIME 
+AND BSETABLE.PROVINCE_CODE=MAXTABLE.PROVINCE_CODE AND BSETABLE.CITY_CODE=MAXTABLE.CITY_CODE 
+AND BSETABLE.AREA_CODE=MAXTABLE.AREA_CODE
+	</select>
+  
+	<select id="searchOuterBranchPriceSendNew" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.job.shared.domain.OuterBranchPriceSendEntity">
+	  	SELECT BSETABLE.ID,BSETABLE.PROVINCE_CODE, BSETABLE.CITY_CODE,BSETABLE.AREA_CODE, BSETABLE.LOWEST_FEE, 
+BSETABLE.WEIGHT_FEE, BSETABLE.VOLUME_FEE, BSETABLE.REMARK, BSETABLE.CREATE_TIME, 
+BSETABLE.CREATE_USER_CODE, BSETABLE.MODIFY_TIME, BSETABLE.MODIFY_USER_CODE, BSETABLE.ACTIVE 
+FROM T_PRICE_OUTER_BRANCH BSETABLE 
+INNER JOIN 
+(
+	SELECT PROVINCE_CODE, CITY_CODE, AREA_CODE, MAX(CREATE_TIME) AS CREATE_TIME, MAX(MODIFY_TIME) AS MODIFY_TIME 
+	FROM T_PRICE_OUTER_BRANCH 
+	WHERE 
+		<if test="endTime != null and endTime != ''">
+		<![CDATA[ MODIFY_TIME< #{endTime, jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="startTime != null and startTime != ''">
+		<![CDATA[ AND MODIFY_TIME>= #{startTime, jdbcType=TIMESTAMP}]]>
+		</if> 
+			GROUP BY PROVINCE_CODE, CITY_CODE, AREA_CODE 
+			) MAXTABLE 
+			ON BSETABLE.CREATE_TIME=MAXTABLE.CREATE_TIME AND BSETABLE.MODIFY_TIME=MAXTABLE.MODIFY_TIME 
+			AND BSETABLE.PROVINCE_CODE=MAXTABLE.PROVINCE_CODE AND BSETABLE.CITY_CODE=MAXTABLE.CITY_CODE 
+			AND BSETABLE.AREA_CODE=MAXTABLE.AREA_CODE 
+		
+	</select>  
+</mapper>

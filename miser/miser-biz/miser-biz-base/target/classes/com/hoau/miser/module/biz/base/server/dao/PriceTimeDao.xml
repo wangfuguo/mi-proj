@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.PriceTimeDao">
+	<resultMap id="baseResultMapping"
+		type="com.hoau.miser.module.biz.base.api.shared.domain.PriceTimeEntity">
+		<result column="SENDPATHNAME" property="sendPathName" jdbcType="VARCHAR" />
+		<result column="ARRIVEPATHNAME" property="arrivePathName" jdbcType="VARCHAR" />
+		<result column="standardPriceId" property="standardPriceId" jdbcType="VARCHAR" />
+		<result column="standardTransTypeCode" property="standardTransTypeCode" jdbcType="VARCHAR" />
+		<result column="standardTransTypeName" property="standardTransTypeName" jdbcType="VARCHAR" />
+		<result column="standardSendPriceCity" property="standardSendPriceCity" jdbcType="VARCHAR" />
+		<result column="standardSendPriceCityName" property="standardSendPriceCityName" jdbcType="VARCHAR" />	
+		<result column="standardArrivePriceCity" property="standardArrivePriceCity" jdbcType="VARCHAR" />
+		<result column="standardArrivePriceCityName" property="standardArrivePriceCityName" jdbcType="VARCHAR" />
+		<result column="standardWeightPrice" property="standardWeightPrice" jdbcType="VARCHAR" />
+		<result column="standardVolumePrice" property="standardVolumePrice" jdbcType="VARCHAR" />
+		<result column="standardWeightVolumneDesc" property="standardWeightVolumneDesc" jdbcType="VARCHAR" />
+		<result column="standardLowestFee" property="standardLowestFee" jdbcType="VARCHAR" />
+		<result column="sendProvinceCode" property="sendProvinceCode" jdbcType="VARCHAR" />				
+		<result column="sendCityCode" property="sendCityCode" jdbcType="VARCHAR" />
+		<result column="sendAreaCode" property="sendAreaCode" jdbcType="VARCHAR" /> 
+		<result column="arriveProvinceCode" property="arriveProvinceCode" jdbcType="VARCHAR" />
+		<result column="arriveCityCode" property="arriveCityCode" jdbcType="VARCHAR" />
+		<result column="arriveAreaCode" property="arriveAreaCode" jdbcType="VARCHAR" />
+		<result column="eventIdStr" property="eventIdStr" jdbcType="VARCHAR" />				
+		<result column="eventNameStr" property="eventNameStr" jdbcType="VARCHAR" />
+		<result column="eventCodeStr" property="eventCodeStr" jdbcType="VARCHAR" />
+		<result column="pickupDeliveryDesc" property="pickupDeliveryDesc" jdbcType="VARCHAR" />
+		<result column="pickupPromDay" property="pickupPromDay" jdbcType="VARCHAR" />
+		<result column="deliveryPromDay" property="deliveryPromDay" jdbcType="VARCHAR" /> 
+	</resultMap>
+	
+	<resultMap
+		type="com.hoau.miser.module.biz.base.api.shared.domain.PriceSectionEntity"
+		id="priceTimeSectionWithSubResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="SHORT_CODE" property="shortCode" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="SUIT_PRODUCT" property="suitProduct" jdbcType="VARCHAR" />
+		<result column="SUIT_PRODUCT_NAME" property="suitProductName" jdbcType="VARCHAR" />
+		<result column="SECTIONED_ITEM" property="sectionedItem" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="SUITOA" property="suitoa" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="REUNITE_SOURCE" property="reuniteSource" jdbcType="VARCHAR" />
+		<collection property="subEntities" ofType="com.hoau.miser.module.biz.base.api.shared.domain.PriceSectionSubEntity">
+			<id column="SUB_ID" property="id" jdbcType="VARCHAR" />
+			<id column="SUB_SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+			<id column="SUB_START_VALUE" property="startValue" jdbcType="DOUBLE" />
+			<id column="SUB_END_VALUE" property="endValue" jdbcType="DOUBLE" />
+			<id column="SUB_SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE" property="price" jdbcType="DOUBLE" />
+			<id column="SUB_CALC_ALONE" property="calcAlone" jdbcType="VARCHAR" />
+			<id column="SUB_MIN_PRICE" property="minPrice" jdbcType="DOUBLE" />
+			<id column="SUB_MAX_PRICE" property="maxPrice" jdbcType="DOUBLE" />
+			<id column="SUB_REMARK" property="remark" jdbcType="VARCHAR" />
+			<id column="SUB_ACTIVE" property="active" jdbcType="VARCHAR" />
+			<id column="SUB_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+			<id column="SUB_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		</collection>
+	</resultMap>	
+	
+	<sql id="mainSqlBody">
+		SELECT SPRO.District_Name || '-' || SCITY.DISTRICT_NAME || '-' ||
+		       SAREA.DISTRICT_NAME SENDPATHNAME,
+		       APRO.District_Name || '-' || ACITY.DISTRICT_NAME || '-' ||
+		       AAREA.DISTRICT_NAME ARRIVEPATHNAME,
+		       SPX.standardPriceId,
+		       SPX.standardTransTypeCode,
+		       SPX.standardTransTypeName,
+		       SPX.standardSendPriceCity,
+		       SPX.standardSendPriceCityName,
+		       SPX.standardArrivePriceCity,
+		       SPX.standardArrivePriceCityName,
+		       SPX.standardWeightPrice,
+		       SPX.standardVolumePrice,
+		       SPX.standardLowestFee,
+		       SPX.sendProvinceCode,
+		       SPX.sendCityCode,
+		       SPX.sendAreaCode,
+		       SPX.arriveProvinceCode,
+		       SPX.arriveCityCode,
+		       SPX.arriveAreaCode,
+		       M.pickupPromDay,
+		       M.deliveryPromDay
+		  FROM (
+		    <if test="standardTransTypeCode != '50000000000000000001'">  
+		       SELECT Y.standardPriceId,
+		               Y.standardTransTypeCode,
+		               Y.standardTransTypeName,
+		               Y.standardSendPriceCity,
+		               Y.standardSendPriceCityName,
+		               Y.standardArrivePriceCity,
+		               Y.standardArrivePriceCityName,
+		               Y.standardWeightPrice,
+		               Y.standardVolumePrice,
+		               Y.standardLowestFee,
+		               Y.sendProvinceCode,
+		               Y.sendCityCode,
+		               Y.sendAreaCode,
+		               Y.arriveProvinceCode,
+		               Y.arriveCityCode,
+		               Y.arriveAreaCode
+		          FROM (SELECT Z.standardPriceId,
+		                       Z.standardTransTypeCode,
+		                       Z.standardTransTypeName,
+		                       Z.standardSendPriceCity,
+		                       PCS.NAME                  standardSendPriceCityName,
+		                       Z.standardArrivePriceCity,
+		                       PCA.NAME                  standardArrivePriceCityName,
+		                       Z.standardWeightPrice,
+		                       Z.standardVolumePrice,
+		                       Z.standardLowestFee,
+		                       PCS.PROVINCE_CODE         sendProvinceCode,
+		                       PCS.CITY_CODE             sendCityCode,
+		                       PCS.AREA_CODE             sendAreaCode,
+		                       PCA.PROVINCE_CODE         arriveProvinceCode,
+		                       PCA.CITY_CODE             arriveCityCode,
+		                       PCA.AREA_CODE             arriveAreaCode
+		                  FROM (SELECT A.id                standardPriceId,
+		                               A.trans_type_code   standardTransTypeCode,
+		                               A.trans_type_name   standardTransTypeName,
+		                               A.send_price_city   standardSendPriceCity,
+		                               A.arrive_price_city standardArrivePriceCity,
+		                               A.weight_price      standardWeightPrice,
+		                               A.volume_price      standardVolumePrice,
+		                               A.lowest_fee        standardLowestFee
+		                          FROM T_PRICE_STANDARD A
+		                         WHERE <![CDATA[ (CASE
+		                                 WHEN A.ACTIVE = 'N' THEN
+		                                  'DELETED'
+		                                 WHEN A.INVALID_TIME IS NOT NULL AND
+		                                      A.INVALID_TIME < SYSDATE THEN
+		                                  'PASSED'
+		                                 WHEN A.EFFECTIVE_TIME > SYSDATE THEN
+		                                  'WAIT'
+		                                 ELSE
+		                                  'EFFECTIVE'
+		                               END)]]> = 'EFFECTIVE') Z
+		                 INNER JOIN (SELECT PC.CODE,
+		                                   PC.NAME,
+		                                   PCM.PROVINCE_CODE,
+		                                   PCM.CITY_CODE,
+		                                   PCM.AREA_CODE
+		                              FROM T_PRICE_CITY PC
+		                             INNER JOIN T_PRICE_CITY_MAPPING_DISTRICT PCM
+		                                ON PC.CODE = PCM.PRICE_CITY
+		                             INNER JOIN (SELECT DISTRICT_CODE
+		                                          FROM T_BSE_DISTRICT
+		                                         WHERE HAS_CORP = 'Y') BD
+		                                ON PCM.AREA_CODE = BD.DISTRICT_CODE
+		                             WHERE PC.TYPE = 'SEND'
+		                               AND PC.ACTIVE = 'Y'
+		                               AND PCM.ACTIVE = 'Y') PCS
+		                    ON Z.standardSendPriceCity = PCS.CODE
+		                 INNER JOIN (SELECT PC.CODE,
+		                                   PC.NAME,
+		                                   PCM.PROVINCE_CODE,
+		                                   PCM.CITY_CODE,
+		                                   PCM.AREA_CODE
+		                              FROM T_PRICE_CITY PC
+		                             INNER JOIN T_PRICE_CITY_MAPPING_DISTRICT PCM
+		                                ON PC.CODE = PCM.PRICE_CITY
+		                             INNER JOIN (SELECT DISTRICT_CODE
+		                                          FROM T_BSE_DISTRICT
+		                                         WHERE HAS_CORP = 'Y') BD
+		                                ON PCM.AREA_CODE = BD.DISTRICT_CODE
+		                             WHERE PC.TYPE = 'ARRIVAL'
+		                               AND PC.ACTIVE = 'Y'
+		                               AND PCM.ACTIVE = 'Y') PCA
+		                    ON Z.standardArrivePriceCity = PCA.CODE) Y
+		                    
+		      </if>              
+				  <if test="standardTransTypeCode == null or standardTransTypeCode == ''">
+			      	UNION
+		      </if>
+		      
+		      <if test="standardTransTypeCode == null or standardTransTypeCode == '' or standardTransTypeCode == '50000000000000000001'"> 
+		        SELECT PX.standardPriceId,
+		               PX.standardTransTypeCode,
+		               PX.standardTransTypeName,
+		               PX.standardSendPriceCity,
+		               PX.standardSendPriceCityName,
+		               PX.standardArrivePriceCity,
+		               PX.standardArrivePriceCityName,
+		               PX.standardWeightPrice,
+		               PX.standardVolumePrice,
+		               PX.standardLowestFee,
+		               PX.sendProvinceCode,
+		               PX.sendCityCode,
+		               PX.sendAreaCode,
+		               PX.arriveProvinceCode,
+		               PX.arriveCityCode,
+		               PX.arriveAreaCode
+		          FROM (SELECT Z.standardPriceId,
+		                       '50000000000000000001' standardTransTypeCode,
+		                       '偏线' standardTransTypeName,
+		                       Z.standardSendPriceCity,
+		                       PCS.NAME standardSendPriceCityName,
+		                       Z.standardArrivePriceCity,
+		                       PCA.NAME standardArrivePriceCityName,
+		                       NVL(POB.weight_fee, 0) + Z.standardWeightPrice AS standardWeightPrice,
+		                       NVL(POB.volume_fee, 0) + Z.standardVolumePrice AS standardVolumePrice,
+		                       NVL(POB.lowest_fee, 0) + Z.standardLowestFee AS standardLowestFee,
+		                       PCS.PROVINCE_CODE sendProvinceCode,
+		                       PCS.CITY_CODE sendCityCode,
+		                       PCS.AREA_CODE sendAreaCode,
+		                       PCA.PROVINCE_CODE arriveProvinceCode,
+		                       PCA.CITY_CODE arriveCityCode,
+		                       PCA.AREA_CODE arriveAreaCode
+		                  FROM (SELECT A.id                standardPriceId,
+		                               A.trans_type_code   standardTransTypeCode,
+		                               A.trans_type_name   standardTransTypeName,
+		                               A.send_price_city   standardSendPriceCity,
+		                               A.arrive_price_city standardArrivePriceCity,
+		                               A.weight_price      standardWeightPrice,
+		                               A.volume_price      standardVolumePrice,
+		                               A.lowest_fee        standardLowestFee
+		                          FROM T_PRICE_STANDARD A
+		                         WHERE A.trans_type_code = '30000000000000000001'
+		                           AND <![CDATA[ (CASE
+		                                 WHEN A.ACTIVE = 'N' THEN
+		                                  'DELETED'
+		                                 WHEN A.INVALID_TIME IS NOT NULL AND
+		                                      A.INVALID_TIME < SYSDATE THEN
+		                                  'PASSED'
+		                                 WHEN A.EFFECTIVE_TIME > SYSDATE THEN
+		                                  'WAIT'
+		                                 ELSE
+		                                  'EFFECTIVE'
+		                               END) ]]> = 'EFFECTIVE') Z
+		                 INNER JOIN (SELECT PC.CODE,
+		                                   PC.NAME,
+		                                   PCM.PROVINCE_CODE,
+		                                   PCM.CITY_CODE,
+		                                   PCM.AREA_CODE
+		                              FROM T_PRICE_CITY PC
+		                             INNER JOIN T_PRICE_CITY_MAPPING_DISTRICT PCM
+		                                ON PC.CODE = PCM.PRICE_CITY
+		                             INNER JOIN (SELECT DISTRICT_CODE
+		                                          FROM T_BSE_DISTRICT
+		                                         WHERE HAS_CORP = 'Y') BD
+		                                ON PCM.AREA_CODE = BD.DISTRICT_CODE
+		                             WHERE PC.TYPE = 'SEND'
+		                               AND PC.ACTIVE = 'Y'
+		                               AND PCM.ACTIVE = 'Y') PCS
+		                    ON Z.standardSendPriceCity = PCS.CODE
+		                 INNER JOIN (SELECT PC.CODE,
+		                                   PC.NAME,
+		                                   PCM.PROVINCE_CODE,
+		                                   PCM.CITY_CODE,
+		                                   PCM.AREA_CODE
+		                              FROM T_PRICE_CITY PC
+		                             INNER JOIN T_PRICE_CITY_MAPPING_DISTRICT PCM
+		                                ON PC.CODE = PCM.PRICE_CITY
+		                             INNER JOIN (SELECT DISTRICT_CODE
+		                                          FROM T_BSE_DISTRICT
+		                                         WHERE HAS_CORP = 'Y') BD
+		                                ON PCM.AREA_CODE = BD.DISTRICT_CODE
+		                             WHERE PC.TYPE = 'ARRIVAL'
+		                               AND PC.ACTIVE = 'Y'
+		                               AND PCM.ACTIVE = 'Y') PCA
+		                    ON Z.standardArrivePriceCity = PCA.CODE
+		                 INNER JOIN (select lowest_fee,
+		                                   weight_fee,
+		                                   volume_fee,
+		                                   province_code,
+		                                   city_code,
+		                                   area_code
+		                              from t_price_outer_branch
+		                             where active = 'Y') POB
+		                    ON PCA.province_code = POB.province_code
+		                   AND PCA.city_code = POB.city_code
+		                   AND PCA.area_code = POB.area_code) PX
+		      </if>  
+		        ) SPX
+		 INNER JOIN (SELECT DISTRICT_CODE, DISTRICT_NAME
+		               FROM T_BSE_DISTRICT
+		              WHERE DISTRICT_TYPE = 'PROVINCE') SPRO
+		    ON SPX.sendProvinceCode = SPRO.DISTRICT_CODE
+		 INNER JOIN (SELECT DISTRICT_CODE, DISTRICT_NAME
+		               FROM T_BSE_DISTRICT
+		              WHERE DISTRICT_TYPE = 'CITY') SCITY
+		    ON SPX.sendCityCode = SCITY.DISTRICT_CODE
+		 INNER JOIN (SELECT DISTRICT_CODE, DISTRICT_NAME
+		               FROM T_BSE_DISTRICT
+		              WHERE DISTRICT_TYPE = 'AREA') SAREA
+		    ON SPX.sendAreaCode = SAREA.DISTRICT_CODE
+		 INNER JOIN (SELECT DISTRICT_CODE, DISTRICT_NAME
+		               FROM T_BSE_DISTRICT
+		              WHERE DISTRICT_TYPE = 'PROVINCE') APRO
+		    ON SPX.arriveProvinceCode = APRO.DISTRICT_CODE
+		 INNER JOIN (SELECT DISTRICT_CODE, DISTRICT_NAME
+		               FROM T_BSE_DISTRICT
+		              WHERE DISTRICT_TYPE = 'CITY') ACITY
+		    ON SPX.arriveCityCode = ACITY.DISTRICT_CODE
+		 INNER JOIN (SELECT DISTRICT_CODE, DISTRICT_NAME
+		               FROM T_BSE_DISTRICT
+		              WHERE DISTRICT_TYPE = 'AREA') AAREA
+		    ON SPX.arriveAreaCode = AAREA.DISTRICT_CODE
+		  LEFT JOIN (SELECT TM.timeStandardId,
+		                    TM.timeTransTypeCode,
+		                    TM.pickupPromDay,
+		                    TM.deliveryPromDay,
+		                    TM.timeSendProCode,
+		                    TM.timeSendCityCode,
+		                    TM.timeSendAreaCode,
+		                    TM.timeArriveProCode,
+		                    TM.timeArriveCityCode,
+		                    TM.timeArriveAreaCode
+		               FROM (SELECT BA.ID                timeStandardId,
+		                            BA.TRANS_TYPE_CODE   timeTransTypeCode,
+		                            BA.PICKUP_PROM_DAY   pickupPromDay,
+		                            BA.DELIVERY_PROM_DAY deliveryPromDay,
+		                            TCS.PROVINCE_CODE    timeSendProCode,
+		                            TCS.CITY_CODE        timeSendCityCode,
+		                            TCS.AREA_CODE        timeSendAreaCode,
+		                            TCA.PROVINCE_CODE    timeArriveProCode,
+		                            TCA.CITY_CODE        timeArriveCityCode,
+		                            TCA.AREA_CODE        timeArriveAreaCode
+		                       FROM T_TIME_STANDARD BA
+		                      INNER JOIN (SELECT TC.CODE,
+		                                        TC.NAME,
+		                                        TCM.PROVINCE_CODE,
+		                                        TCM.CITY_CODE,
+		                                        TCM.AREA_CODE
+		                                   FROM T_TIME_CITY TC
+		                                  INNER JOIN T_TIME_CITY_MAPPING_DISTRICT TCM
+		                                     ON TC.CODE = TCM.TIME_CITY
+		                                  INNER JOIN (SELECT DISTRICT_CODE
+		                                               FROM T_BSE_DISTRICT
+		                                              WHERE HAS_CORP = 'Y') BD
+		                                     ON TCM.AREA_CODE = BD.DISTRICT_CODE
+		                                  WHERE TC.TYPE = 'SEND'
+		                                    AND TC.ACTIVE = 'Y'
+		                                    AND TCM.ACTIVE = 'Y') TCS
+		                         ON BA.SEND_TIME_CITY = TCS.CODE
+		                      INNER JOIN (SELECT TC.CODE,
+		                                        TC.NAME,
+		                                        TCM.PROVINCE_CODE,
+		                                        TCM.CITY_CODE,
+		                                        TCM.AREA_CODE
+		                                   FROM T_TIME_CITY TC
+		                                  INNER JOIN T_TIME_CITY_MAPPING_DISTRICT TCM
+		                                     ON TC.CODE = TCM.TIME_CITY
+		                                  INNER JOIN (SELECT DISTRICT_CODE
+		                                               FROM T_BSE_DISTRICT
+		                                              WHERE HAS_CORP = 'Y') BD
+		                                     ON TCM.AREA_CODE = BD.DISTRICT_CODE
+		                                  WHERE TC.TYPE = 'ARRIVAL'
+		                                    AND TC.ACTIVE = 'Y'
+		                                    AND TCM.ACTIVE = 'Y') TCA
+		                         ON BA.ARRIVE_TIME_CITY = TCA.CODE
+		                      WHERE <![CDATA[ (CASE
+		                              WHEN BA.ACTIVE = 'N' THEN
+		                               'DELETED'
+		                              WHEN BA.INVALID_TIME IS NOT NULL AND
+		                                   BA.INVALID_TIME < SYSDATE THEN
+		                               'PASSED'
+		                              WHEN BA.EFFECTIVE_TIME > SYSDATE THEN
+		                               'WAIT'
+		                              ELSE
+		                               'EFFECTIVE'
+		                            END) ]]> = 'EFFECTIVE') TM) M
+		    ON SPX.sendProvinceCode = M.timeSendProCode
+		   AND SPX.sendCityCode = M.timeSendCityCode
+		   AND SPX.sendAreaCode = M.timeSendAreaCode
+		   AND SPX.arriveProvinceCode = M.timeArriveProCode
+		   AND SPX.arriveCityCode = M.timeArriveCityCode
+		   AND SPX.arriveAreaCode = M.timeArriveAreaCode
+		   AND SPX.standardTransTypeCode = M.timeTransTypeCode
+		 WHERE 1 = 1		
+	 
+		<if test="sendProvinceCode != null and sendProvinceCode != ''">
+			AND SPX.sendProvinceCode = #{sendProvinceCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="sendCityCode != null and sendCityCode != ''">
+			AND SPX.sendCityCode = #{sendCityCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="sendAreaCode != null and sendAreaCode != ''">
+			AND SPX.sendAreaCode = #{sendAreaCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="arriveProvinceCode != null and arriveProvinceCode != ''">
+			AND SPX.arriveProvinceCode = #{arriveProvinceCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="arriveCityCode != null and arriveCityCode != ''">
+			AND SPX.arriveCityCode = #{arriveCityCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="arriveAreaCode != null and arriveAreaCode != ''">
+			AND SPX.arriveAreaCode = #{arriveAreaCode,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="standardTransTypeCode != null and standardTransTypeCode != ''">
+			AND SPX.standardTransTypeCode = #{standardTransTypeCode,jdbcType=VARCHAR}
+		</if>	
+	 
+	</sql>
+	 
+	<select id="queryPriceTimeEntityListByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceTimeEntity"
+		resultMap="baseResultMapping">
+		<include refid="mainSqlBody"></include>
+	</select>
+	 
+	 
+	<select id="countOfPriceTimeEntityListByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceTimeEntity"
+		resultType="Long">
+		    SELECT 
+		        COUNT(1)
+		    FROM (
+				<include refid="mainSqlBody"></include>
+		    )	
+	</select>
+	
+	
+	<!-- 分段主表带明细的返回字段 -->
+	<sql id="query_sectionsubmain_param_withsub">
+		PSE.ID AS ID,
+		PSE.CODE AS CODE,
+		PSE.SHORT_CODE AS SHORT_CODE,
+		PSE.NAME AS NAME,
+		PSE.SUIT_PRODUCT AS SUIT_PRODUCT,
+		(SELECT NAME FROM T_BSE_TRANS_TYPE TTT WHERE TTT.CODE=PSE.SUIT_PRODUCT AND TTT.ACTIVE='Y') AS SUIT_PRODUCT_NAME,
+		PSE.SECTIONED_ITEM AS SECTIONED_ITEM,
+		PSE.REMARK AS REMARK,
+		PSE.ACTIVE AS ACTIVE,
+		PSE.CREATE_TIME AS CREATE_TIME,
+		PSE.CREATE_USER_CODE AS CREATE_USER_CODE,
+		PSE.MODIFY_TIME AS MODIFY_TIME,
+		PSE.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		PSE.REUNITE_SOURCE AS REUNITE_SOURCE,
+		PSE_SUB.ID AS SUB_ID,
+		PSE_SUB.SECTION_ID AS SUB_SECTION_ID,
+		PSE_SUB.START_VALUE AS SUB_START_VALUE,
+		PSE_SUB.END_VALUE AS SUB_END_VALUE,
+		PSE_SUB.SECTION_ACCODING_ITEM AS SUB_SECTION_ACCODING_ITEM,
+		PSE_SUB.PRICE_TYPE AS SUB_PRICE_TYPE,
+		PSE_SUB.PRICE AS SUB_PRICE,
+		PSE_SUB.CALC_ALONE AS SUB_CALC_ALONE,
+		PSE_SUB.MIN_PRICE AS SUB_MIN_PRICE,
+		PSE_SUB.MAX_PRICE AS SUB_MAX_PRICE,
+		PSE_SUB.REMARK AS SUB_REMARK,
+		PSE_SUB.ACTIVE AS SUB_ACTIVE,
+		PSE_SUB.CREATE_TIME AS SUB_CREATE_TIME,
+		PSE_SUB.CREATE_USER_CODE AS SUB_CREATE_USER_CODE,
+		PSE_SUB.MODIFY_TIME AS SUB_MODIFY_TIME,
+		PSE_SUB.MODIFY_USER_CODE AS SUB_MODIFY_USER_CODE
+	</sql>	
+		
+	<select id="querySectionSubListBySectionCodeStr" 
+			parameterType="java.util.Map" 
+			resultMap="priceTimeSectionWithSubResultMap">
+		SELECT 
+		    <include refid="query_sectionsubmain_param_withsub"></include>
+		  FROM T_PRICE_SECTION PSE
+		 INNER JOIN T_PRICE_SECTION_SUB PSE_SUB
+		 ON PSE.ID = PSE_SUB.SECTION_ID
+		 WHERE PSE.ACTIVE = 'Y'
+		 AND PSE_SUB.ACTIVE = 'Y'
+		 ${sectionCodeStr}
+	</select>
+	
+</mapper>

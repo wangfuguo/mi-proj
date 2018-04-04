@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.extrafee.server.dao.ExtrafeeAddValueFeeDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.extrafee.shared.domain.ExtrafeeAddValueFeeEntity"
+		id="ExtrafeeAddValueFeeResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="CODE" property="code" jdbcType="VARCHAR" />
+		<id column="CODE_NAME" property="codeName" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+		<id column="CALCULATION_TYPE" property="calculationType" jdbcType="VARCHAR" />
+		<id column="WEIGHT_PRICE" property="weightPrice" jdbcType="DOUBLE" />
+		<id column="LIGHT_PRICE" property="lightPrice" jdbcType="DOUBLE" />
+		<id column="LOWEST_MONEY" property="lowestMoney" jdbcType="DOUBLE" />
+		<id column="LOCK_TYPE" property="lockType" jdbcType="DOUBLE" />
+		<id column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<id column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<id column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<id column="state" property="state" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="query_mian_param">
+		PSE.ID AS id,
+		PSE.CODE AS code,
+		(select NAME from T_PRICE_ADDVALUE_FEE_ITEMS TAF where TAF.CODE=PSE.CODE and TAF.active='Y') AS CODE_NAME,
+		PSE.TRANS_TYPE_CODE AS trans_type_code,
+		(select NAME from T_BSE_TRANS_TYPE TTT where TTT.CODE=PSE.TRANS_TYPE_CODE and TTT.active='Y') AS trans_type_name,
+		PSE.CALCULATION_TYPE AS calculationType,
+		PSE.WEIGHT_PRICE AS weightPrice,
+		PSE.LIGHT_PRICE AS lightPrice,
+		PSE.LOWEST_MONEY AS lowestMoney,
+		PSE.LOCK_TYPE AS lockType,
+		PSE.EFFECTIVE_TIME AS effectiveTime,
+		PSE.INVALID_TIME AS invalidTime,
+		PSE.REMARK AS remark,
+		PSE.ACTIVE AS active,
+		PSE.CREATE_TIME AS createDate,
+		PSE.CREATE_USER_CODE AS createUser,
+		PSE.MODIFY_TIME AS modifyDate,
+		PSE.MODIFY_USER_CODE AS modifyUser,
+		<![CDATA[
+		case when (PSE.invalid_time<sysdate and PSE.active='Y') then 'PASSED'
+ 			                     when (PSE.effective_time<=sysdate and PSE.active='Y') then 'EFFECTIVE'
+ 			                     when (PSE.effective_time>sysdate and PSE.active='Y') then 'WAIT'
+ 			                     when (PSE.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			<if test="extrafeeAddValueFeeEntity!=null and extrafeeAddValueFeeEntity.id!=null and extrafeeAddValueFeeEntity.id!=''">
+				and PSE.ID=#{extrafeeAddValueFeeEntity.id,jdbcType=VARCHAR}
+			</if>
+			<if test="extrafeeAddValueFeeEntity!=null and extrafeeAddValueFeeEntity.code!=null and extrafeeAddValueFeeEntity.code!=''">
+				and PSE.CODE=#{extrafeeAddValueFeeEntity.code,jdbcType=VARCHAR}
+			</if>
+			<if test="extrafeeAddValueFeeEntity!=null and extrafeeAddValueFeeEntity.transTypeCode!=null and extrafeeAddValueFeeEntity.transTypeCode!=''">
+				and PSE.TRANS_TYPE_CODE=#{extrafeeAddValueFeeEntity.transTypeCode,jdbcType=VARCHAR}
+			</if>
+			<if test="extrafeeAddValueFeeEntity!=null and extrafeeAddValueFeeEntity.active!=null and extrafeeAddValueFeeEntity.active!=''">
+				and PSE.ACTIVE=#{extrafeeAddValueFeeEntity.active,jdbcType=VARCHAR}
+			</if>
+			<!-- 1:已失效,2:生效中,3:待生效,4:已废弃  -->
+			<if test="extrafeeAddValueFeeEntity.state!=null and extrafeeAddValueFeeEntity.state!=''">
+				<choose>
+					<when test='extrafeeAddValueFeeEntity.state=="PASSED"'>
+						<![CDATA[ and (sysdate>PSE.INVALID_TIME and PSE.ACTIVE='Y')]]>
+					</when>
+					<when test='extrafeeAddValueFeeEntity.state=="EFFECTIVE"'>
+						<![CDATA[ 
+							and (
+								(sysdate>=PSE.EFFECTIVE_TIME and PSE.INVALID_TIME is null and PSE.ACTIVE='Y')
+								or 
+								(sysdate>=PSE.EFFECTIVE_TIME  and PSE.INVALID_TIME is not null and sysdate<PSE.INVALID_TIME and PSE.ACTIVE='Y')
+							)
+						]]>
+					</when>
+					<when test='extrafeeAddValueFeeEntity.state=="WAIT"'>
+						<![CDATA[ and (sysdate<=PSE.EFFECTIVE_TIME and PSE.ACTIVE='Y')]]>
+					</when>
+					<when test='extrafeeAddValueFeeEntity.state=="DELETED"'>
+						<![CDATA[ and PSE.ACTIVE='N']]>
+					</when>
+					<otherwise>
+					</otherwise>
+				</choose>
+			</if>
+		</where> 
+	</sql>
+<!-- 根据参数查询优惠分段信息  -->
+	<select id="queryListByParam" resultMap="ExtrafeeAddValueFeeResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_ADDVALUE_FEE_STANDARD PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	
+	<!-- 根据参数统计优惠分段信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_ADDVALUE_FEE_STANDARD PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	<!-- 增加一条优惠分段 -->
+	<insert id="addExtrafeeAddValueFee" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.ExtrafeeAddValueFeeEntity">
+	    INSERT INTO T_PRICE_ADDVALUE_FEE_STANDARD
+	     (
+	    ID,
+		CODE,
+		TRANS_TYPE_CODE,
+		CALCULATION_TYPE,
+		WEIGHT_PRICE,
+		LIGHT_PRICE,
+		LOWEST_MONEY,
+		LOCK_TYPE,
+		EFFECTIVE_TIME,
+		INVALID_TIME,
+		REMARK,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{code,jdbcType=VARCHAR},
+	    	#{transTypeCode,jdbcType=VARCHAR},
+	    	#{calculationType,jdbcType=VARCHAR},
+	    	#{weightPrice,jdbcType=DOUBLE},
+	    	#{lightPrice,jdbcType=DOUBLE},
+	    	#{lowestMoney,jdbcType=DOUBLE},
+	    	#{lockType,jdbcType=DOUBLE},
+	    	#{effectiveTime,jdbcType=TIMESTAMP},
+	    	#{invalidTime,jdbcType=TIMESTAMP},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改和删除都用这个 -->
+	<update id="delExtrafeeAddValueFee" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.ExtrafeeAddValueFeeEntity">
+	    UPDATE T_PRICE_ADDVALUE_FEE_STANDARD SET
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR},
+	    INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateExtrafeeAddValueFee">
+	        UPDATE T_PRICE_ADDVALUE_FEE_STANDARD TBR  SET 
+	    	TBR.CODE = #{code,jdbcType=VARCHAR},
+			TBR.TRANS_TYPE_CODE  = #{transTypeCode,jdbcType=VARCHAR},
+			TBR.CALCULATION_TYPE  = #{calculationType,jdbcType=VARCHAR},
+			TBR.WEIGHT_PRICE  = #{weightPrice,jdbcType=DOUBLE},
+			TBR.LIGHT_PRICE  = #{lightPrice,jdbcType=DOUBLE},
+			TBR.LOWEST_MONEY = #{lowestMoney,jdbcType=DOUBLE},
+			TBR.LOCK_TYPE = #{lockType,jdbcType=DOUBLE},
+			TBR.EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+			TBR.INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+	    	TBR.REMARK = #{remark,jdbcType=VARCHAR},
+	    	TBR.ACTIVE = #{active,jdbcType=VARCHAR},
+	    	TBR.MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    	TBR.MODIFY_USER_CODE = #{modifyUser,jdbcType=TIMESTAMP}
+	    WHERE 
+	   		TBR.ID = #{id,jdbcType=VARCHAR}
+	</update>
+
+</mapper>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.PriceCityDao">
+	<resultMap id="priceCityMap"
+		type="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" javaType="Date"  jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser"  jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" javaType="Date" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUser"  jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="INVALID" property="invalid" jdbcType="VARCHAR" />
+		<result column="PRICECITYSCOPE" property="priceCityScope" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="main_query_columns">
+        T.ID AS ID,
+        T.CODE AS CODE,
+        T.NAME AS NAME,
+        T.TYPE AS TYPE,
+        T.INVALID AS INVALID,
+        T.ACTIVE AS ACTIVE,
+        T.CREATE_TIME AS CREATE_TIME,
+        T.CREATE_USER_CODE AS CREATE_USER_CODE,
+        T.REMARK AS REMARK,
+        T.MODIFY_TIME AS MODIFY_TIME,
+        T.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+        T.PRICECITYSCOPE
+	</sql>
+	
+	<sql id="excel_query_columns">
+        T.ID AS ID,
+        T.CODE AS CODE,
+        T.NAME AS NAME,
+        DECODE(T.TYPE,'SEND','出发价格城市','到达价格城市')             AS TYPE,
+        DECODE(T.INVALID,'Y','是','否')          AS INVALID,
+        DECODE(T.ACTIVE,'Y','是','否')           AS ACTIVE,
+        T.CREATE_TIME AS CREATE_TIME,
+        T.CREATE_USER_CODE AS CREATE_USER_CODE,
+        T.REMARK AS REMARK,
+        T.MODIFY_TIME AS MODIFY_TIME,
+        T.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+        T.PRICECITYSCOPE
+	</sql>
+		
+
+	<sql id="main_query_filter">
+		<if test="code != null and code != ''">
+            AND T.CODE = #{code, jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != ''">
+            AND T.NAME LIKE  CONCAT('%', CONCAT(#{name, jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="type != null and type != ''">
+            AND T.TYPE = #{type, jdbcType=VARCHAR}
+		</if>
+		<if test="invalid != null and invalid != ''">
+            AND T.INVALID = #{invalid, jdbcType=VARCHAR}
+		</if>
+		<if test="priceCityScope != null and priceCityScope != ''">
+            AND T.PRICECITYSCOPE = #{priceCityScope, jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	<!-- 查询价格城市列表 -->
+	<select id="queryPriceCities" resultMap="priceCityMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        SELECT
+		<include refid="main_query_columns"></include>
+        FROM T_PRICE_CITY T
+		<where>
+			<include refid="main_query_filter"></include>
+		</where>
+		<if test="name != null and name != ''">
+			ORDER BY T.NAME ASC
+		</if>
+	</select>
+	
+	
+	
+	<!-- 用于导出的查询 -->
+	<select id="queryPriceCitiesForExport" resultMap="priceCityMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        SELECT
+		<include refid="excel_query_columns"></include>
+        FROM T_PRICE_CITY T
+		<where>
+			<include refid="main_query_filter"></include>
+		</where>
+		<if test="name != null and name != ''">
+			ORDER BY T.NAME ASC
+		</if>
+	</select>
+	
+	
+
+	<!-- 查询价格城市列表总数量 -->
+	<select id="queryPriceCityCount" resultType="long" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        SELECT COUNT(0) FROM T_PRICE_CITY T
+		<where>
+			<include refid="main_query_filter"></include>
+		</where>
+	</select>
+
+	<!-- 根据ID查询价格城市 -->
+	<select id="queryPriceCityById" resultMap="priceCityMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        SELECT
+		<include refid="main_query_columns"></include>
+        FROM T_PRICE_CITY T
+		<where>
+            T.ID = #{id, jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	<!-- 根据code查询价格城市 -->
+	<select id="queryPriceCityByCode" resultMap="priceCityMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        SELECT
+		<include refid="main_query_columns"></include>
+        FROM T_PRICE_CITY T
+		<where>
+            T.CODE = #{code, jdbcType=VARCHAR}
+            AND T.AVTIVE = 'Y'
+		</where>
+	</select>
+
+	<!-- 根据name查询价格城市 -->
+	<select id="queryPriceCityByName" resultMap="priceCityMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        SELECT
+		<include refid="main_query_columns"></include>
+        FROM T_PRICE_CITY T
+		<where>
+            T.NAME = #{name, jdbcType=VARCHAR}
+            AND T.TYPE = #{type, jdbcType=VARCHAR}
+            <if test="priceCityScope != null and priceCityScope != ''">
+            	AND T.PRICECITYSCOPE = #{priceCityScope, jdbcType=VARCHAR}
+			</if>
+            AND T.ACTIVE = 'Y'
+		</where>
+	</select>
+    
+	<!-- 新增价格城市 -->
+	<insert id="addPriceCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+		INSERT INTO T_PRICE_CITY(/** 新增时效城市**/
+	    ID,
+	    CODE,
+	    NAME,
+	    REMARK,    
+	    ACTIVE,
+	    CREATE_TIME,
+	    CREATE_USER_CODE,
+	    MODIFY_TIME,
+	    MODIFY_USER_CODE,
+	    TYPE,
+	    INVALID,
+	   	PRICECITYSCOPE
+	    )VALUES(
+	    #{id,jdbcType=VARCHAR},
+	    #{code,jdbcType=VARCHAR},
+	    #{name,jdbcType=VARCHAR},
+	    #{remark,jdbcType=VARCHAR},
+	    #{active,jdbcType=CHAR},
+	    #{createDate,jdbcType=TIMESTAMP},
+	    #{createUser,jdbcType=VARCHAR},
+	    #{modifyDate, jdbcType=TIMESTAMP},
+	    #{modifyUser,jdbcType=VARCHAR},
+	    #{type,jdbcType=VARCHAR},
+	    #{invalid,jdbcType=VARCHAR},
+	    #{priceCityScope,jdbcType=VARCHAR}
+	    )
+	</insert>
+
+	<!-- 修改价格城市 -->
+	<update id="updatePriceCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        UPDATE T_PRICE_CITY SET
+		<if test="name != null and name != ''">
+            NAME = #{name,jdbcType=VARCHAR},
+		</if>
+		<if test="modifyDate != null and modifyData != ''">
+            MODIFY_TIME = #{modifyDate, jdbcType=TIMESTAMP}
+		</if>
+		<if test="modifyUser != null and modifyUser != ''">
+            MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR},
+		</if>
+        REMARK = #{remark,jdbcType=VARCHAR}
+		<where>
+            ID = #{id,jdbcType=VARCHAR}
+            AND ACTIVE = 'Y'
+            AND INVALID = 'N'
+		</where>
+	</update>
+
+	<!-- 手动作废价格城市 -->
+	<update id="invalidPriceCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        UPDATE T_PRICE_CITY SET
+		<if test="modifyDate != null and modifyDate != ''">
+            MODIFY_TIME = #{modifyDate, jdbcType=TIMESTAMP},
+		</if>
+		<if test="modifyUser != null and modifyUser != ''">
+            MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR},
+		</if>
+        INVALID = 'Y', ACTIVE = 'N'
+		<where>
+            ID = #{id,jdbcType=VARCHAR}
+            AND ACTIVE = 'Y'
+            AND INVALID = 'N'
+		</where>
+	</update>
+
+	<!-- 修改导致的删除上一条数据 -->
+	<update id="deletePriceCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+        UPDATE T_PRICE_CITY SET
+		<if test="modifyDate != null and modifyDate != ''">
+            MODIFY_TIME = #{modifyDate, jdbcType=TIMESTAMP},
+		</if>
+		<if test="modifyUser != null and modifyUser != ''">
+            MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR},
+		</if>
+        INVALID = 'Y', ACTIVE = 'N'
+		<where>
+            ID = #{id,jdbcType=VARCHAR}
+            AND ACTIVE = 'Y'
+            AND INVALID = 'N'
+		</where>
+	</update>
+	
+	<insert id="insertBatch" parameterType="List">
+  	INSERT INTO T_PRICE_CITY (ID, CODE, NAME, TYPE,REMARK,
+      CREATE_TIME,CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, 
+      ACTIVE,INVALID,PRICECITYSCOPE)
+     <foreach collection="pceList" item ="item" index="index"  separator ="union all"> 
+     SELECT
+      #{item.id,jdbcType=VARCHAR},#{item.code,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR}, 
+      #{item.type,jdbcType=VARCHAR},#{item.remark,jdbcType=CHAR},
+      #{item.createDate,jdbcType=TIMESTAMP}, #{item.createUser,jdbcType=VARCHAR},
+      #{item.modifyDate,jdbcType=TIMESTAMP},#{item.modifyUser,jdbcType=VARCHAR},
+      #{item.active,jdbcType=VARCHAR},#{item.invalid,jdbcType=VARCHAR},#{item.priceCityScope,jdbcType=VARCHAR}
+     from dual
+    </foreach> 
+  </insert>
+
+</mapper>

@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoau.miser.module.biz.pricecard.server.dao.PriceCorpDao" >
+  <resultMap id="PriceCorpResultMap" type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCorpEntity" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+    <result column="CORP_CODE" property="corpCode" jdbcType="VARCHAR" />
+    <result column="CORP_NAME" property="corpName" jdbcType="VARCHAR" />
+    <result column="ARRIVE_PRICE_CITY" property="arrivePriceCity" jdbcType="VARCHAR" />
+    <result column="WEIGHT_PRICE" property="weightPrice" jdbcType="DECIMAL" />
+    <result column="VOLUME_PRICE" property="volumePrice" jdbcType="DECIMAL" />
+    <result column="ADD_FEE" property="addFee" jdbcType="DECIMAL" />
+    <result column="LOWEST_FEE" property="lowestFee" jdbcType="DECIMAL" />
+    <result column="FUEL_FEE_SECTION" property="fuelFeeSection" jdbcType="VARCHAR" />
+    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+  </resultMap>
+  
+  <resultMap id="gridView" type="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCorpGirdVo" >
+  	<id column="INDEXS" property="index" jdbcType="DECIMAL" />
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+    <result column="CORP_CODE" property="corpCode" jdbcType="VARCHAR" />
+    <result column="CORP_NAME" property="corpName" jdbcType="VARCHAR" />
+    <result column="ARRIVE_PRICE_CITY" property="arrivePriceCity" jdbcType="VARCHAR" />
+    <result column="ARRIVE_PRICE_CITY_NAME" property="arrivePriceCityName" jdbcType="VARCHAR" />
+    <result column="WEIGHT_PRICE" property="weightPrice" jdbcType="DECIMAL" />
+    <result column="VOLUME_PRICE" property="volumePrice" jdbcType="DECIMAL" />
+    <result column="ADD_FEE" property="addFee" jdbcType="DECIMAL" />
+    <result column="LOWEST_FEE" property="lowestFee" jdbcType="DECIMAL" />
+    <result column="FUEL_FEE_SECTION" property="fuelAddFeeSection" jdbcType="VARCHAR" />
+    <result column="FUEL_FEE_SECTION_NAME" property="fuelAddFeeSectionName" jdbcType="VARCHAR" />
+    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+    <result column="STATUS" property="state" jdbcType="VARCHAR" />
+    <result column="DIVISION" property="division" jdbcType="VARCHAR" />
+    <result column="BIGREGION" property="bigRegion" jdbcType="VARCHAR" />
+    <result column="ROADAREA" property="roadArea" jdbcType="VARCHAR" />
+    <result column="DIVISIONCODE" property="divisionCode" jdbcType="VARCHAR" />
+    <result column="BIGREGIONCODE" property="bigRegionCode" jdbcType="VARCHAR" />
+    <result column="ROADAREACODE" property="roadAreaCode" jdbcType="VARCHAR" />
+    <result column="LOGISTICNAME" property="logisticName" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, TRANS_TYPE_CODE, TRANS_TYPE_NAME, CORP_CODE, CORP_NAME, ARRIVE_PRICE_CITY, WEIGHT_PRICE, 
+    VOLUME_PRICE, ADD_FEE, LOWEST_FEE, FUEL_FEE_SECTION, EFFECTIVE_TIME, INVALID_TIME, 
+    REMARK, CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, ACTIVE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="PriceCorpResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_PRICE_CORP
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_PRICE_CORP
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  	
+  <update id="cancelByPrimaryKey" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCorpGirdVo" >
+    update T_PRICE_CORP set  ACTIVE = 'N' ,MODIFY_TIME = sysdate,MODIFY_USER_CODE = #{modifyUserCode}
+    where ID = #{id}
+  </update>
+  
+   <update id="cancelByLJPrimary" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCorpGirdVo" >
+    UPDATE T_PRICE_CORP SET  ACTIVE = 'N' ,MODIFY_TIME = SYSDATE,MODIFY_USER_CODE = #{modifyUserCode},INVALID_TIME = sysdate
+    <if test="(remark !=null) and (remark != '')">
+    	,remark  = #{remark}
+    </if>
+    WHERE CORP_CODE = #{corpCode} 
+    
+     AND EFFECTIVE_TIME = #{effectiveTime}
+    <if test="(invalidTime !=null) and (invalidTime !='')">
+     AND INVALID_TIME = #{invalidTime}
+    </if>
+    <if test="(invalidTime == null)">
+     AND INVALID_TIME IS NULL
+    </if>
+  </update>
+  
+  <update id="updateByLJPrimaryForInsert" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCorpGirdVo" >
+    UPDATE T_PRICE_CORP SET INVALID_TIME = SYSDATE,MODIFY_TIME = SYSDATE,MODIFY_USER_CODE = #{modifyUserCode}
+    <if test="(remark !=null) and (remark != '')">
+    	,remark  = #{remark}
+    </if>
+    WHERE CORP_CODE = #{corpCode} 
+    
+     AND EFFECTIVE_TIME = #{effectiveTime }
+    <if test="(invalidTime !=null) and (invalidTime !='')">
+     AND INVALID_TIME = #{invalidTime}
+    </if>
+    <if test="(invalidTime == null)">
+     AND INVALID_TIME is null
+    </if>
+  </update>
+  
+  
+  <insert id="insert" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCorpEntity" >
+    insert into T_PRICE_CORP (ID, TRANS_TYPE_CODE, TRANS_TYPE_NAME, 
+      CORP_CODE, CORP_NAME, ARRIVE_PRICE_CITY, 
+      WEIGHT_PRICE, VOLUME_PRICE, ADD_FEE, 
+      LOWEST_FEE, FUEL_FEE_SECTION, EFFECTIVE_TIME, 
+      INVALID_TIME, REMARK, CREATE_TIME, 
+      CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, 
+      ACTIVE,DATAORIGN)
+    values (#{id,jdbcType=VARCHAR}, #{transTypeCode,jdbcType=VARCHAR}, #{transTypeName,jdbcType=VARCHAR}, 
+      #{corpCode,jdbcType=VARCHAR}, #{corpName,jdbcType=VARCHAR}, #{arrivePriceCity,jdbcType=VARCHAR}, 
+      #{weightPrice,jdbcType=DECIMAL}, #{volumePrice,jdbcType=DECIMAL}, #{addFee,jdbcType=DECIMAL}, 
+      #{lowestFee,jdbcType=DECIMAL}, #{fuelFeeSection,jdbcType=VARCHAR}, #{effectiveTime,jdbcType=TIMESTAMP}, 
+      #{invalidTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},sysdate, 
+      #{createUserCode,jdbcType=VARCHAR}, sysdate, #{modifyUserCode,jdbcType=VARCHAR}, 
+      #{active,jdbcType=CHAR},#{dataOrign,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="insertBatch" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCorpVo">
+  	INSERT INTO T_PRICE_CORP (ID, TRANS_TYPE_CODE, TRANS_TYPE_NAME, 
+      CORP_CODE, CORP_NAME, ARRIVE_PRICE_CITY, 
+      WEIGHT_PRICE, VOLUME_PRICE, ADD_FEE, 
+      LOWEST_FEE, FUEL_FEE_SECTION, EFFECTIVE_TIME, 
+      INVALID_TIME, REMARK, CREATE_TIME, 
+      CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, 
+      ACTIVE,DATAORIGN)
+     <foreach collection="prcList" item ="item" index="index"  separator ="union all"> 
+     SELECT
+     #{item.id,jdbcType=VARCHAR}, #{item.transTypeCode,jdbcType=VARCHAR}, #{item.transTypeName,jdbcType=VARCHAR}, 
+      #{item.corpCode,jdbcType=VARCHAR}, #{item.corpName,jdbcType=VARCHAR}, #{item.arrivePriceCity,jdbcType=VARCHAR}, 
+      #{item.weightPrice,jdbcType=DECIMAL}, #{item.volumePrice,jdbcType=DECIMAL}, #{item.addFee,jdbcType=DECIMAL}, 
+      #{item.lowestFee,jdbcType=DECIMAL}, #{item.fuelFeeSection,jdbcType=VARCHAR}, #{gridVo.effectiveTime,jdbcType=TIMESTAMP}, 
+      #{gridVo.invalidTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR},#{gridVo.createTime,jdbcType=TIMESTAMP}, 
+      #{gridVo.createUserCode,jdbcType=VARCHAR}, #{gridVo.modifyTime ,jdbcType=TIMESTAMP}, #{gridVo.modifyUserCode,jdbcType=VARCHAR}, 
+      #{item.active,jdbcType=CHAR},#{item.dataOrign,jdbcType=VARCHAR}
+     from dual
+    </foreach> 
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCorpEntity" >
+    insert into T_PRICE_CORP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="transTypeCode != null" >
+        TRANS_TYPE_CODE,
+      </if>
+      <if test="transTypeName != null" >
+        TRANS_TYPE_NAME,
+      </if>
+      <if test="corpCode != null" >
+        CORP_CODE,
+      </if>
+      <if test="corpName != null" >
+        CORP_NAME,
+      </if>
+      <if test="arrivePriceCity != null" >
+        ARRIVE_PRICE_CITY,
+      </if>
+      <if test="weightPrice != null" >
+        WEIGHT_PRICE,
+      </if>
+      <if test="volumePrice != null" >
+        VOLUME_PRICE,
+      </if>
+      <if test="addFee != null" >
+        ADD_FEE,
+      </if>
+      <if test="lowestFee != null" >
+        LOWEST_FEE,
+      </if>
+      <if test="fuelFeeSection != null" >
+        FUEL_FEE_SECTION,
+      </if>
+      <if test="effectiveTime != null" >
+        EFFECTIVE_TIME,
+      </if>
+      <if test="invalidTime != null" >
+        INVALID_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="createUserCode != null" >
+        CREATE_USER_CODE,
+      </if>
+      <if test="modifyTime != null" >
+        MODIFY_TIME,
+      </if>
+      <if test="modifyUserCode != null" >
+        MODIFY_USER_CODE,
+      </if>
+      <if test="active != null" >
+        ACTIVE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="transTypeCode != null" >
+        #{transTypeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="transTypeName != null" >
+        #{transTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpCode != null" >
+        #{corpCode,jdbcType=VARCHAR},
+      </if>
+      <if test="corpName != null" >
+        #{corpName,jdbcType=VARCHAR},
+      </if>
+      <if test="arrivePriceCity != null" >
+        #{arrivePriceCity,jdbcType=VARCHAR},
+      </if>
+      <if test="weightPrice != null" >
+        #{weightPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="volumePrice != null" >
+        #{volumePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="addFee != null" >
+        #{addFee,jdbcType=DECIMAL},
+      </if>
+      <if test="lowestFee != null" >
+        #{lowestFee,jdbcType=DECIMAL},
+      </if>
+      <if test="fuelFeeSection != null" >
+        #{fuelFeeSection,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveTime != null" >
+        #{effectiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="invalidTime != null" >
+        #{invalidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserCode != null" >
+        #{createUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUserCode != null" >
+        #{modifyUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="active != null" >
+        #{active,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCorpEntity" >
+    update T_PRICE_CORP
+    <set >
+      <if test="transTypeCode != null" >
+        TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="transTypeName != null" >
+        TRANS_TYPE_NAME = #{transTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpCode != null" >
+        CORP_CODE = #{corpCode,jdbcType=VARCHAR},
+      </if>
+      <if test="corpName != null" >
+        CORP_NAME = #{corpName,jdbcType=VARCHAR},
+      </if>
+      <if test="arrivePriceCity != null" >
+        ARRIVE_PRICE_CITY = #{arrivePriceCity,jdbcType=VARCHAR},
+      </if>
+      <if test="weightPrice != null" >
+        WEIGHT_PRICE = #{weightPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="volumePrice != null" >
+        VOLUME_PRICE = #{volumePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="addFee != null" >
+        ADD_FEE = #{addFee,jdbcType=DECIMAL},
+      </if>
+      <if test="lowestFee != null" >
+        LOWEST_FEE = #{lowestFee,jdbcType=DECIMAL},
+      </if>
+      <if test="fuelFeeSection != null" >
+        FUEL_FEE_SECTION = #{fuelFeeSection,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveTime != null" >
+        EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="invalidTime != null" >
+        INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserCode != null" >
+        CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        MODIFY_TIME = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUserCode != null" >
+        MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="active != null" >
+        ACTIVE = #{active,jdbcType=CHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceCorpEntity" >
+    update T_PRICE_CORP
+    set TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR},
+      TRANS_TYPE_NAME = #{transTypeName,jdbcType=VARCHAR},
+      CORP_CODE = #{corpCode,jdbcType=VARCHAR},
+      CORP_NAME = #{corpName,jdbcType=VARCHAR},
+      ARRIVE_PRICE_CITY = #{arrivePriceCity,jdbcType=VARCHAR},
+      WEIGHT_PRICE = #{weightPrice,jdbcType=DECIMAL},
+      VOLUME_PRICE = #{volumePrice,jdbcType=DECIMAL},
+      ADD_FEE = #{addFee,jdbcType=DECIMAL},
+      LOWEST_FEE = #{lowestFee,jdbcType=DECIMAL},
+      FUEL_FEE_SECTION = #{fuelFeeSection,jdbcType=VARCHAR},
+      EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+      INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      CREATE_USER_CODE = #{createUserCode,jdbcType=VARCHAR},
+      MODIFY_TIME = #{modifyTime,jdbcType=TIMESTAMP},
+      MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+      ACTIVE = #{active,jdbcType=CHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+   <select id="queryBySearch" resultMap="gridView" parameterType="map">
+	SELECT * FROM (
+		SELECT 
+		    max(T.TRANS_TYPE_CODE) as TRANS_TYPE_CODE,max(T.TRANS_TYPE_NAME) as TRANS_TYPE_NAME,
+		    max(T.CORP_CODE) as CORP_CODE,max(T.CORP_NAME) as CORP_NAME,max(T.ARRIVE_PRICE_CITY) as ARRIVE_PRICE_CITY,
+		    max(T.WEIGHT_PRICE) as WEIGHT_PRICE,max(T.VOLUME_PRICE) as VOLUME_PRICE,max(T.ADD_FEE) as ADD_FEE,
+		    max(T.LOWEST_FEE) as LOWEST_FEE,max(T.FUEL_FEE_SECTION) as FUEL_FEE_SECTION,
+		    max(T.EFFECTIVE_TIME) as EFFECTIVE_TIME,max(T.INVALID_TIME) as INVALID_TIME,
+		    max(T.REMARK) as REMARK,max(T.CREATE_TIME) as CREATE_TIME,max(T.CREATE_USER_CODE || ' ' || E.EMP_NAME) AS CREATE_USER_CODE,
+		    max(T.MODIFY_TIME) as MODIFY_TIME,max(T.MODIFY_USER_CODE || ' ' || F.EMP_NAME) AS MODIFY_USER_CODE,
+		    max(B.NAME) AS ROADAREA ,max(B.CODE) AS ROADAREACODE,max(C.NAME) AS BIGREGION,max(C.CODE) AS BIGREGIONCODE,max(D.NAME) AS DIVISION,max(D.CODE) AS DIVISIONCODE,
+            max(A.LOGIST_CODE) AS LOGISTICNAME,
+				<![CDATA[ max(CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+		    WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN 'PASSED'
+		    WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+		    ELSE 'EFFECTIVE' END) AS STATUS  
+				 ]]>
+				from T_PRICE_CORP T
+				LEFT JOIN (SELECT CODE,NAME,PARENT_CODE, LOGIST_CODE FROM T_BSE_ORG WHERE  IS_SALES_DEPARTMENT = 'Y') A
+				ON A.CODE = T.CORP_CODE
+				LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_ROAD_AREA = 'Y') B 
+				ON A.PARENT_CODE = B.CODE
+				LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_BIG_REGION = 'Y') C 
+				ON B.PARENT_CODE = C.CODE
+				LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_DIVISION = 'Y') D 
+				ON C.PARENT_CODE = D.CODE
+				LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') E
+				ON E.USER_NAME = T.CREATE_USER_CODE
+				LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') F
+				ON F.USER_NAME = T.MODIFY_USER_CODE
+				WHERE 1 = 1
+				<!-- <if test = "(id !=null) and (id != '')">
+					AND T.ID = #{id}
+				</if> -->
+				<if test ="(division != null) and (division !='')">
+					AND D.code = #{division}
+				</if>
+				<if test ="(bigRegion != null) and (bigRegion !='')">
+					AND C.code = #{bigRegion}
+				</if>
+				<if test ="(roadArea != null) and (roadArea !='')">
+					AND B.code = #{roadArea}
+				</if>
+				<if test ="(sales != null) and (sales !='')">
+					AND A.code = #{sales}
+				</if>
+				
+				<if test ="(effective != null) and (effective !='')">
+					 AND #{effective} BETWEEN  EFFECTIVE_TIME AND INVALID_TIME  
+				</if>
+				
+				<if test ="(dataOrign != null) and (dataOrign !='')">
+					 AND T.dataorign = #{dataOrign} 
+				</if>
+				
+				GROUP BY T.CORP_CODE,T.EFFECTIVE_TIME,T.INVALID_TIME
+				ORDER BY CREATE_TIME
+				<if test="(order!=null) and (order!='')">
+						 #{order,jdbcType=VARCHAR}
+				</if>
+				<if test="(order ==null) or (order=='')">
+						desc
+				</if>
+			)
+		<if test ="(state != null) and (state !='')">
+			WHERE STATUS = #{state}
+		</if>
+		<if test ="(state == null) or (state =='')">
+			WHERE STATUS != 'DELETED'
+		</if>
+  </select>
+  
+   <select id="queryBySearchCount" resultType="long" parameterType="map">
+	SELECT count(1) FROM (
+		SELECT 
+		    max(T.TRANS_TYPE_CODE) as TRANS_TYPE_CODE,max(T.TRANS_TYPE_NAME) as TRANS_TYPE_NAME,
+		    max(T.CORP_CODE) as CORP_CODE,max(T.CORP_NAME) as CORP_NAME,max(T.ARRIVE_PRICE_CITY) as ARRIVE_PRICE_CITY,
+		    max(T.WEIGHT_PRICE) as WEIGHT_PRICE,max(T.VOLUME_PRICE) as VOLUME_PRICE,max(T.ADD_FEE) as ADD_FEE,
+		    max(T.LOWEST_FEE) as LOWEST_FEE,max(T.FUEL_FEE_SECTION) as FUEL_FEE_SECTION,
+		    max(T.EFFECTIVE_TIME) as EFFECTIVE_TIME,max(T.INVALID_TIME) as INVALID_TIME,
+		    max(T.REMARK) as REMARK,max(T.CREATE_TIME) as CREATE_TIME,max(T.CREATE_USER_CODE || ' ' || E.EMP_NAME) AS CREATE_USER_CODE,
+		    max(T.MODIFY_TIME) as MODIFY_TIME,max(T.MODIFY_USER_CODE || ' ' || F.EMP_NAME) AS MODIFY_USER_CODE,
+		    max(B.NAME) AS ROADAREA,max(C.NAME) AS BIGREGION,max(D.NAME) AS DIVISION,
+				<![CDATA[ max(CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+		    WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN 'PASSED'
+		    WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+		    ELSE 'EFFECTIVE' END) AS STATUS  
+				 ]]>
+				from T_PRICE_CORP T
+				LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE  IS_SALES_DEPARTMENT = 'Y') A 
+				ON A.CODE = T.CORP_CODE
+				LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_ROAD_AREA = 'Y') B 
+				ON A.PARENT_CODE = B.CODE
+				LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_BIG_REGION = 'Y') C 
+				ON B.PARENT_CODE = C.CODE
+				LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_DIVISION = 'Y') D 
+				ON C.PARENT_CODE = D.CODE
+				LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') E
+				ON E.USER_NAME = T.CREATE_USER_CODE
+				LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') F
+				ON F.USER_NAME = T.MODIFY_USER_CODE
+				WHERE 1 = 1
+				<!-- <if test = "(id !=null) and (id != '')">
+					AND T.ID = #{id}
+				</if> -->
+				<if test ="(division != null) and (division !='')">
+					AND D.code = #{division}
+				</if>
+				<if test ="(bigRegion != null) and (bigRegion !='')">
+					AND C.code = #{bigRegion}
+				</if>
+				<if test ="(roadArea != null) and (roadArea !='')">
+					AND B.code = #{roadArea}
+				</if>
+				<if test ="(sales != null) and (sales !='')">
+					AND A.code = #{sales}
+				</if>
+				
+				<if test ="(effective != null) and (effective !='')">
+					 AND #{effective} BETWEEN  EFFECTIVE_TIME AND INVALID_TIME  
+				</if>
+				
+				<if test ="(dataOrign != null) and (dataOrign !='')">
+					 AND T.dataorign = #{dataOrign} 
+				</if>
+				
+				GROUP BY T.CORP_CODE,T.EFFECTIVE_TIME,T.INVALID_TIME
+				ORDER BY CREATE_TIME
+				<if test="(order!=null) and (order!='')">
+						 #{order,jdbcType=VARCHAR}
+				</if>
+				<if test="(order ==null) or (order=='')">
+						desc
+				</if>
+			)
+		<if test ="(state != null) and (state !='')">
+			WHERE STATUS = #{state}
+		</if>
+		<if test ="(state == null) or (state =='')">
+			WHERE STATUS != 'DELETED'
+		</if>
+  </select>
+  
+  <select id="queryListCorp" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCorpGirdVo" resultMap="gridView">
+  		SELECT CORP_CODE,EFFECTIVE_TIME, INVALID_TIME
+				FROM T_PRICE_CORP
+			WHERE
+				CORP_CODE = #{corpCode} 
+				AND ACTIVE = 'Y'
+		GROUP BY CORP_CODE,EFFECTIVE_TIME,INVALID_TIME
+  </select>
+  
+  <select id="checkIsCanSave" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCorpGirdVo" resultType="Integer">
+  	SELECT COUNT(*)
+		FROM (
+			SELECT TRANS_TYPE_CODE,ARRIVE_PRICE_CITY,CORP_CODE,EFFECTIVE_TIME, INVALID_TIME
+				FROM T_PRICE_CORP
+			WHERE TRANS_TYPE_CODE =  #{transTypeCode} 
+				AND ARRIVE_PRICE_CITY = #{arrivePriceCity} 
+				AND CORP_CODE = #{corpCode} 
+				AND ACTIVE = 'Y'
+			GROUP BY TRANS_TYPE_CODE,ARRIVE_PRICE_CITY,CORP_CODE,EFFECTIVE_TIME,INVALID_TIME
+		)A
+		WHERE 1 = 1 AND (
+		<if test="(invalidTime != null) and (invalidTime!='')" >
+		<![CDATA[
+			EFFECTIVE_TIME >=  #{invalidTime} OR 
+		]]>
+		</if>
+		<![CDATA[ 
+			A.INVALID_TIME <= #{effectiveTime}
+		]]>
+			OR A.INVALID_TIME IS NULL
+		)
+		
+  </select>
+  
+  <select id="findByCorpDetail" resultMap="gridView" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.vo.PriceCorpGirdVo">
+	SELECT ROWNUM AS INDEXS,M.* FROM (
+	
+	  SELECT 
+		T.ID,T.TRANS_TYPE_CODE,T.TRANS_TYPE_NAME,T.CORP_CODE,T.CORP_NAME,T.ARRIVE_PRICE_CITY,G.NAME AS ARRIVE_PRICE_CITY_NAME,
+		T.WEIGHT_PRICE,T.VOLUME_PRICE,T.ADD_FEE,T.LOWEST_FEE,T.FUEL_FEE_SECTION,H.NAME AS FUEL_FEE_SECTION_NAME,
+		T.EFFECTIVE_TIME,T.INVALID_TIME,T.REMARK,T.CREATE_TIME,E.EMP_NAME AS CREATE_USER_CODE,
+		T.MODIFY_TIME,F.EMP_NAME AS MODIFY_USER_CODE,
+		B.NAME AS ROADAREA,C.NAME AS BIGREGION,D.NAME AS DIVISION,
+		B.CODE AS ROADAREACODE,C.CODE AS BIGREGIONCODE,D.CODE AS DIVISIONCODE,
+		A.LOGIST_CODE AS LOGISTICNAME,
+		<![CDATA[CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+		WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN 'PASSED'
+		WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+		ELSE 'EFFECTIVE' END AS STATUS
+		 ]]>
+		from T_PRICE_CORP T
+		LEFT JOIN (SELECT CODE,NAME,PARENT_CODE,LOGIST_CODE FROM T_BSE_ORG WHERE  IS_SALES_DEPARTMENT = 'Y') A 
+		ON A.CODE = T.CORP_CODE
+		LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_ROAD_AREA = 'Y') B 
+		ON A.PARENT_CODE = B.CODE
+		LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_BIG_REGION = 'Y') C 
+		ON B.PARENT_CODE = C.CODE
+		LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_DIVISION = 'Y') D 
+		ON C.PARENT_CODE = D.CODE
+		LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') E
+		ON E.USER_NAME = T.CREATE_USER_CODE
+		LEFT JOIN (SELECT USER_NAME,EMP_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') F
+		ON F.USER_NAME = T.MODIFY_USER_CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_CITY WHERE ACTIVE = 'Y') G
+		ON G.CODE = T.ARRIVE_PRICE_CITY
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='FUEL') H
+		ON H.CODE = T.FUEL_FEE_SECTION
+		WHERE 1 = 1 and 
+		T.CORP_CODE = #{corpCode}
+		and
+		T.EFFECTIVE_TIME = #{effectiveTime}
+		<if test="(invalidTime != null) and (invalidTime!='')">
+			and 
+			T.INVALID_TIME = #{invalidTime}
+		</if>
+		
+		<if test="(dataOrign != null) and (dataOrign!='')">
+			and 
+			T.DATAORIGN = #{dataOrign}
+		</if>
+		) M
+		<if test="(state !=null) and (state !='')">
+			WHERE M.STATUS = #{state}
+		</if>
+  </select>
+  <select id="queryCurrentDateTime"  resultType="java.util.Date">
+  		SELECT SYSDATE FROM DUAL
+  </select>
+</mapper>

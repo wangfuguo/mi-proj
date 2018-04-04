@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.DataSendJobFailureDao" >
+
+  <resultMap id="dataSendJobFailureResultMap" type="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="BUSINESS_ID" property="businessId" jdbcType="VARCHAR" />
+    <result column="SEND_TIME" property="sendTime" jdbcType="TIMESTAMP" />
+    <result column="FAIL_REASON" property="failReason" jdbcType="VARCHAR" />
+    <result column="RETRY_TIMES" property="retryTimes" jdbcType="INTEGER" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, TYPE, BUSINESS_ID, SEND_TIME, FAIL_REASON, RETRY_TIMES, REMARK, CREATE_TIME, CREATE_USER_CODE, 
+    MODIFY_TIME, MODIFY_USER_CODE, ACTIVE
+  </sql>
+  
+  <!-- 查询发送失败记录 -->
+  <select id="getFailureDatas" resultMap="dataSendJobFailureResultMap" 
+  	parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_JOB_SEND_FAILURE
+    <where>
+    	<if test="active != null and active != ''">
+    		AND ACTIVE = #{active,jdbcType=VARCHAR}
+    	</if>
+    	<if test="type != null and type != ''">
+    		AND TYPE = #{type, jdbcType=VARCHAR}
+    	</if>
+    </where>
+  </select>
+  
+  <!-- 保存发送失败记录 -->
+  <insert id="saveFailureData" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity" >
+    insert into T_JOB_SEND_FAILURE (ID, TYPE, BUSINESS_ID, 
+      SEND_TIME, FAIL_REASON, RETRY_TIMES, REMARK, 
+      CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, 
+      MODIFY_USER_CODE, ACTIVE)
+    values (#{id,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{businessId,jdbcType=VARCHAR}, 
+      #{sendTime,jdbcType=TIMESTAMP}, #{failReason,jdbcType=VARCHAR},
+      <if test="retryTimes != null and retryTimes != ''">
+          #{retryTimes,jdbcType=INTEGER},
+      </if>
+      <if test="retryTimes == null or retryTimes == ''">
+         0,
+      </if>
+      #{remark,jdbcType=VARCHAR},
+      #{createDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{modifyDate,jdbcType=TIMESTAMP}, 
+      #{modifyUser,jdbcType=VARCHAR}, #{active,jdbcType=CHAR})
+  </insert>
+  
+  <!-- 更新已发送数据 -->
+  <update id="updateSendedData" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity" >
+    update T_JOB_SEND_FAILURE
+    <set >
+    	<if test="active != null and active != ''">
+        	ACTIVE = #{active,jdbcType=CHAR},
+    	</if>
+    	<if test="modifyUser != null and modifyUser != ''">
+        	MODIFY_USER_CODE = #{modifyUser,jdbcType=CHAR},
+    	</if>
+        MODIFY_TIME = SYSDATE,
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 更新失败重发次数 -->
+  <update id="updateSendFailTimes" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+   	update T_JOB_SEND_FAILURE
+    <set >
+       	RETRY_TIMES = NVL(RETRY_TIMES, 0) + 1,
+    	<if test="modifyUser != null and modifyUser != ''">
+        	MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR},
+    	</if>
+    	<if test="failReason != null and failReason != ''">
+    		FAIL_REASON = #{failReason,jdbcType=VARCHAR},
+    	</if>
+        SEND_TIME = SYSDATE, MODIFY_TIME = SYSDATE
+    </set>
+    where BUSINESS_ID = #{businessId,jdbcType=VARCHAR} AND TYPE = #{type,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

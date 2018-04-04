@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper	namespace="com.hoau.miser.module.api.itf.server.dao.PriceUpstairsTyDao">
+	
+	<resultMap id="BaseResultMap"
+		type="com.hoau.miser.module.api.itf.api.shared.domain.PriceUpstairsEntity">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_CODE" property="transportType" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_NAME" property="transportTypeName" jdbcType="VARCHAR" />
+		<result column="SECTION_ITEM_CODE" property="sectionItemCode" jdbcType="VARCHAR" />
+		<result column="SECTION_ITEM_NAME" property="sectionItemName" jdbcType="VARCHAR" />
+		<result column="LOCK_TYPE" property="lockType" jdbcType="VARCHAR" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="CHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="query_main_params">
+		T.ID AS ID,
+		T.TYPE AS TYPE,
+		T.TRANS_TYPE_CODE AS TRANS_TYPE_CODE,
+		TRANSTYPE.NAME AS TRANS_TYPE_NAME, 
+		T.SECTION_ITEM_CODE AS SECTION_ITEM_CODE,
+		SECTION.NAME AS SECTION_ITEM_NAME,
+		T.LOCK_TYPE AS LOCK_TYPE,
+		T.EFFECTIVE_TIME AS EFFECTIVE_TIME,
+		T.INVALID_TIME AS INVALID_TIME,
+		T.REMARK AS REMARK,
+		T.ACTIVE AS ACTIVE,
+		T.CREATE_TIME AS CREATE_TIME,
+		T.CREATE_USER_CODE AS CREATE_USER_CODE,
+		T.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		T.MODIFY_TIME AS MODIFY_TIME,
+		<![CDATA[
+			CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+			WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN 'PASSED'
+			WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+			ELSE 'EFFECTIVE' END AS STATUS
+		]]>
+	</sql>
+	
+	<sql id="query_main_filter">
+		<where>
+			T.active = 'Y'
+			<if test="type!=null and type!=''">
+				AND T.TYPE = #{type, jdbcType=VARCHAR}
+			</if>
+			<if test="transportType!=null and transportType!=''">
+				AND T.TRANS_TYPE_CODE = #{transportType, jdbcType=VARCHAR}
+			</if>
+			and (<![CDATA[T.effective_time<=]]>#{billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(T.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=#{billTime,jdbcType=TIMESTAMP} ]]>)
+				)
+		</where>
+	</sql>
+	
+	<select id="queryUpstairsPrices"
+	parameterType="com.hoau.miser.module.api.itf.api.shared.domain.PriceUpstairsEntity"
+	resultMap="BaseResultMap">
+	SELECT 
+		<include refid="query_main_params"></include>
+		FROM T_PRICE_UPSTAIRS_FEE_STANDARD T
+		LEFT JOIN T_PRICE_SECTION SECTION ON T.SECTION_ITEM_CODE = SECTION.CODE AND SECTION.ACTIVE = 'Y'
+		LEFT JOIN T_BSE_TRANS_TYPE TRANSTYPE ON T.TRANS_TYPE_CODE = TRANSTYPE.CODE AND TRANSTYPE.ACTIVE = 'Y'
+		<include refid="query_main_filter"></include>
+		ORDER BY ACTIVE DESC, EFFECTIVE_TIME DESC 
+	</select>
+	
+</mapper>

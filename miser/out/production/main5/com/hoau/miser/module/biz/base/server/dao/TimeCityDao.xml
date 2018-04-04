@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.TimeCityDao">
+  <resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="CODE" jdbcType="VARCHAR" property="code" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="TYPE" jdbcType="VARCHAR" property="type" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+    <result column="CREATE_USER_CODE" jdbcType="VARCHAR" property="createUserCode" />
+    <result column="MODIFY_TIME" jdbcType="DATE" property="modifyTime" />
+    <result column="MODIFY_USER_CODE" jdbcType="VARCHAR" property="modifyUserCode" />
+    <result column="ACTIVE" jdbcType="CHAR" property="active" />
+    <result column="INVALID" jdbcType="CHAR" property="invalid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, CODE, NAME, TYPE, REMARK, CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, 
+    ACTIVE,INVALID
+  </sql>
+  
+  <sql id="excel_query_columns">
+        T.ID AS ID,
+        T.CODE AS CODE,
+        T.NAME AS NAME,
+        DECODE(T.TYPE,'SEND','出发价格城市','到达价格城市')             AS TYPE,
+        DECODE(T.INVALID,'Y','是','否')          AS INVALID,
+        DECODE(T.ACTIVE,'Y','是','否')           AS ACTIVE,
+        T.CREATE_TIME AS CREATE_TIME,
+        T.CREATE_USER_CODE AS CREATE_USER_CODE,
+        T.REMARK AS REMARK,
+        T.MODIFY_TIME AS MODIFY_TIME,
+        T.MODIFY_USER_CODE AS MODIFY_USER_CODE
+	</sql>
+  
+  <sql id="main_query_filter">
+		<if test="code != null and code != ''">
+            AND CODE = #{code, jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != ''">
+            AND NAME LIKE  CONCAT('%', CONCAT(#{name, jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="type != null and type != ''">
+            AND TYPE = #{type, jdbcType=VARCHAR}
+		</if>
+		<if test="invalid != null and invalid != ''">
+            AND INVALID = #{invalid, jdbcType=CHAR}
+		</if>
+	</sql>
+  
+  <!-- 查询时效城市列表 -->
+  <select id="queryByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_TIME_CITY
+    where 1 = 1
+    <include refid="main_query_filter" />
+    <if test="name != null and name != ''">
+			ORDER BY NAME ASC
+    </if>
+  </select>
+  
+  <!-- 统计时效城市记录数 -->
+  <select id="countOfTimeCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity" resultType="long">
+    select COUNT(0) FROM T_TIME_CITY 
+    where 1 = 1
+    <include refid="main_query_filter" />
+  </select>
+  
+  	<!-- 根据ID查询时效城市 -->
+	<select id="queryById" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity">
+	       SELECT
+		<include refid="Base_Column_List"/>
+	       FROM T_TIME_CITY 
+		<where>
+	           ID = #{id, jdbcType=VARCHAR}
+		</where>
+	</select>
+	
+  <!-- 新增时效城市 -->
+  <insert id="addTimeCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity">
+    insert into T_TIME_CITY (ID, CODE, NAME, 
+      TYPE, REMARK, CREATE_TIME, 
+      CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, 
+      ACTIVE,INVALID)
+    values (#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=DATE}, 
+      #{createUserCode,jdbcType=VARCHAR}, #{modifyTime,jdbcType=DATE}, #{modifyUserCode,jdbcType=VARCHAR}, 
+      #{active,jdbcType=CHAR},#{invalid,jdbcType=CHAR})
+  </insert>
+  
+  
+  <!-- 修改时效城市 -->
+	<update id="updateTimeCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity">
+        UPDATE T_TIME_CITY SET
+		<if test="name != null and name != ''">
+            NAME = #{name,jdbcType=VARCHAR},
+		</if>
+		<if test="modifyDate != null and modifyData != ''">
+            MODIFY_TIME = #{modifyTime, jdbcType=DATE}
+		</if>
+		<if test="modifyUser != null and modifyUser != ''">
+            MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+		</if>
+        REMARK = #{remark,jdbcType=VARCHAR}
+		<where>
+            ID = #{id,jdbcType=VARCHAR}
+            AND ACTIVE = 'Y'
+            AND INVALID = 'N'
+		</where>
+	</update>
+  
+  
+    <!-- 根据name查询价格城市 -->
+	<select id="queryByName" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity">
+        SELECT
+		<include refid="Base_Column_List"></include>
+        FROM T_TIME_CITY 
+		<where>
+            NAME = #{name, jdbcType=VARCHAR}
+            AND TYPE = #{type, jdbcType=VARCHAR}
+            AND ACTIVE = 'Y'
+		</where>
+	</select> 
+	
+	<!-- 作废价格城市 -->
+	<update id="invalidTimeCity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity">
+        UPDATE T_TIME_CITY SET
+		<if test="modifyDate != null and modifyDate != ''">
+            MODIFY_TIME = #{modifyTime, jdbcType=DATE},
+		</if>
+		<if test="modifyUser != null and modifyUser != ''">
+            MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+		</if>
+        INVALID = 'Y', ACTIVE = 'N'
+		<where>
+            ID = #{id,jdbcType=VARCHAR}
+            AND ACTIVE = 'Y'
+            AND INVALID = 'N'
+		</where>
+	</update>
+	
+	<!-- 用于导出的查询 -->
+	<select id="queryForExport" resultMap="BaseResultMap" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.TimeCityEntity">
+        SELECT
+		<include refid="excel_query_columns"></include>
+        FROM T_TIME_CITY T
+		<where>
+			<include refid="main_query_filter"></include>
+		</where>
+		<if test="name != null and name != ''">
+			ORDER BY T.NAME ASC
+		</if>
+	</select>
+	
+	<insert id="insertBatch" parameterType="List">
+  	INSERT INTO T_TIME_CITY (ID, CODE, NAME, TYPE,REMARK,
+      CREATE_TIME,CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE, 
+      ACTIVE,INVALID)
+     <foreach collection="pceList" item ="item" index="index"  separator ="union all"> 
+     SELECT
+      #{item.id,jdbcType=VARCHAR},#{item.code,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR}, 
+      #{item.type,jdbcType=VARCHAR},#{item.remark,jdbcType=CHAR},
+      #{item.createTime,jdbcType=DATE}, #{item.createUserCode,jdbcType=VARCHAR},
+      #{item.modifyTime,jdbcType=DATE},#{item.modifyUserCode,jdbcType=VARCHAR},
+      #{item.active,jdbcType=VARCHAR},#{item.invalid,jdbcType=VARCHAR}
+     from dual
+    </foreach> 
+  </insert>
+	
+</mapper>

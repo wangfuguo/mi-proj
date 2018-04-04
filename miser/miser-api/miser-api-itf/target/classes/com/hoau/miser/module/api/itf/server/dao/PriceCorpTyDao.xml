@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PriceCorpTyDao" >
+  <resultMap id="PriceCorpResultMap" type="com.hoau.miser.module.api.itf.api.shared.domain.PriceCorpTyEntity" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_CODE" property="transType" jdbcType="VARCHAR" />
+    <result column="CORP_CODE" property="corpCode" jdbcType="VARCHAR" />
+    <result column="CORP_NAME" property="corpName" jdbcType="VARCHAR" />
+    <result column="ARRIVE_PRICE_CITY" property="arrivePriceCityCode" jdbcType="VARCHAR" />
+    <result column="WEIGHT_PRICE" property="weightPrice" jdbcType="DECIMAL" />
+    <result column="VOLUME_PRICE" property="volumePrice" jdbcType="DECIMAL" />
+    <result column="ADD_FEE" property="addFee" jdbcType="DECIMAL" />
+    <result column="FUEL_FEE_SECTION" property="fuelFeeSection" jdbcType="VARCHAR" />
+    <result column="LOWEST_FEE" property="lowestFee" jdbcType="DECIMAL" />
+    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+  </resultMap>
+
+  <select id="queryPriceCorpTyByParamInSide" resultMap="PriceCorpResultMap" parameterType="map">
+	  SELECT
+		T.ID,
+        T.TRANS_TYPE_CODE,
+        T.TRANS_TYPE_NAME,
+        T.CORP_CODE,
+        T.CORP_NAME,
+        T.ARRIVE_PRICE_CITY,
+		T.WEIGHT_PRICE,
+        T.VOLUME_PRICE,
+        T.ADD_FEE,
+        T.LOWEST_FEE,
+        T.FUEL_FEE_SECTION,
+		T.EFFECTIVE_TIME,
+        T.INVALID_TIME,
+        T.REMARK,
+        T.CREATE_TIME,
+		T.MODIFY_TIME
+		from T_PRICE_CORP T
+		WHERE
+		    T.CORP_CODE=#{baseTyParam.originCode,jdbcType=VARCHAR}
+		AND T.ARRIVE_PRICE_CITY=#{arrivePriceCityCode,jdbcType=VARCHAR}
+		AND T.TRANS_TYPE_CODE=#{baseTyParam.transTypeCode,jdbcType=VARCHAR}
+		AND T.active='Y'
+        and (<![CDATA[T.effective_time<=]]>#{baseTyParam.billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(T.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=#{baseTyParam.billTime,jdbcType=TIMESTAMP}]]>)
+				)
+  </select>
+
+</mapper>

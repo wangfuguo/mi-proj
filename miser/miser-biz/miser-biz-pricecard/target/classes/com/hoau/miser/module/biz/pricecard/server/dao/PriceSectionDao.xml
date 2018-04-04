@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.pricecard.server.dao.PriceSectionDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionEntity"
+		id="priceSectionResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="CODE" property="code" jdbcType="VARCHAR" />
+		<id column="SHORT_CODE" property="shortCode" jdbcType="VARCHAR" />
+		<id column="NAME" property="name" jdbcType="VARCHAR" />
+		<id column="SUIT_PRODUCT" property="suitProduct" jdbcType="VARCHAR" />
+		<id column="SUIT_PRODUCT_NAME" property="suitProductName" jdbcType="VARCHAR" />
+		<id column="SECTIONED_ITEM" property="sectionedItem" jdbcType="VARCHAR" />
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<id column="SUITOA" property="suitoa" jdbcType="VARCHAR" />
+		<id column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<id column="REUNITE_SOURCE" property="reuniteSource" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap
+		type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionSubEntity"
+		id="priceSectionSubResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="SUB_SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+			<id column="SUB_START_VALUE" property="startValue" jdbcType="DOUBLE" />
+			<id column="SUB_END_VALUE" property="endValue" jdbcType="DOUBLE" />
+			<id column="SUB_SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE" property="price" jdbcType="DOUBLE" />
+			<id column="SUB_CALC_ALONE" property="calcAlone" jdbcType="VARCHAR" />
+			<id column="SUB_MIN_PRICE" property="minPrice" jdbcType="DOUBLE" />
+			<id column="SUB_MAX_PRICE" property="maxPrice" jdbcType="DOUBLE" />
+			<id column="SUB_REMARK" property="remark" jdbcType="VARCHAR" />
+			<id column="SUB_ACTIVE" property="active" jdbcType="VARCHAR" />
+			<id column="SUB_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+			<id column="SUB_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 分段主表带明细的返回类型 -->
+	<resultMap
+		type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionEntity"
+		id="priceSectionWithSubResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="SHORT_CODE" property="shortCode" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="SUIT_PRODUCT" property="suitProduct" jdbcType="VARCHAR" />
+		<result column="SUIT_PRODUCT_NAME" property="suitProductName" jdbcType="VARCHAR" />
+		<result column="SECTIONED_ITEM" property="sectionedItem" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="SUITOA" property="suitoa" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="REUNITE_SOURCE" property="reuniteSource" jdbcType="VARCHAR" />
+		<collection property="subEntities" ofType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionSubEntity">
+			<id column="SUB_ID" property="id" jdbcType="VARCHAR" />
+			<id column="SUB_SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+			<id column="SUB_START_VALUE" property="startValue" jdbcType="DOUBLE" />
+			<id column="SUB_END_VALUE" property="endValue" jdbcType="DOUBLE" />
+			<id column="SUB_SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE" property="price" jdbcType="DOUBLE" />
+			<id column="SUB_CALC_ALONE" property="calcAlone" jdbcType="VARCHAR" />
+			<id column="SUB_MIN_PRICE" property="minPrice" jdbcType="DOUBLE" />
+			<id column="SUB_MAX_PRICE" property="maxPrice" jdbcType="DOUBLE" />
+			<id column="SUB_REMARK" property="remark" jdbcType="VARCHAR" />
+			<id column="SUB_ACTIVE" property="active" jdbcType="VARCHAR" />
+			<id column="SUB_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+			<id column="SUB_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		</collection>
+	</resultMap>
+	
+	<!-- 分段主表带明细的返回类型      导出功能 -->
+	<resultMap
+		type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionEntity"
+		id="priceSectionWithSubResultMap_report">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="SHORT_CODE" property="shortCode" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="SUIT_PRODUCT" property="suitProduct" jdbcType="VARCHAR" />
+		<result column="SUIT_PRODUCT_NAME" property="suitProductName" jdbcType="VARCHAR" />
+		<result column="SECTIONED_ITEM" property="sectionedItem" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="SUITOA" property="suitoa" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="SUB_SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+		<result column="SUB_START_VALUE" property="startValue" jdbcType="VARCHAR" />
+		<result column="SUB_END_VALUE" property="endValue" jdbcType="VARCHAR" />
+		<result column="SUB_PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+		<result column="SUB_PRICE" property="price" jdbcType="VARCHAR" />
+		<result column="SUB_CALC_ALONE" property="calcAlone" jdbcType="VARCHAR" />
+		<result column="SUB_MIN_PRICE" property="minPrice" jdbcType="VARCHAR" />
+		<result column="SUB_MAX_PRICE" property="maxPrice" jdbcType="VARCHAR" />
+		<result column="SUB_REMARK" property="sub_remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="query_mian_param">
+		PSE.ID AS id,
+		PSE.CODE AS code,
+		PSE.SHORT_CODE AS shortCode,
+		PSE.NAME AS name,
+		PSE.SUIT_PRODUCT AS suitProduct,
+		(select NAME from T_BSE_TRANS_TYPE TTT where TTT.CODE=PSE.SUIT_PRODUCT and TTT.active='Y') AS SUIT_PRODUCT_NAME,
+		PSE.SECTIONED_ITEM AS sectionedItem,
+		PSE.REMARK AS remark,
+		PSE.ACTIVE AS active,
+		PSE.SUITOA AS suitoa,
+		PSE.CREATE_TIME AS createDate,
+		PSE.CREATE_USER_CODE AS createUser,
+		PSE.MODIFY_TIME AS modifyDate,
+		PSE.MODIFY_USER_CODE AS modifyUser
+	</sql>
+	
+	<sql id="query_mian_paramSub">
+		PSE.ID AS id,
+		PSE.SECTION_ID AS SUB_SECTION_ID,
+		PSE.START_VALUE AS SUB_START_VALUE,
+		PSE.END_VALUE AS SUB_END_VALUE,
+		PSE.SECTION_ACCODING_ITEM AS SUB_SECTION_ACCODING_ITEM,
+		PSE.PRICE_TYPE AS SUB_PRICE_TYPE,
+		PSE.PRICE AS SUB_PRICE,
+		PSE.CALC_ALONE AS SUB_CALC_ALONE,
+		PSE.MIN_PRICE AS SUB_MIN_PRICE,
+		PSE.MAX_PRICE AS SUB_MAX_PRICE,
+		PSE.REMARK AS SUB_REMARK,
+		PSE.ACTIVE AS SUB_ACTIVE,
+		PSE.CREATE_TIME AS SUB_CREATE_TIME,
+		PSE.CREATE_USER_CODE AS SUB_CREATE_USER_CODE,
+		PSE.MODIFY_TIME AS SUB_MODIFY_TIME,
+		PSE.MODIFY_USER_CODE AS SUB_MODIFY_USER_CODE
+	</sql>
+	
+	<!-- 分段主表带明细的返回字段 -->
+	<sql id="query_mian_param_withsub">
+		PSE.ID AS ID,
+		PSE.CODE AS CODE,
+		PSE.SHORT_CODE AS SHORT_CODE,
+		PSE.NAME AS NAME,
+		PSE.SUIT_PRODUCT AS SUIT_PRODUCT,
+		(SELECT NAME FROM T_BSE_TRANS_TYPE TTT WHERE TTT.CODE=PSE.SUIT_PRODUCT AND TTT.ACTIVE='Y') AS SUIT_PRODUCT_NAME,
+		PSE.SECTIONED_ITEM AS SECTIONED_ITEM,
+		PSE.REMARK AS REMARK,
+		PSE.ACTIVE AS ACTIVE,
+		PSE.CREATE_TIME AS CREATE_TIME,
+		PSE.CREATE_USER_CODE AS CREATE_USER_CODE,
+		PSE.MODIFY_TIME AS MODIFY_TIME,
+		PSE.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		PSE.REUNITE_SOURCE AS REUNITE_SOURCE,
+		PSE_SUB.ID AS SUB_ID,
+		PSE_SUB.SECTION_ID AS SUB_SECTION_ID,
+		PSE_SUB.START_VALUE AS SUB_START_VALUE,
+		PSE_SUB.END_VALUE AS SUB_END_VALUE,
+		PSE_SUB.SECTION_ACCODING_ITEM AS SUB_SECTION_ACCODING_ITEM,
+		PSE_SUB.PRICE_TYPE AS SUB_PRICE_TYPE,
+		PSE_SUB.PRICE AS SUB_PRICE,
+		PSE_SUB.CALC_ALONE AS SUB_CALC_ALONE,
+		PSE_SUB.MIN_PRICE AS SUB_MIN_PRICE,
+		PSE_SUB.MAX_PRICE AS SUB_MAX_PRICE,
+		PSE_SUB.REMARK AS SUB_REMARK,
+		PSE_SUB.ACTIVE AS SUB_ACTIVE,
+		PSE_SUB.CREATE_TIME AS SUB_CREATE_TIME,
+		PSE_SUB.CREATE_USER_CODE AS SUB_CREATE_USER_CODE,
+		PSE_SUB.MODIFY_TIME AS SUB_MODIFY_TIME,
+		PSE_SUB.MODIFY_USER_CODE AS SUB_MODIFY_USER_CODE
+	</sql>
+	<!-- 分段主表带明细的返回字段 -->
+	<sql id="query_mian_param_withsub_exprot">
+		PSE.ID AS ID,
+		PSE.CODE AS CODE,
+		PSE.SHORT_CODE AS SHORT_CODE,
+		PSE.NAME AS NAME,
+		PSE.SUIT_PRODUCT AS SUIT_PRODUCT,
+		(SELECT NAME FROM T_BSE_TRANS_TYPE TTT WHERE TTT.CODE=PSE.SUIT_PRODUCT AND TTT.ACTIVE='Y') AS SUIT_PRODUCT_NAME,
+		DECODE(PSE.SECTIONED_ITEM,
+              'FUEL',
+              '燃油费',
+              'COLLECT_RATE',
+              '代收手续费率',
+              'UPSTAIRS',
+              '上楼费',
+              'COLLECT_RATE',
+              '代收手续费率',
+              'EXTRA_FEE',
+              '附加费',
+              'FREIGHT',
+              '运费',
+              'PICKUP',
+              '提货费',
+              'INSURANCE_RATE',
+              '保价率',
+              'INSURANCE',
+              '保价费',
+              'COLLECTION_RATE',
+              '代收货款手续费',
+              'COLLECTION',
+              '代收货款',
+              'DELIVERY',
+              '送货费',
+              'PAPER',
+              '工本费',
+              'SMS',
+              '信息费',
+              PSE.SECTIONED_ITEM) AS SECTIONED_ITEM,
+		PSE.REMARK AS REMARK,
+		DECODE(PSE.ACTIVE,'Y','是','N','否') AS ACTIVE,
+		DECODE(PSE.SUITOA,'Y','是','N','否') AS SUITOA,
+		PSE.CREATE_TIME AS CREATE_TIME,
+		PSE.CREATE_USER_CODE AS CREATE_USER_CODE,
+		PSE.MODIFY_TIME AS MODIFY_TIME,
+		PSE.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		PSE.REUNITE_SOURCE AS REUNITE_SOURCE,
+		PSE_SUB.ID AS SUB_ID,
+		PSE_SUB.SECTION_ID AS SUB_SECTION_ID,
+		
+		DECODE(SUBSTR(TRIM(to_char(PSE_SUB.START_VALUE, '99999999D99')), 0, 1),
+              '.',
+              '0' || TRIM(to_char(PSE_SUB.START_VALUE, '99999999D99')),
+              TRIM(to_char(PSE_SUB.START_VALUE, '99999999D99'))) AS SUB_START_VALUE,
+              
+		DECODE(SUBSTR(TRIM(to_char(PSE_SUB.END_VALUE, '99999999D99')), 0, 1),
+              '.',
+              '0' || TRIM(to_char(PSE_SUB.END_VALUE, '99999999D99')),
+              TRIM(to_char(PSE_SUB.END_VALUE, '99999999D99'))) AS SUB_END_VALUE,
+                            
+              
+ 
+		DECODE(PSE_SUB.SECTION_ACCODING_ITEM,'WEIGHT','重量',
+			'VOLUMN','体积',
+			'PIECE','件数',
+			'PACKAGE','票',
+			'INSURANCE','保价费',
+			'COLLECTION','代收货款',PSE_SUB.SECTION_ACCODING_ITEM) AS SUB_SECTION_ACCODING_ITEM,
+		DECODE(PSE_SUB.PRICE_TYPE,'RATE','单价',
+					'MONEY','金额',PSE_SUB.PRICE_TYPE) AS SUB_PRICE_TYPE,
+					
+		DECODE(SUBSTR(TRIM(to_char(PSE_SUB.PRICE, '99999999D99')), 0, 1),
+              '.',
+              '0' || TRIM(to_char(PSE_SUB.PRICE, '99999999D99')),
+              TRIM(to_char(PSE_SUB.PRICE, '99999999D99'))) AS SUB_PRICE,
+		
+		
+		DECODE(PSE_SUB.CALC_ALONE,'Y','是','N','否',PSE_SUB.CALC_ALONE) AS SUB_CALC_ALONE,
+		
+		DECODE(SUBSTR(TRIM(to_char(PSE_SUB.MIN_PRICE, '99999999D99')), 0, 1),
+              '.',
+              '0' || TRIM(to_char(PSE_SUB.MIN_PRICE, '99999999D99')),
+              TRIM(to_char(PSE_SUB.MIN_PRICE, '99999999D99'))) AS SUB_MIN_PRICE,
+ 
+		
+		DECODE(SUBSTR(TRIM(to_char(PSE_SUB.MAX_PRICE, '99999999D99')), 0, 1),
+              '.',
+              '0' || TRIM(to_char(PSE_SUB.MAX_PRICE, '99999999D99')),
+              TRIM(to_char(PSE_SUB.MAX_PRICE, '99999999D99'))) AS SUB_MAX_PRICE,
+              		
+		PSE_SUB.REMARK AS SUB_REMARK,
+		PSE_SUB.ACTIVE AS SUB_ACTIVE,
+		PSE_SUB.CREATE_TIME AS SUB_CREATE_TIME,
+		PSE_SUB.CREATE_USER_CODE AS SUB_CREATE_USER_CODE,
+		PSE_SUB.MODIFY_TIME AS SUB_MODIFY_TIME,
+		PSE_SUB.MODIFY_USER_CODE AS SUB_MODIFY_USER_CODE
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			<if test="priceSectionEntity.shortCode!=null and priceSectionEntity.shortCode!=''">
+				and PSE.SHORT_CODE=#{priceSectionEntity.shortCode,jdbcType=VARCHAR}
+			</if>
+			<if test="priceSectionEntity.name!=null and priceSectionEntity.name!=''">
+				and PSE.NAME LIKE CONCAT(CONCAT('%', #{priceSectionEntity.name,jdbcType=VARCHAR}),'%')
+			</if>
+			<if test="priceSectionEntity.suitProduct!=null and priceSectionEntity.suitProduct!=''">
+				and PSE.SUIT_PRODUCT=#{priceSectionEntity.suitProduct,jdbcType=VARCHAR}
+			</if>
+			<if test="priceSectionEntity.sectionedItem!=null and priceSectionEntity.sectionedItem!=''">
+				and PSE.SECTIONED_ITEM=#{priceSectionEntity.sectionedItem,jdbcType=VARCHAR}
+			</if>
+			<if test="priceSectionEntity.id!=null and priceSectionEntity.id!=''">
+				and PSE.ID=#{priceSectionEntity.id,jdbcType=VARCHAR}
+			</if>
+			<if test="priceSectionEntity.active!=null and priceSectionEntity.active!=''">
+				and PSE.ACTIVE=#{priceSectionEntity.active,jdbcType=VARCHAR}
+			</if>
+			<if test="priceSectionEntity.suitoa!=null and priceSectionEntity.suitoa!=''">
+				and PSE.SUITOA=#{priceSectionEntity.suitoa,jdbcType=VARCHAR}
+			</if>
+		</where> 
+	</sql>
+	
+	<!-- 导出查询条件 -->
+	<sql id="queryCondition_export">
+		<where>
+			<if test="shortCode!=null and shortCode!=''">
+				and PSE.SHORT_CODE=#{shortCode,jdbcType=VARCHAR}
+			</if>
+			<if test="name!=null and name!=''">
+				and PSE.NAME LIKE CONCAT(CONCAT('%', #{name,jdbcType=VARCHAR}),'%')
+			</if>
+			<if test="suitProduct!=null and suitProduct!=''">
+				and PSE.SUIT_PRODUCT=#{suitProduct,jdbcType=VARCHAR}
+			</if>
+			<if test="sectionedItem!=null and sectionedItem!=''">
+				and PSE.SECTIONED_ITEM=#{sectionedItem,jdbcType=VARCHAR}
+			</if>
+			<if test="active!=null and active!=''">
+				and PSE.ACTIVE=#{active,jdbcType=VARCHAR}
+			</if>
+			<if test="suitoa!=null and suitoa!=''">
+				and PSE.SUITOA=#{suitoa,jdbcType=VARCHAR}
+			</if>
+		</where> 
+	</sql>
+	<sql id="queryConditionOne">
+		<where>
+			<if test="code!=null and code!=''">
+				and PSE.CODE=#{code,jdbcType=VARCHAR}
+			</if>
+			<if test="shortCode!=null and shortCode!=''">
+				and PSE.SHORT_CODE=#{shortCode,jdbcType=VARCHAR}
+			</if>
+			<if test="name!=null and name!=''">
+				AND PSE.NAME LIKE CONCAT(CONCAT('%', #{name,jdbcType=VARCHAR}),'%')
+			</if>
+			<if test="suitProduct!=null and suitProduct!=''">
+				and PSE.SUIT_PRODUCT=#{suitProduct,jdbcType=VARCHAR}
+			</if>
+			<if test="sectionedItem!=null and sectionedItem!=''">
+				and PSE.SECTIONED_ITEM=#{sectionedItem,jdbcType=VARCHAR}
+			</if>
+			<if test="id!=null and id!=''">
+				and PSE.ID=#{id,jdbcType=VARCHAR}
+			</if>
+			<if test="active!=null and active!=''">
+				and PSE.ACTIVE=#{active,jdbcType=VARCHAR}
+			</if>
+			<if test="suitoa!=null and suitoa!=''">
+				and PSE.SUITOA=#{suitoa,jdbcType=VARCHAR}
+			</if>
+		</where> 
+	</sql>
+		<!-- 查询条件 -->
+	<sql id="queryConditionSub">
+		<where>
+			<if test="priceSectionSubEntity.sectionId!=null and priceSectionSubEntity.sectionId!=''">
+				and PSE.SECTION_ID=#{priceSectionSubEntity.sectionId,jdbcType=VARCHAR}
+			</if>
+			<if test="priceSectionSubEntity.id!=null and priceSectionSubEntity.id!=''">
+				and PSE.ID=#{priceSectionSubEntity.id,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	<select id="queryPriceSectionOne" resultMap="priceSectionResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_SECTION PSE
+		<include refid="queryConditionOne"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	<select id="queryPriceSection" resultMap="priceSectionResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_SECTION PSE
+		<include refid="queryConditionOne"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+<!-- 根据参数查询优惠分段信息  -->
+	<select id="queryListByParam" resultMap="priceSectionResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_SECTION PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	
+	<!-- 根据参数统计优惠分段信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_SECTION PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	<!-- 增加一条优惠分段 -->
+	<insert id="addPriceSection" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionEntity">
+	    INSERT INTO T_PRICE_SECTION
+	     (
+	    	ID,
+			CODE,
+			SHORT_CODE,
+			NAME,
+			SUIT_PRODUCT,
+			SECTIONED_ITEM,
+			REMARK,
+			ACTIVE,
+			CREATE_TIME,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE,
+			REUNITE_SOURCE,
+			SUITOA
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{code,jdbcType=VARCHAR},
+	    	#{shortCode,jdbcType=VARCHAR},
+	    	#{name,jdbcType=VARCHAR},
+	    	#{suitProduct,jdbcType=VARCHAR},
+	    	#{sectionedItem,jdbcType=VARCHAR},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR},
+	    	#{reuniteSource,jdbcType=VARCHAR},
+	    	#{suitoa,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改和删除都用这个 -->
+	<update id="delPriceSection" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionEntity">
+	    UPDATE T_PRICE_SECTION SET
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updatePriceSection">
+	     UPDATE T_PRICE_SECTION TBR  SET 
+	    	TBR.CODE = #{code,jdbcType=VARCHAR},
+	    	TBR.SHORT_CODE = #{shortCode,jdbcType=VARCHAR},
+	    	TBR.NAME = #{name,jdbcType=VARCHAR},
+	    	TBR.SUIT_PRODUCT = #{suitProduct,jdbcType=VARCHAR},
+	    	TBR.SECTIONED_ITEM  = #{sectionedItem,jdbcType=VARCHAR},
+	    	TBR.REMARK = #{remark,jdbcType=VARCHAR},
+	    	TBR.ACTIVE = #{active,jdbcType=VARCHAR},
+	    	TBR.SUITOA = #{suitoa,jdbcType=VARCHAR},
+	    	TBR.MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    	TBR.MODIFY_USER_CODE = #{modifyUser,jdbcType=TIMESTAMP}
+	    WHERE 
+	   		TBR.ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<!-- 增加一条优惠分段 -->
+	<insert id="addPriceSectionSub" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionSubEntity">
+	    INSERT INTO T_PRICE_SECTION_SUB
+	     (
+	    ID,
+		SECTION_ID,
+		START_VALUE,
+		END_VALUE,
+		SECTION_ACCODING_ITEM,
+		PRICE_TYPE,
+		PRICE,
+		CALC_ALONE,
+		MIN_PRICE,
+		MAX_PRICE,
+		REMARK,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{sectionId,jdbcType=VARCHAR},
+	    	#{startValue,jdbcType=DOUBLE},
+	    	#{endValue,jdbcType=DOUBLE},
+	    	#{sectionAccodingItem,jdbcType=VARCHAR},
+	    	#{priceType,jdbcType=VARCHAR},
+	    	#{price,jdbcType=DOUBLE},
+	    	#{calcAlone,jdbcType=VARCHAR},
+	    	#{minPrice,jdbcType=DOUBLE},
+	    	#{maxPrice,jdbcType=DOUBLE},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改和删除都用这个 -->
+	<update id="delPriceSectionSub" parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionSubEntity">
+	    UPDATE T_PRICE_SECTION_SUB SET
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR}
+	    <where>
+	    	<if test="id!=null and id!=''">
+	    		and ID = #{id,jdbcType=VARCHAR}
+	    	</if>
+	    	<if test="sectionId!=null and sectionId!=''">
+	    		and SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+	    	</if>
+	    </where>
+	    
+	</update>
+	
+	<update id="updatePriceSectionSub">
+	        UPDATE T_PRICE_SECTION_SUB TBR  SET 
+	    	TBR.SECTION_ID = #{sectionId,jdbcType=VARCHAR},
+			TBR.START_VALUE  = #{startValue,jdbcType=DOUBLE},
+			TBR.END_VALUE  = #{endValue,jdbcType=DOUBLE},
+			TBR.SECTION_ACCODING_ITEM  = #{sectionAccodingItem,jdbcType=DOUBLE},
+			TBR.PRICE_TYPE  = #{priceType,jdbcType=VARCHAR},
+			TBR.PRICE = #{price,jdbcType=DOUBLE},
+			TBR.CALC_ALONE = #{calcAlone,jdbcType=VARCHAR},
+			TBR.MIN_PRICE = #{minPrice,jdbcType=DOUBLE},
+			TBR.MAX_PRICE = #{maxPrice,jdbcType=DOUBLE},
+	    	TBR.REMARK = #{remark,jdbcType=VARCHAR},
+	    	TBR.ACTIVE = #{active,jdbcType=VARCHAR},
+	    	TBR.MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    	TBR.MODIFY_USER_CODE = #{modifyUser,jdbcType=TIMESTAMP}
+	    WHERE 
+	   		TBR.ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<!-- 根据参数查询优惠分段信息  -->
+	<select id="queryListByParamSub" resultMap="priceSectionSubResultMap" parameterType="map">
+		SELECT
+		<include refid="query_mian_paramSub"></include>
+		FROM T_PRICE_SECTION_SUB PSE
+		<include refid="queryConditionSub"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	
+	<!-- 根据参数统计优惠分段信息 -->
+	<select id="queryCountByParamSub" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_PRICE_SECTION_SUB PSE
+		<include refid="queryConditionSub"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	
+	<!-- 分段主表带明细的查询 -->
+	<select id="queryPriceSectionByCode" resultMap="priceSectionWithSubResultMap" parameterType="string">
+		SELECT 
+		<include refid="query_mian_param_withsub"></include>
+		FROM T_PRICE_SECTION PSE 
+		JOIN T_PRICE_SECTION_SUB PSE_SUB ON PSE.ID = PSE_SUB.SECTION_ID
+		<where>
+			PSE.CODE = #{code, jdbcType=VARCHAR} 
+			AND PSE.ACTIVE = 'Y'
+			AND PSE_SUB.ACTIVE = 'Y'
+		</where>
+		ORDER BY PSE_SUB.SECTION_ACCODING_ITEM, PSE_SUB.START_VALUE ASC
+	</select>
+	
+	<!-- 根据融合来源查询待明细的分段 -->
+	<select id="queryPriceSectionByReuniteSource" resultMap="priceSectionWithSubResultMap" 
+		parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionSubEntity">
+		SELECT 
+		<include refid="query_mian_param_withsub"></include>
+		FROM T_PRICE_SECTION PSE 
+		JOIN T_PRICE_SECTION_SUB PSE_SUB ON PSE.ID = PSE_SUB.SECTION_ID
+		<where>
+			PSE.REUNITE_SOURCE = #{reuniteSource, jdbcType=VARCHAR} 
+			AND PSE.ACTIVE = #{active, jdbcType=VARCHAR}
+			AND PSE_SUB.ACTIVE = #{active, jdbcType=VARCHAR}
+		</where>
+	</select>
+	<!-- 查询导出数据  create by lhf -->
+	<!-- 分段主表带明细的查询 -->
+	<select id="excelQueryListByParam" resultMap="priceSectionWithSubResultMap_report" 
+	parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionEntity">
+		SELECT 
+		<include refid="query_mian_param_withsub_exprot"></include>
+		FROM T_PRICE_SECTION PSE 
+		JOIN T_PRICE_SECTION_SUB PSE_SUB ON PSE.ID = PSE_SUB.SECTION_ID
+		<include refid="queryCondition_export"></include>
+			AND PSE.ACTIVE = 'Y'
+			AND PSE_SUB.ACTIVE = 'Y'
+		ORDER BY PSE_SUB.SECTION_ACCODING_ITEM, PSE_SUB.START_VALUE ASC
+	</select>
+</mapper>

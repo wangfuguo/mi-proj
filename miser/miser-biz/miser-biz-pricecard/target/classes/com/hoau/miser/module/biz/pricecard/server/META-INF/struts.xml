@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="pricecard" namespace="/pricecard"
+		extends="miser-default">
+		<action name="index" class="loginAction" method="index">
+			<result name="success">pricecard.jsp</result>
+		</action>
+		<action name="queryUser" class="loginAction" method="queryUser">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>		    
+		</action>
+		<!-- lwq20151215_add 增加标准价格 -->
+		<action name="priceStandard" class="priceStandardAction">
+			<result name="index">priceStandard.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<!-- wm优惠分段 -->
+		<action name="priceSection" class="priceSectionAction">
+			<result name="index">priceSection.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		
+		
+		<!-- add by dengyin 2016-1-5 14:51:56 增加 客户专属价格管理  -->
+		<action name="priceCustomer" class="priceCustomerAction">
+			<result name="index">priceCustomer.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		<!-- 易入户客户价格管理  -->
+		<action name="priceCustomerSection" class="priceCustomerSectionAction">
+			<result name="index">priceCustomerSection.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		<!-- add by chenqiyong 2016-1-13 16:51:56 增加 客户信息  -->
+		<action name="bseCustomer" class="bseCustomerAction">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		<!-- add by lwy 2016年1月14日11:22:10 网点专属价格  -->
+		<action name="priceCorp" class="priceCorpAction">
+			<result name="index">priceCorp.jsp</result>
+			<result name="success" type="json" ></result>
+			<result name="error" type="json" ></result>
+		</action>
+		
+		<!-- add by lwy 2016年4月22日9:40:50 时效价格管理  -->
+		<action name="timeStandard" class="timeStandardAction">
+			<result name="index">timeStandard.jsp</result>
+			<result name="success" type="json" ></result>
+			<result name="error" type="json" ></result>
+		</action>
+		
+		<!-- add by lwy 2016年5月3日13:46:20 易入户网点价格管理  -->
+		<action name="priceCorpSection" class="priceCorpSectionAction">
+			<result name="index">priceCorpSection.jsp</result>
+			<result name="success" type="json" ></result>
+			<result name="error" type="json" ></result>
+		</action>
+		
+		<!-- 易入户标准价格 -->
+		<action name="priceStandardSection" class="priceStandardSectionAction">
+			<result name="index">priceStandardSection.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+	</package>
+</struts>

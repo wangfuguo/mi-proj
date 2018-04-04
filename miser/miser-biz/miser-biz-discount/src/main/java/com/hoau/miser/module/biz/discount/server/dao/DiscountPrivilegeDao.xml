@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.discount.server.dao.DiscountPrivilegeDao">
+
+	<resultMap
+		type="com.hoau.miser.module.biz.discount.api.shared.domain.DiscountPrivilegeEntity"
+		id="discountPrivilegeResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="START_AMOUNT" property="startAmount" jdbcType="DOUBLE" />
+		<result column="END_AMOUNT" property="endAmount" jdbcType="DOUBLE" />
+		<result column="DD_MIN_FREIGHT_DISCOUNT" property="ddMinFreightDiscount" jdbcType="DOUBLE" />
+		<result column="DU_MIN_FREIGHT_DISCOUNT" property="duMinFreightDiscount" jdbcType="DOUBLE" />
+		<result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+		<result column="MAX_COUPON_SCALE" property="maxCouponScale" jdbcType="DOUBLE" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="query_mian_param">
+		PSE.ID AS id,
+		PSE.START_AMOUNT AS startAmount,
+		PSE.END_AMOUNT AS endAmount,
+		PSE.DD_MIN_FREIGHT_DISCOUNT AS ddMinFreightDiscount,
+		PSE.DU_MIN_FREIGHT_DISCOUNT AS duMinFreightDiscount,
+		PSE.HAS_COUPON AS hasCoupon,
+		PSE.MAX_COUPON_SCALE AS maxCouponScale,
+		PSE.EFFECTIVE_TIME AS effectiveTime,
+		PSE.INVALID_TIME AS invalidTime,
+		PSE.REMARK AS remark,
+		PSE.ACTIVE AS active,
+		PSE.CREATE_TIME AS createDate,
+		PSE.CREATE_USER_CODE AS createUser,
+		PSE.MODIFY_TIME AS modifyDate,
+		PSE.MODIFY_USER_CODE AS modifyUser,
+		<![CDATA[
+		case when (PSE.invalid_time<sysdate and PSE.active='Y') then 'PASSED'
+ 			                     when ((PSE.effective_time<=sysdate and PSE.INVALID_TIME IS NULL and PSE.active='Y') OR 
+ 			                      (PSE.effective_time<=sysdate AND SYSDATE<PSE.INVALID_TIME and PSE.active='Y')) then 'EFFECTIVE'
+ 			                     when (PSE.effective_time>sysdate and PSE.active='Y') then 'WAIT'
+ 			                     when (PSE.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			<if test="discountPrivilegeEntity!=null and discountPrivilegeEntity.id!=null and discountPrivilegeEntity.id!=''">
+				and PSE.ID=#{discountPrivilegeEntity.id,jdbcType=VARCHAR}
+			</if>
+			<if test="discountPrivilegeEntity!=null and discountPrivilegeEntity.hasCoupon!=null and discountPrivilegeEntity.hasCoupon!=''">
+				and PSE.HAS_COUPON=#{discountPrivilegeEntity.hasCoupon,jdbcType=VARCHAR}
+			</if>
+			<if test="discountPrivilegeEntity!=null and discountPrivilegeEntity.startAmount!=null and discountPrivilegeEntity.startAmount!=''">
+				and PSE.START_AMOUNT=#{discountPrivilegeEntity.startAmount,jdbcType=DOUBLE}
+			</if>
+			<if test="discountPrivilegeEntity!=null and discountPrivilegeEntity.endAmount!=null and discountPrivilegeEntity.endAmount!=''">
+				and PSE.END_AMOUNT=#{discountPrivilegeEntity.endAmount,jdbcType=DOUBLE}
+			</if>
+			<if test="discountPrivilegeEntity!=null and discountPrivilegeEntity.ddMinFreightDiscount!=null and discountPrivilegeEntity.ddMinFreightDiscount!=''">
+				and PSE.DD_MIN_FREIGHT_DISCOUNT=#{discountPrivilegeEntity.ddMinFreightDiscount,jdbcType=DOUBLE}
+			</if>
+			<if test="discountPrivilegeEntity!=null and discountPrivilegeEntity.duMinFreightDiscount!=null and discountPrivilegeEntity.duMinFreightDiscount!=''">
+				and PSE.DU_MIN_FREIGHT_DISCOUNT=#{discountPrivilegeEntity.duMinFreightDiscount,jdbcType=DOUBLE}
+			</if>
+<!-- 			<choose>
+			 <when test="discountPrivilegeEntity==null or (discountPrivilegeEntity!=null and (discountPrivilegeEntity.state==null or discountPrivilegeEntity.state=='' or discountPrivilegeEntity.active==null or discountPrivilegeEntity.active==''))">
+         and PSE.ACTIVE='Y'
+       </when>
+       <when test="discountPrivilegeEntity!=null and (discountPrivilegeEntity.state==null or discountPrivilegeEntity.state=='') and discountPrivilegeEntity.active!=null and discountPrivilegeEntity.active!=''">
+         and PSE.ACTIVE=#{active,jdbcType=VARCHAR}
+       </when>
+			</choose> -->
+			<if test="discountPrivilegeEntity!=null and discountPrivilegeEntity.state!=null and discountPrivilegeEntity.state!=''">
+		    <choose>
+	        <when test='discountPrivilegeEntity.state=="PASSED"'>
+	          <![CDATA[ and (sysdate>PSE.INVALID_TIME and PSE.active='Y')]]>
+	        </when>
+	        <when test='discountPrivilegeEntity.state=="EFFECTIVE"'>
+	          <![CDATA[ 
+	            and (
+	              (sysdate>=PSE.EFFECTIVE_TIME and PSE.INVALID_TIME is null and PSE.active='Y')
+	              or 
+	              (sysdate>=PSE.EFFECTIVE_TIME  and PSE.INVALID_TIME is not null and sysdate<PSE.INVALID_TIME and PSE.active='Y')
+	            )
+	          ]]>
+	        </when>
+	        <when test='discountPrivilegeEntity.state=="WAIT"'>
+	          <![CDATA[ and (sysdate<=PSE.EFFECTIVE_TIME and PSE.active='Y')]]>
+	        </when>
+	        <when test='discountPrivilegeEntity.state=="DELETED"'>
+	          <![CDATA[ and PSE.active='N']]>
+	        </when>
+	        <otherwise>
+	        </otherwise>
+        </choose>
+			</if>
+		</where> 
+	</sql>
+<!-- 根据参数查询优惠分段信息  -->
+	<select id="queryListByParam" resultMap="discountPrivilegeResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRIVILEGE PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	
+	<!-- 根据参数统计优惠分段信息 -->
+	<select id="queryCountByParam" resultType="Long"
+		parameterType="map">
+		SELECT
+		COUNT(1)
+		FROM T_PRIVILEGE PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+	<!-- 增加一条优惠分段 -->
+	<insert id="addDiscountPrivilege" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.DiscountPrivilegeEntity">
+	    INSERT INTO T_PRIVILEGE
+	     (
+	    ID,
+	    START_AMOUNT,
+		END_AMOUNT,
+		DD_MIN_FREIGHT_DISCOUNT,
+		DU_MIN_FREIGHT_DISCOUNT,
+		HAS_COUPON,
+		MAX_COUPON_SCALE,
+		EFFECTIVE_TIME,
+		INVALID_TIME,
+		REMARK,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{startAmount,jdbcType=DOUBLE},
+	    	#{endAmount,jdbcType=DOUBLE},
+	    	#{ddMinFreightDiscount,jdbcType=DOUBLE},
+	    	#{duMinFreightDiscount,jdbcType=DOUBLE},
+	    	#{hasCoupon,jdbcType=VARCHAR},
+	    	#{maxCouponScale,jdbcType=DOUBLE},
+	    	#{effectiveTime,jdbcType=TIMESTAMP},
+	    	#{invalidTime,jdbcType=TIMESTAMP},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 修改和删除都用这个 -->
+	<update id="delDiscountPrivilege" parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.DiscountPrivilegeEntity">
+	    UPDATE T_PRIVILEGE SET
+	    <if test="remark!=null and remark!=''">
+		    REMARK= #{remark,jdbcType=VARCHAR},
+		</if>
+	    ACTIVE =  #{active,jdbcType=VARCHAR},
+	    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR},
+	    INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP}
+	    WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateDiscountPrivilege">
+	        UPDATE T_PRIVILEGE TBR  SET 
+	    	TBR.START_AMOUNT =#{startAmount,jdbcType=DOUBLE},
+			TBR.END_AMOUNT =#{endAmount,jdbcType=DOUBLE},
+			TBR.DD_MIN_FREIGHT_DISCOUNT=#{ddMinFreightDiscount,jdbcType=DOUBLE},
+			TBR.DU_MIN_FREIGHT_DISCOUNT=#{duMinFreightDiscount,jdbcType=DOUBLE},
+			TBR.HAS_COUPON=#{hasCoupon,jdbcType=VARCHAR},
+			TBR.MAX_COUPON_SCALE=#{maxCouponScale,jdbcType=DOUBLE},
+			TBR.EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+			TBR.INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+	    	TBR.REMARK = #{remark,jdbcType=VARCHAR},
+	    	TBR.ACTIVE = #{active,jdbcType=VARCHAR},
+	    	TBR.MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+	    	TBR.MODIFY_USER_CODE = #{modifyUser,jdbcType=TIMESTAMP}
+	    WHERE 
+	   		TBR.ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="findPrivilege" 
+	 parameterType="com.hoau.miser.module.biz.discount.api.shared.domain.DiscountPrivilegeEntity" 
+	 resultType="java.lang.Long">
+	    SELECT COUNT(1) FROM T_PRIVILEGE  
+      <where>
+        <!-- 待生效和已生效的数据 -->
+        <![CDATA[
+          AND START_AMOUNT<#{endAmount,jdbcType=DOUBLE} 
+          AND END_AMOUNT>#{startAmount,jdbcType=DOUBLE}
+          AND ACTIVE='Y' 
+          AND ((EFFECTIVE_TIME<=SYSDATE AND INVALID_TIME IS NULL) OR 
+             (EFFECTIVE_TIME<=SYSDATE AND SYSDATE<INVALID_TIME) OR EFFECTIVE_TIME>SYSDATE)
+        ]]>
+        <if test="hasCoupon!=null and hasCoupon!=''">
+          AND HAS_COUPON=#{hasCoupon,jdbcType=VARCHAR}
+        </if>
+        <if test='hasCoupon!=null and hasCoupon=="Y"'>
+          AND DD_MIN_FREIGHT_DISCOUNT=#{ddMinFreightDiscount,jdbcType=DOUBLE}
+          AND DU_MIN_FREIGHT_DISCOUNT=#{duMinFreightDiscount,jdbcType=DOUBLE}
+        </if>
+      </where>
+	</select>
+
+</mapper>

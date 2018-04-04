@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.DiscountSectionSendDao">
+	<resultMap type="com.hoau.miser.module.biz.job.shared.domain.DiscountSectionSendEntity" 
+	 id="discountSectionResultMap">
+	 <id column="ID" property="id" jdbcType="VARCHAR"/>
+	 <result column="CODE" property="code" jdbcType="VARCHAR"/>
+	 <result column="NAME" property="name" jdbcType="VARCHAR"/>
+	 <result column="SUIT_PRODUCT" property="suitProduct" jdbcType="VARCHAR"/>
+	 <result column="SECTIONED_ITEM" property="sectionedItem" jdbcType="VARCHAR"/>
+	 <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+	 <result column="ACTIVE" property="active" jdbcType="VARCHAR"/>
+	 <collection property="discountDetailEntity" resultMap="discountDetailResultMap" ></collection>
+	 </resultMap>
+	
+	<resultMap type="com.hoau.miser.module.biz.job.shared.domain.DiscountDetailEntity" id="discountDetailResultMap">
+		<result column="SUB_ID" property="id" jdbcType="VARCHAR"/>
+		<result column="SECTION_ID" property="sectionCode" jdbcType="VARCHAR"/>
+		<result column="SECTION_ACCODING_ITEM" property="sectionAccdoingItem" jdbcType="VARCHAR"/>
+		<result column="START_VALUE" property="startValue" jdbcType="VARCHAR"/>
+		<result column="END_VALUE" property="endValue" jdbcType="VARCHAR"/>
+		<result column="PRICE_TYPE" property="priceType" jdbcType="VARCHAR"/>
+		<result column="PRICE" property="price" jdbcType="VARCHAR"/>
+		<result column="CALC_ALONE" property="calcAlone" jdbcType="VARCHAR"/>
+		<result column="MIN_PRICE" property="minPrice" jdbcType="VARCHAR"/>
+		<result column="MAX_PRICE" property="maxPrice" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<sql id="disSec_params">
+	A.ID,
+	LPAD(A.CODE, 4, '0') AS CODE,
+	A.NAME,
+	A.SUIT_PRODUCT,
+	A.SECTIONED_ITEM,
+	A.REMARK,
+	B.ID AS SUB_ID,
+	B.SECTION_ID,
+	B.SECTION_ACCODING_ITEM,
+	B.START_VALUE,
+	B.END_VALUE,
+	B.PRICE_TYPE,
+	B.PRICE,
+	B.CALC_ALONE,
+	B.MIN_PRICE,
+	B.MAX_PRICE,
+	CASE WHEN (A.ACTIVE='Y') THEN B.ACTIVE 
+	ELSE 'N' 
+	END AS ACTIVE
+	</sql>
+	
+	<select id="queryListByParam" resultMap="discountSectionResultMap"
+				parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity" >
+		SELECT 
+		<include refid="disSec_params"></include>
+		FROM T_PRICE_SECTION A
+		LEFT JOIN T_PRICE_SECTION_SUB B
+		ON A.ID=B.SECTION_ID
+		WHERE
+		EXISTS (SELECT 1 FROM (
+			SELECT A.CODE,MAX(A.MODIFY_TIME) AS MAX_MODIFY_TIME,MAX(A.CREATE_TIME) AS MAX_CREATE_TIME 
+			FROM T_PRICE_SECTION A
+			<where>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND A.MODIFY_TIME >= #{startTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND A.MODIFY_TIME < #{endTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+		</where> 
+			GROUP BY A.CODE ) 
+		WHERE CODE = A.CODE AND MAX_MODIFY_TIME = A.MODIFY_TIME AND MAX_CREATE_TIME=A.CREATE_TIME)
+	</select>
+	
+	
+	<select id="queryFailureData" resultMap="discountSectionResultMap" 
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		SELECT 
+		<include refid="disSec_params"></include>
+		FROM T_JOB_SEND_FAILURE C 
+		LEFT JOIN T_PRICE_SECTION A ON C.BUSINESS_ID = A.ID
+		LEFT JOIN T_PRICE_SECTION_SUB B ON A.ID=B.SECTION_ID
+		WHERE 
+		EXISTS (SELECT 1 FROM (
+		SELECT B.CODE, MAX(A.MODIFY_TIME) AS MAX_MODIFY_TIME
+		FROM T_JOB_SEND_FAILURE A 
+		LEFT JOIN T_PRICE_SECTION B ON A.BUSINESS_ID = B.ID
+		LEFT JOIN T_PRICE_SECTION_SUB C ON B.ID=C.SECTION_ID
+		<where>
+			<if test="active != null and active != ''">
+				AND C.ACTIVE = #{active, jdbcType=VARCHAR}
+			</if>
+		</where> 
+		GROUP BY B.CODE ) X
+		WHERE X.CODE = A.CODE AND X.MAX_MODIFY_TIME =A.MODIFY_TIME)
+		
+	</select>
+	
+	<select id="queryDataByCode" parameterType="string" resultMap="discountSectionResultMap">
+		SELECT 
+		<include refid="disSec_params"></include>
+		FROM T_PRICE_SECTION A
+		LEFT JOIN T_PRICE_SECTION_SUB B
+		ON A.ID=B.SECTION_ID
+		<where>
+			<if test="code!=null"></if>
+			A.CODE=#{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+</mapper>

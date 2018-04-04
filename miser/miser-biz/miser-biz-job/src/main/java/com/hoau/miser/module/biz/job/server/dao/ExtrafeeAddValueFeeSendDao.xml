@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.ExtrafeeAddValueFeeSendDao">
+
+	<resultMap type="com.hoau.miser.module.biz.job.shared.domain.ExtrafeeAddValueFeeEntity" 
+		id="extrafeeAddValueFeeResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="CODE_NAME" property="codeName" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+		<result column="CALCULATION_TYPE" property="calculationType" jdbcType="VARCHAR" />
+		<result column="WEIGHT_PRICE" property="weightPrice" jdbcType="DOUBLE" />
+		<result column="LIGHT_PRICE" property="lightPrice" jdbcType="DOUBLE" />
+		<result column="LOWEST_MONEY" property="lowestMoney" jdbcType="DOUBLE" />
+		<result column="LOCK_TYPE" property="lockType" jdbcType="DOUBLE" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<result column="ORDER_NO" property="orderNo"  jdbcType="NUMERIC" />
+	</resultMap>
+	
+	<select id="queryFailureData" resultMap="extrafeeAddValueFeeResultMap" 
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		SELECT A.ID AS ID,
+		B.CODE AS CODE,
+		B.TRANS_TYPE_CODE AS TRANS_TYPE_CODE,
+		TRA.NAME AS TRANS_TYPE_NAME,
+		TRA.ORDER_NO AS ORDER_NO, /**排序号*/
+		B.CALCULATION_TYPE AS CALCULATION_TYPE,
+		B.WEIGHT_PRICE AS WEIGHT_PRICE,
+		B.LIGHT_PRICE AS LIGHT_PRICE,
+		B.LOWEST_MONEY AS LOWEST_MONEY,
+		B.LOCK_TYPE AS LOCK_TYPE,
+		B.REMARK AS REMARK,
+		B.ACTIVE AS ACTIVE 
+		FROM T_JOB_SEND_FAILURE A 
+		JOIN T_PRICE_ADDVALUE_FEE_STANDARD B ON A.BUSINESS_ID = B.ID 
+		JOIN T_BSE_TRANS_TYPE TRA ON B.TRANS_TYPE_CODE = TRA.CODE 
+		<where>  
+			EXISTS (SELECT 1 FROM (
+			SELECT D.CODE, D.TRANS_TYPE_CODE, MAX(C.MODIFY_TIME) AS MAX_MODIFY_TIME 
+			FROM T_JOB_SEND_FAILURE C 
+			JOIN T_PRICE_ADDVALUE_FEE_STANDARD D ON C.BUSINESS_ID = D.ID 
+			<where>
+				<if test="type != null and type != ''">
+					AND C.TYPE = #{type, jdbcType=VARCHAR}
+				</if>
+				<if test="active != null and active != ''">
+					AND C.ACTIVE = #{active, jdbcType=VARCHAR}
+				</if>
+			</where> 
+			GROUP BY D.CODE, D.TRANS_TYPE_CODE ) X 
+			WHERE X.CODE = B.CODE AND X.TRANS_TYPE_CODE = B.TRANS_TYPE_CODE AND X.MAX_MODIFY_TIME = A.MODIFY_TIME)
+			<if test="retryTimes != null and retryTimes != ''">
+				AND A.RETRY_TIMES <![CDATA[ < ]]> #{retryTimes, jdbcType=INTEGER}
+			</if>
+			<if test="type != null and type != ''">
+				AND A.TYPE = #{type, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryNeedSendData" resultMap="extrafeeAddValueFeeResultMap" 
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+		SELECT DISTINCT A.ID AS ID,
+		A.CODE AS CODE,
+		A.TRANS_TYPE_CODE AS TRANS_TYPE_CODE,
+		TRA.NAME AS TRANS_TYPE_NAME,
+		TRA.ORDER_NO AS ORDER_NO, /**排序号*/
+		A.CALCULATION_TYPE AS CALCULATION_TYPE,
+		A.WEIGHT_PRICE AS WEIGHT_PRICE,
+		A.LIGHT_PRICE AS LIGHT_PRICE,
+		A.LOWEST_MONEY AS LOWEST_MONEY,
+		A.LOCK_TYPE AS LOCK_TYPE,
+		<!-- 失效时间落在段内的结果都作为需要删除的记录，其他的作为需要新增或者修改的记录-->
+		<![CDATA[CASE WHEN A.INVALID_TIME<=SYSDATE THEN 'N' ELSE 'Y' END AS ACTIVE,]]>
+		A.REMARK AS REMARK 
+		FROM T_PRICE_ADDVALUE_FEE_STANDARD A 
+		JOIN T_BSE_TRANS_TYPE TRA ON A.TRANS_TYPE_CODE = TRA.CODE AND TRA.ACTIVE='Y' 
+		WHERE 
+		EXISTS (SELECT 1 FROM (
+		SELECT C.CODE, C.TRANS_TYPE_CODE, MAX(C.MODIFY_TIME) AS MAX_MODIFY_TIME, MAX(C.CREATE_TIME) AS MAX_CREATE_TIME 
+		FROM T_PRICE_ADDVALUE_FEE_STANDARD C 
+		<where>
+		<if test="endTime != null and endTime != ''">
+			<![CDATA[
+			((C.ACTIVE='Y' AND C.EFFECTIVE_TIME < #{endTime, jdbcType=TIMESTAMP} 
+			]]> 
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[
+				AND C.EFFECTIVE_TIME >= #{startTime, jdbcType=TIMESTAMP} 
+				]]>
+			</if>
+			<![CDATA[
+				) OR (C.INVALID_TIME < #{endTime, jdbcType=TIMESTAMP} 
+			]]>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[
+					AND C.INVALID_TIME >= #{startTime, jdbcType=TIMESTAMP} 
+				]]>
+			</if>
+			<![CDATA[
+				AND NOT EXISTS 
+				(
+					SELECT 1 FROM T_PRICE_ADDVALUE_FEE_STANDARD D 
+						WHERE D.CODE=C.CODE 
+						AND D.TRANS_TYPE_CODE=C.TRANS_TYPE_CODE 
+						AND (
+								(D.INVALID_TIME > #{endTime, jdbcType=TIMESTAMP} OR D.INVALID_TIME IS NULL) 
+								AND D.EFFECTIVE_TIME <= #{endTime, jdbcType=TIMESTAMP}
+								AND D.ACTIVE='Y'
+							)
+				)
+			  )
+			) 
+			]]>
+		</if>
+		</where> 
+		GROUP BY C.CODE, C.TRANS_TYPE_CODE ) X 
+		WHERE X.CODE = A.CODE AND X.TRANS_TYPE_CODE = A.TRANS_TYPE_CODE AND X.MAX_MODIFY_TIME = A.MODIFY_TIME AND X.MAX_CREATE_TIME = A.CREATE_TIME)
+		
+	</select>
+
+	<update id="updateFailureRepeatData" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		UPDATE T_JOB_SEND_FAILURE A SET A.ACTIVE = 'N', REMARK = #{remark, jdbcType=VARCHAR} 
+		WHERE A.ACTIVE = #{active, jdbcType=VARCHAR} 
+		AND A.TYPE = #{type, jdbcType=VARCHAR} 
+		AND EXISTS(SELECT 1 FROM T_PRICE_ADDVALUE_FEE_STANDARD B 
+			WHERE B.ID = A.BUSINESS_ID AND EXISTS(SELECT 1 FROM T_PRICE_ADDVALUE_FEE_STANDARD C WHERE C.CODE = B.CODE AND C.TRANS_TYPE_CODE = B.TRANS_TYPE_CODE 
+			<if test="lastSendTime != null and lastSendTime != ''">
+				<![CDATA[AND C.MODIFY_TIME >= #{lastSendTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+			<if test="sendTime != null and sendTime != ''">
+				<![CDATA[AND C.MODIFY_TIME < #{sendTime, jdbcType=TIMESTAMP}]]> 
+			</if>))
+	</update>
+	
+</mapper>

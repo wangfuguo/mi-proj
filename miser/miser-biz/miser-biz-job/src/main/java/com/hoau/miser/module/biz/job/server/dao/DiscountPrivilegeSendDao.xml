@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.DiscountPrivilegeSendDao">
+  <resultMap type="com.hoau.miser.module.biz.job.shared.domain.PrivilegeEntity"
+    id="privilegeResultMap">
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="START_AMOUNT" property="startAmount" jdbcType="DOUBLE" />
+    <result column="END_AMOUNT" property="endAmount" jdbcType="DOUBLE" />
+    <result column="DD_MIN_FREIGHT_DISCOUNT" property="ddMinFreightDiscount" jdbcType="DOUBLE" />
+    <result column="DU_MIN_FREIGHT_DISCOUNT" property="duMinFreightDiscount" jdbcType="DOUBLE" />
+    <result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+    <result column="MAX_COUPON_SCALE" property="maxCouponScale" jdbcType="DOUBLE" />
+    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+	<resultMap type="com.hoau.miser.module.biz.job.shared.domain.PrivilegeContractEntity"
+		id="contractResultMap">
+		<id column="CONTRACT_ID" property="id" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+		<result column="NAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="CONTACT_NAME" property="contactName" jdbcType="VARCHAR" />
+		<result column="CONTACT_PHONE" property="contactPhone" jdbcType="VARCHAR" />
+		<result column="CONTRACT_START_TIME" property="contractStartTime" jdbcType="TIMESTAMP" />
+		<result column="CONTRACT_END_TIME" property="contractEndTime" jdbcType="TIMESTAMP" />
+		<result column="PRIVILEGE_START_TIME" property="privilegeStartTime" jdbcType="TIMESTAMP" />
+    <result column="PRIVILEGE_END_TIME" property="privilegeEndTime" jdbcType="TIMESTAMP" />
+    <result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+		<result column="CONTRACT_REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="VARCHAR" />
+		<result column="CONTRACT_ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<collection property="detail" 
+		  ofType="com.hoau.miser.module.biz.job.shared.domain.PrivilegeContractDetailEntity">
+		  <id column="DETAIL_ID" property="id" jdbcType="VARCHAR" />
+	    <result column="CUSTOMER_CONTRACT_ID" property="customerContractId" jdbcType="VARCHAR" />
+	    <result column="START_AMOUNT" property="startAmount" jdbcType="DOUBLE" />
+	    <result column="END_AMOUNT" property="endAmount" jdbcType="DOUBLE" />
+	    <result column="DD_MIN_FREIGHT_DISCOUNT" property="ddMinFreightDiscount" jdbcType="DOUBLE" />
+	    <result column="DU_MIN_FREIGHT_DISCOUNT" property="duMinFreightDiscount" jdbcType="DOUBLE" />
+	    <result column="MAX_COUPON_SCALE" property="maxCouponScale" jdbcType="DOUBLE" />
+	    <result column="DATA_ORIGN" property="dataOrign" jdbcType="VARCHAR" />
+	    <result column="DETAIL_REMARK" property="remark" jdbcType="VARCHAR" />
+	    <result column="DETAIL_ACTIVE" property="active" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+	<resultMap type="com.hoau.miser.module.biz.job.shared.domain.PrivilegeDiscountEntity" 
+	  id="discountResultMap">
+    <id column="DISCOUNT_ID" property="id" jdbcType="VARCHAR" />
+    <result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+    <result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+    <result column="LAST_LAST_MONTH_AMOUNT" property="lastLastMonthAmount" jdbcType="DOUBLE" />
+    <result column="LAST_MONTH_AMOUNT" property="lastMonthAmount" jdbcType="DOUBLE" />
+    <result column="LAST_TWO_MONTHS_AVERAGE_AMOUNT" property="lastTwoMonthsAverageAmount" jdbcType="DOUBLE" />
+    <result column="CURRENT_MONTH_AMOUNT" property="currentMonthAmount" jdbcType="DOUBLE" />
+    <result column="CURRENT_DU_DISCOUNT" property="currentDuDiscount" jdbcType="DOUBLE" />
+    <result column="CURRENT_DD_DISCOUNT" property="currentDdDiscount" jdbcType="DOUBLE" />
+    <result column="DISCOUNT_ACTIVE" property="active" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap type="com.hoau.miser.module.biz.job.shared.domain.PrivilegeCouponEntity" 
+    id="couponResultMap">
+    <id column="COUPON_ID" property="id" jdbcType="VARCHAR" />
+    <result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+    <result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+    <result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+    <result column="COUPON_SCALE" property="couponScale" jdbcType="DOUBLE" />
+    <result column="COUPON_AMOUNT" property="couponAmount" jdbcType="VARCHAR" />
+    <result column="COUPON_STATE" property="couponState" jdbcType="VARCHAR" />
+    <result column="CHECK_TIME" property="checkTime" jdbcType="TIMESTAMP" />
+    <result column="SHOULD_PAY_AMOUNT_SUM" property="shouldPayAmountSum" jdbcType="DOUBLE" />
+    <result column="CHECK_REMARK" property="checkRemark" jdbcType="VARCHAR" />
+    <result column="COUPON_ACTIVE" property="active" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+    <association property="acceptor" 
+      javaType="com.hoau.miser.module.biz.job.shared.domain.PrivilegeCouponAcceptorEntity">
+	    <id column="ACCEPTOR_ID" property="id" jdbcType="VARCHAR" />
+	    <result column="ACCEPTOR_NAME" property="acceptorName" jdbcType="VARCHAR" />
+	    <result column="ACCEPTOR_PHONE" property="acceptorPhone" jdbcType="VARCHAR" />
+	    <result column="IDENTITY_CARD_NO" property="identityCardNo" jdbcType="VARCHAR" />
+	    <result column="BANK_NAME" property="bankName" jdbcType="VARCHAR" />
+	    <result column="CREDIT_CARD_NO" property="creditCardNo" jdbcType="VARCHAR" />
+	    <result column="RELATIONSHIP_WITH_CUSTOMER" property="relationshipWithCustomer" jdbcType="VARCHAR" />
+	    <result column="ALIPAY_ACCOUNT" property="alipayAccount" jdbcType="VARCHAR" />
+	    <result column="SUBBRANCH_NAME" property="subbranchName" jdbcType="VARCHAR" />
+    </association>
+  </resultMap>
+	<sql id="privilegeFields">
+	  TP.ID AS ID,
+    TP.START_AMOUNT AS START_AMOUNT,
+    TP.END_AMOUNT AS END_AMOUNT,
+    TP.DD_MIN_FREIGHT_DISCOUNT AS DD_MIN_FREIGHT_DISCOUNT,
+    TP.DU_MIN_FREIGHT_DISCOUNT AS DU_MIN_FREIGHT_DISCOUNT,
+    TP.HAS_COUPON AS HAS_COUPON,
+    TP.MAX_COUPON_SCALE AS MAX_COUPON_SCALE,
+    TP.EFFECTIVE_TIME AS EFFECTIVE_TIME,
+    TP.INVALID_TIME AS INVALID_TIME,
+    TP.REMARK AS REMARK,
+    TP.CREATE_TIME AS CREATE_TIME,
+    TP.CREATE_USER_CODE AS CREATE_USER_CODE,
+    TP.MODIFY_TIME AS MODIFY_USER_CODE,
+    TP.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+    TP.ACTIVE AS ACTIVE,
+    <![CDATA[
+    CASE WHEN (TP.INVALID_TIME<SYSDATE AND TP.ACTIVE='Y') THEN 'PASSED'
+         WHEN (
+            (SYSDATE>=TP.EFFECTIVE_TIME AND TP.INVALID_TIME IS NULL AND TP.ACTIVE='Y')
+            OR 
+            (SYSDATE>=TP.EFFECTIVE_TIME  AND TP.INVALID_TIME IS NOT NULL AND SYSDATE<TP.INVALID_TIME AND TP.ACTIVE='Y')
+         ) THEN 'EFFECTIVE'
+         WHEN (TP.EFFECTIVE_TIME>SYSDATE AND TP.ACTIVE='Y') THEN 'WAIT'
+         WHEN (TP.ACTIVE='N') THEN 'DELETED'
+         ELSE ''
+    END AS STATE
+    ]]>
+	</sql>
+	<sql id="contractFields">
+    TCC.ID AS CONTRACT_ID,
+    TCC.CUSTOMER_CODE AS CUSTOMER_CODE,
+    CUSTOMER.NAME AS NAME,
+    TCC.CONTACT_NAME AS CONTACT_NAME,
+    TCC.CONTACT_PHONE AS CONTACT_PHONE,
+    TCC.CONTRACT_START_TIME AS CONTRACT_START_TIME,
+    TCC.CONTRACT_END_TIME AS CONTRACT_END_TIME,
+    TCC.PRIVILEGE_START_TIME AS PRIVILEGE_START_TIME,
+    TCC.PRIVILEGE_END_TIME AS PRIVILEGE_END_TIME,
+    TCC.HAS_COUPON AS HAS_COUPON,
+    TCC.REMARK AS CONTRACT_REMARK,
+    TCC.ACTIVE AS CONTRACT_ACTIVE,
+    TCC.CREATE_TIME AS CREATE_TIME,
+    TCC.CREATE_USER_CODE AS CREATE_USER_CODE,
+    TCC.MODIFY_TIME AS MODIFY_TIME,
+    TCC.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+    <![CDATA[
+    CASE WHEN (TCC.PRIVILEGE_END_TIME<SYSDATE AND TCC.ACTIVE='Y') THEN 'PASSED'
+         WHEN (
+            (SYSDATE>=TCC.PRIVILEGE_START_TIME AND TCC.PRIVILEGE_END_TIME IS NULL AND TCC.ACTIVE='Y')
+            OR 
+            (SYSDATE>=TCC.PRIVILEGE_START_TIME  AND TCC.PRIVILEGE_END_TIME IS NOT NULL AND SYSDATE<TCC.PRIVILEGE_END_TIME AND TCC.ACTIVE='Y')
+         ) THEN 'EFFECTIVE'
+         WHEN (TCC.PRIVILEGE_START_TIME>SYSDATE AND TCC.ACTIVE='Y') THEN 'WAIT'
+         WHEN (TCC.ACTIVE='N') THEN 'DELETED'
+         ELSE ''
+    END AS STATE
+    ]]>
+	</sql>
+	<sql id="contractDetailFields">
+    TCCD.ID AS DETAIL_ID,
+    TCCD.CUSTOMER_CONTRACT_ID AS CUSTOMER_CONTRACT_ID,
+    TCCD.START_AMOUNT AS START_AMOUNT,
+    TCCD.END_AMOUNT AS END_AMOUNT,
+    TCCD.DD_MIN_FREIGHT_DISCOUNT AS DD_MIN_FREIGHT_DISCOUNT,
+    TCCD.DU_MIN_FREIGHT_DISCOUNT AS DU_MIN_FREIGHT_DISCOUNT,
+    TCCD.MAX_COUPON_SCALE AS MAX_COUPON_SCALE,
+    TCCD.DATA_ORIGN AS DATA_ORIGN,
+    TCCD.REMARK AS DETAIL_REMARK,
+    TCCD.ACTIVE AS DETAIL_ACTIVE
+	</sql>
+	<sql id="discountFields">
+    TPD.ID AS DISCOUNT_ID,
+    TCC.CUSTOMER_CODE AS CUSTOMER_CODE,
+    TPD.RECORD_MONTH AS RECORD_MONTH,
+    TPD.LAST_LAST_MONTH_AMOUNT AS LAST_LAST_MONTH_AMOUNT,
+    TPD.LAST_MONTH_AMOUNT AS LAST_MONTH_AMOUNT,
+    TPD.LAST_TWO_MONTHS_AVERAGE_AMOUNT AS LAST_TWO_MONTHS_AVERAGE_AMOUNT,
+    TPD.CURRENT_MONTH_AMOUNT AS CURRENT_MONTH_AMOUNT,
+    TPD.CURRENT_DU_DISCOUNT AS CURRENT_DU_DISCOUNT,
+    TPD.CURRENT_DD_DISCOUNT AS CURRENT_DD_DISCOUNT,
+    TPD.ACTIVE AS DISCOUNT_ACTIVE,
+    TPD.CREATE_TIME AS CREATE_TIME,
+    TPD.CREATE_USER_CODE AS CREATE_USER_CODE,
+    TPD.MODIFY_TIME AS MODIFY_TIME,
+    TPD.MODIFY_USER_CODE AS MODIFY_USER_CODE
+	</sql>
+	<sql id="couponFields">
+    TPC.ID AS COUPON_ID,
+    TCC.CUSTOMER_CODE AS CUSTOMER_CODE,
+    TPC.RECORD_MONTH AS RECORD_MONTH,
+    TPC.HAS_COUPON AS HAS_COUPON,
+    TPC.COUPON_SCALE AS COUPON_SCALE,
+    TPC.COUPON_AMOUNT AS COUPON_AMOUNT,
+    TPC.COUPON_STATE AS COUPON_STATE,
+    TPC.CHECK_TIME AS CHECK_TIME,
+    TPC.COUPON_ACCEPTOR_ID AS COUPON_ACCEPTOR_ID,
+    TPC.SHOULD_PAY_AMOUNT_SUM AS SHOULD_PAY_AMOUNT_SUM,
+    TPC.CHECK_REMARK AS CHECK_REMARK,
+    TPC.ACTIVE AS COUPON_ACTIVE,
+    TPC.CREATE_TIME AS CREATE_TIME,
+    TPC.CREATE_USER_CODE AS CREATE_USER_CODE,
+    TPC.MODIFY_TIME AS MODIFY_TIME,
+    TPC.MODIFY_USER_CODE AS MODIFY_USER_CODE
+  </sql>
+	<sql id="couponAcceptorFields">
+    TCA.ID AS ACCEPTOR_ID,
+    TCA.ACCEPTOR_NAME AS ACCEPTOR_NAME,
+    TCA.ACCEPTOR_PHONE AS ACCEPTOR_PHONE,
+    TCA.IDENTITY_CARD_NO AS IDENTITY_CARD_NO,
+    TCA.BANK_NAME AS BANK_NAME,
+    TCA.CREDIT_CARD_NO AS CREDIT_CARD_NO,
+    TCA.RELATIONSHIP_WITH_CUSTOMER as RELATIONSHIP_WITH_CUSTOMER,
+    TCA.ALIPAY_ACCOUNT AS ALIPAY_ACCOUNT,
+    TCA.SUBBRANCH_NAME AS SUBBRANCH_NAME
+	</sql>
+	<!-- 查询上次发送失败的越发越惠定义数据 -->
+	<select id="queryFailurePrivilege" resultMap="privilegeResultMap" 
+	  parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+	  SELECT <include refid="privilegeFields"/> 
+	  FROM T_PRIVILEGE TP 
+	  WHERE (START_AMOUNT,END_AMOUNT,MODIFY_TIME,CREATE_TIME) IN(
+	    <!-- SELECT 1 FROM ( -->
+	      SELECT START_AMOUNT,END_AMOUNT,MAX(B.MODIFY_TIME) AS MODIFY_TIME,
+	      MAX(B.CREATE_TIME) AS CREATE_TIME 
+        FROM T_JOB_SEND_FAILURE A JOIN T_PRIVILEGE B
+        ON B.ID=A.BUSINESS_ID
+        <where>
+		      <if test="type != null and type != ''">
+		        AND A.TYPE=#{type, jdbcType=VARCHAR}
+		      </if>
+		      <if test="active != null and active != ''">
+		        AND A.ACTIVE=#{active, jdbcType=VARCHAR}
+		      </if>
+		    </where>
+        GROUP BY START_AMOUNT,END_AMOUNT
+	   <!--  )
+	    WHERE TP.START_AMOUNT=START_AMOUNT AND TP.END_AMOUNT=END_AMOUNT 
+	    AND TP.MODIFY_TIME=MODIFY_TIME AND TP.CREATE_TIME=CREATE_TIME -->
+	  )
+	</select>
+	<!-- 查询越发越惠定义数据 -->
+	<select id="queryPrivilege" resultMap="privilegeResultMap" 
+	  parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+	  SELECT <include refid="privilegeFields"/> 
+	  FROM T_PRIVILEGE TP 
+	  WHERE (START_AMOUNT,END_AMOUNT,MODIFY_TIME,CREATE_TIME) IN(
+	    <!-- SELECT 1 FROM ( -->
+	      SELECT START_AMOUNT,END_AMOUNT,MAX(MODIFY_TIME) AS MODIFY_TIME,
+        MAX(CREATE_TIME) AS CREATE_TIME 
+	      FROM T_PRIVILEGE 
+	      <where>
+          <if test="startTime != null and startTime != ''">
+            <![CDATA[AND MODIFY_TIME>=#{startTime, jdbcType=TIMESTAMP}]]>
+          </if>
+          <if test="endTime != null and endTime != ''">
+            <![CDATA[AND MODIFY_TIME<#{endTime, jdbcType=TIMESTAMP}]]>
+          </if>
+        </where>
+	      <!-- WHERE 
+	      <trim prefix="(" suffix=")" prefixOverrides="AND">
+	        <if test="startTime != null and startTime != ''">
+              <![CDATA[AND EFFECTIVE_TIME>#{startTime, jdbcType=TIMESTAMP}]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+              <![CDATA[AND EFFECTIVE_TIME<#{endTime, jdbcType=TIMESTAMP}]]>
+            </if>
+	      </trim>
+	      OR
+	      <trim prefix="(" suffix=")" prefixOverrides="AND">
+          <if test="startTime != null and startTime != ''">
+              <![CDATA[AND INVALID_TIME>#{startTime, jdbcType=TIMESTAMP}]]>
+            </if>
+            <if test="endTime != null and endTime != ''">
+              <![CDATA[AND INVALID_TIME<#{endTime, jdbcType=TIMESTAMP}]]>
+            </if>
+        </trim> -->
+	      GROUP BY START_AMOUNT,END_AMOUNT
+	    <!-- )
+	    WHERE TP.START_AMOUNT=START_AMOUNT AND TP.END_AMOUNT=END_AMOUNT 
+	    AND TP.MODIFY_TIME=MODIFY_TIME AND TP.CREATE_TIME=CREATE_TIME -->
+    )
+	</select>
+	<!-- 查询上次发送失败的越发越惠合同数据 -->
+	<select id="queryFailurePrivilegeContract" resultMap="contractResultMap" 
+	  parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+	  select <include refid="contractFields"/>,<include refid="contractDetailFields"/>
+	  FROM T_CUSTOMER_CONTRACT TCC 
+	  LEFT JOIN T_BSE_CUSTOMER CUSTOMER ON TCC.CUSTOMER_CODE=CUSTOMER.CODE AND CUSTOMER.ACTIVE='Y'
+	  LEFT JOIN T_CUSTOMER_CONTRACT_DETAIL TCCD ON TCC.ID=TCCD.CUSTOMER_CONTRACT_ID 
+	  WHERE (TCC.CUSTOMER_CODE,TCC.CONTRACT_START_TIME,TCC.CONTRACT_END_TIME,TCC.MODIFY_TIME,TCC.CREATE_TIME) IN(
+	    <!-- SELECT 1 FROM ( -->
+	      SELECT CUSTOMER_CODE,CONTRACT_START_TIME,CONTRACT_END_TIME,
+	      MAX(B.MODIFY_TIME) AS MODIFY_TIME,MAX(B.CREATE_TIME) AS CREATE_TIME 
+	      FROM T_JOB_SEND_FAILURE A JOIN T_CUSTOMER_CONTRACT B ON A.BUSINESS_ID = B.ID
+	      <where>
+          <if test="type != null and type != ''">
+            AND A.TYPE=#{type, jdbcType=VARCHAR}
+          </if>
+          <if test="active != null and active != ''">
+            AND A.ACTIVE=#{active, jdbcType=VARCHAR}
+          </if>
+        </where>
+	      GROUP BY CUSTOMER_CODE,CONTRACT_START_TIME,CONTRACT_END_TIME
+	    <!-- )
+	    WHERE CUSTOMER_CODE=TCC.CUSTOMER_CODE AND CONTRACT_START_TIME=TCC.CONTRACT_START_TIME 
+      AND CONTRACT_END_TIME=TCC.CONTRACT_END_TIME AND MODIFY_TIME=TCC.MODIFY_TIME
+      AND CREATE_TIME=TCC.CREATE_TIME -->
+    )
+	</select>
+	<!-- 查询越发越惠合同数据 -->
+	<select id="queryPrivilegeContract" resultMap="contractResultMap" 
+	  parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+	  SELECT <include refid="contractFields"/>,<include refid="contractDetailFields"/>
+	  FROM T_CUSTOMER_CONTRACT TCC 
+	  LEFT JOIN T_BSE_CUSTOMER CUSTOMER ON TCC.CUSTOMER_CODE=CUSTOMER.CODE AND CUSTOMER.ACTIVE='Y'
+    LEFT JOIN T_CUSTOMER_CONTRACT_DETAIL TCCD ON TCC.ID=TCCD.CUSTOMER_CONTRACT_ID 
+	  WHERE (TCC.CUSTOMER_CODE,TCC.CONTRACT_START_TIME,TCC.CONTRACT_END_TIME,TCC.MODIFY_TIME,TCC.CREATE_TIME) IN(
+	    <!-- SELECT 1 FROM ( -->
+	      SELECT CUSTOMER_CODE,CONTRACT_START_TIME,CONTRACT_END_TIME,
+	      MAX(MODIFY_TIME) AS MODIFY_TIME,MAX(CREATE_TIME) AS CREATE_TIME 
+	      FROM T_CUSTOMER_CONTRACT
+	      <where>
+          <if test="startTime != null and startTime != ''">
+            <![CDATA[AND MODIFY_TIME>=#{startTime, jdbcType=TIMESTAMP}]]>
+          </if>
+          <if test="endTime != null and endTime != ''">
+            <![CDATA[AND MODIFY_TIME<#{endTime, jdbcType=TIMESTAMP}]]>
+          </if>
+        </where>
+	      GROUP BY CUSTOMER_CODE,CONTRACT_START_TIME,CONTRACT_END_TIME
+	    <!-- )
+	    WHERE CUSTOMER_CODE=TCC.CUSTOMER_CODE AND CONTRACT_START_TIME=TCC.CONTRACT_START_TIME 
+	    AND CONTRACT_END_TIME=TCC.CONTRACT_END_TIME AND MODIFY_TIME=TCC.MODIFY_TIME
+	    AND CREATE_TIME=TCC.CREATE_TIME -->
+    )
+	</select>
+	<!-- 查询上次发送失败的越发越惠折扣数据 -->
+	<select id="queryFailurePrivilegeDiscount" resultMap="discountResultMap"
+	  parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+	  SELECT <include refid="discountFields"/> 
+    FROM T_PRIVILEGE_DISCOUNT TPD 
+    INNER JOIN T_CUSTOMER_CONTRACT TCC ON TPD.CONTRACT_CODE=TCC.CONTRACT_CODE AND TCC.ACTIVE='Y' 
+    WHERE (TPD.CONTRACT_CODE,TPD.RECORD_MONTH,TPD.MODIFY_TIME) IN(
+      <!-- SELECT 1 FROM ( -->
+        SELECT CONTRACT_CODE,RECORD_MONTH,MAX(B.MODIFY_TIME) AS MODIFY_TIME
+        FROM T_JOB_SEND_FAILURE A JOIN T_PRIVILEGE_DISCOUNT B
+        ON B.ID=A.BUSINESS_ID
+        <where>
+          <if test="type != null and type != ''">
+            AND A.TYPE=#{type, jdbcType=VARCHAR}
+          </if>
+          <if test="active != null and active != ''">
+            AND A.ACTIVE=#{active, jdbcType=VARCHAR}
+          </if>
+          AND B.ACTIVE='Y'
+        </where>
+        GROUP BY CONTRACT_CODE,RECORD_MONTH
+      <!-- )
+      WHERE TPD.CONTRACT_CODE=CONTRACT_CODE AND TPD.RECORD_MONTH=RECORD_MONTH 
+      AND TPD.MODIFY_TIME=MODIFY_TIME AND TPD.CREATE_TIME=CREATE_TIME -->
+    ) AND TPD.ACTIVE='Y'
+	</select>
+	<!-- 查询越发越惠折扣数据 -->
+	<select id="queryPrivilegeDiscount" resultMap="discountResultMap" 
+	  parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+	  SELECT <include refid="discountFields"/> 
+	  FROM T_PRIVILEGE_DISCOUNT TPD 
+	  INNER JOIN T_CUSTOMER_CONTRACT TCC ON TPD.CONTRACT_CODE=TCC.CONTRACT_CODE AND TCC.ACTIVE='Y' 
+	  WHERE (TPD.CONTRACT_CODE,TPD.RECORD_MONTH,TPD.MODIFY_TIME,TPD.CREATE_TIME) IN(
+	    <!-- SELECT 1 FROM ( -->
+	      SELECT CONTRACT_CODE,RECORD_MONTH,MAX(MODIFY_TIME) AS MODIFY_TIME,
+        MAX(CREATE_TIME) AS CREATE_TIME
+	      FROM T_PRIVILEGE_DISCOUNT 
+	      <where>
+          <if test="startTime != null and startTime != ''">
+            <![CDATA[AND MODIFY_TIME>=#{startTime, jdbcType=TIMESTAMP}]]>
+          </if>
+          <if test="endTime != null and endTime != ''">
+            <![CDATA[AND MODIFY_TIME<#{endTime, jdbcType=TIMESTAMP}]]>
+          </if>
+          AND ACTIVE='Y'
+        </where>
+	      GROUP BY CONTRACT_CODE,RECORD_MONTH
+	    <!-- )
+	    WHERE TPD.CONTRACT_CODE=CONTRACT_CODE AND TPD.RECORD_MONTH=RECORD_MONTH 
+	    AND TPD.MODIFY_TIME=MODIFY_TIME AND TPD.CREATE_TIME=CREATE_TIME -->
+	  ) AND TPD.ACTIVE='Y'
+	</select>
+	<!-- 查询上次发送失败的越发越惠返券数据 -->
+  <select id="queryFailurePrivilegeCoupon" resultMap="couponResultMap" 
+    parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+    SELECT <include refid="couponFields"/>,<include refid="couponAcceptorFields"/> 
+    FROM T_PRIVILEGE_COUPON TPC 
+    INNER JOIN T_CUSTOMER_CONTRACT TCC ON TPC.CONTRACT_CODE=TCC.CONTRACT_CODE AND TCC.ACTIVE='Y' 
+    LEFT JOIN T_COUPON_ACCEPTOR TCA ON TPC.COUPON_ACCEPTOR_ID=TCA.ID
+    WHERE (TPC.CONTRACT_CODE,TPC.RECORD_MONTH,TPC.MODIFY_TIME) IN(
+      <!-- SELECT 1 FROM ( -->
+        SELECT CONTRACT_CODE,RECORD_MONTH,MAX(A.MODIFY_TIME) AS MODIFY_TIME
+        FROM T_PRIVILEGE_COUPON A JOIN T_JOB_SEND_FAILURE B
+        ON A.ID=B.BUSINESS_ID
+        <where>
+          <if test="type != null and type != ''">
+            AND B.TYPE=#{type, jdbcType=VARCHAR}
+          </if>
+          <if test="active != null and active != ''">
+            AND B.ACTIVE=#{active, jdbcType=VARCHAR}
+          </if>
+          AND A.ACTIVE='Y'
+        </where>
+        GROUP BY CONTRACT_CODE,RECORD_MONTH
+     <!--  )
+      WHERE TPC.CONTRACT_CODE=CONTRACT_CODE AND TPC.RECORD_MONTH=RECORD_MONTH 
+      AND TPC.MODIFY_TIME=MODIFY_TIME AND TPC.CREATE_TIME=CREATE_TIME -->
+    ) AND TPC.ACTIVE='Y'
+  </select>
+  <!-- 查询越发越惠返券数据 -->
+  <select id="queryPrivilegeCoupon" resultMap="couponResultMap" 
+    parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+    SELECT <include refid="couponFields"/>,<include refid="couponAcceptorFields"/> 
+    FROM T_PRIVILEGE_COUPON TPC 
+    INNER JOIN T_CUSTOMER_CONTRACT TCC ON TPC.CONTRACT_CODE=TCC.CONTRACT_CODE AND TCC.ACTIVE='Y' 
+    LEFT JOIN T_COUPON_ACCEPTOR TCA ON TPC.COUPON_ACCEPTOR_ID=TCA.ID 
+    WHERE (TPC.CONTRACT_CODE,TPC.RECORD_MONTH,TPC.MODIFY_TIME,TPC.CREATE_TIME) IN(
+      <!-- SELECT 1 FROM ( -->
+        SELECT CONTRACT_CODE,RECORD_MONTH,MAX(MODIFY_TIME) AS MODIFY_TIME,
+        MAX(CREATE_TIME) AS CREATE_TIME
+        FROM T_PRIVILEGE_COUPON 
+        <where>
+          <if test="startTime != null and startTime != ''">
+            <![CDATA[AND MODIFY_TIME>=#{startTime, jdbcType=TIMESTAMP}]]>
+          </if>
+          <if test="endTime != null and endTime != ''">
+            <![CDATA[AND MODIFY_TIME<#{endTime, jdbcType=TIMESTAMP}]]>
+          </if>
+          AND ACTIVE='Y'
+        </where>
+        GROUP BY CONTRACT_CODE,RECORD_MONTH
+      <!-- )
+      WHERE TPC.CONTRACT_CODE=CONTRACT_CODE AND TPC.RECORD_MONTH=RECORD_MONTH 
+      AND TPC.MODIFY_TIME=MODIFY_TIME AND TPC.CREATE_TIME=CREATE_TIME -->
+    ) AND TPC.ACTIVE='Y'
+  </select>
+  
+</mapper>

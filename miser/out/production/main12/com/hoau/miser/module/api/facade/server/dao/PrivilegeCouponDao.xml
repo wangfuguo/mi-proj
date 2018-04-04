@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.facade.server.dao.PrivilegeCouponDao">
+
+  <resultMap
+    type="com.hoau.miser.module.api.facade.shared.domain.PrivilegeCouponEntity"
+    id="couponResultMap">
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CONTRACT_CODE" property="contractCode" jdbcType="VARCHAR" />
+    <result column="RECORD_MONTH" property="recordMonth" jdbcType="TIMESTAMP" />
+    <result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+    <result column="COUPON_SCALE" property="couponScale" jdbcType="VARCHAR" />
+    <result column="COUPON_AMOUNT" property="couponAmount"
+      jdbcType="VARCHAR" />
+    <result column="COUPON_STATE" property="couponState" jdbcType="VARCHAR" />
+    <result column="COUPON_ACCEPTOR_ID" property="couponAcceptorId"
+      jdbcType="VARCHAR" />
+    <result column="CHECK_TIME" property="checkTime" jdbcType="TIMESTAMP" />
+    <result column="SHOULD_PAY_AMOUNT_SUM" property="shouldPayAmountSum"
+      jdbcType="VARCHAR" />
+    <result column="CHECK_REMARK" property="checkRemark" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser"
+      jdbcType="VARCHAR" />
+    <result column="MODIFY_USER_CODE" property="modifyUser"
+      jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+	<resultMap
+    type="com.hoau.miser.module.api.facade.shared.domain.CouponAcceptorEntity"
+    id="acceptorResultMap">
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="ACCEPTOR_NAME" property="acceptorName"
+      jdbcType="VARCHAR" />
+    <result column="ACCEPTOR_PHONE" property="acceptorPhone"
+      jdbcType="VARCHAR" />
+    <result column="IDENTITY_CARD_NO" property="identityCardNo"
+      jdbcType="VARCHAR" />
+    <result column="BANK_NAME" property="bankName" jdbcType="VARCHAR" />
+    <result column="CREDIT_CARD_NO" property="creditCardNo"
+      jdbcType="VARCHAR" />
+    <result column="RELATIONSHIP_WITH_CUSTOMER" property="relationshipWithCustomer"
+      jdbcType="VARCHAR" />
+    <result column="ALIPAY_ACCOUNT" property="alipayAccount"
+      jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser"
+      jdbcType="VARCHAR" />
+    <result column="MODIFY_USER_CODE" property="modifyUser"
+      jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+	
+	<select id="queryCouponList" parameterType="map" resultMap="couponResultMap">
+	  SELECT
+	  A.ID AS ID,
+    A.CONTRACT_CODE AS CONTRACT_CODE,
+    A.RECORD_MONTH AS RECORD_MONTH,
+    A.HAS_COUPON AS HAS_COUPON,
+    A.COUPON_SCALE AS COUPON_SCALE,
+    A.COUPON_AMOUNT AS COUPON_AMOUNT,
+    A.COUPON_STATE AS COUPON_STATE,
+    A.COUPON_ACCEPTOR_ID AS COUPON_ACCEPTOR_ID,
+    A.CHECK_TIME AS CHECK_TIME,
+    A.CHECK_REMARK AS CHECK_REMARK,
+    A.COUPON_REMARK AS COUPON_REMARK,
+    A.COUPON_TIME AS COUPON_TIME,
+    A.SHOULD_PAY_AMOUNT_SUM AS SHOULD_PAY_AMOUNT_SUM,
+    A.ACTIVE AS ACTIVE,
+    A.CREATE_TIME AS CREATE_TIME,
+    A.CREATE_USER_CODE AS CREATE_USER_CODE,
+    A.MODIFY_TIME AS MODIFY_TIME,
+    A.MODIFY_USER_CODE AS MODIFY_USER_CODE
+    FROM T_PRIVILEGE_COUPON A 
+    LEFT JOIN T_CUSTOMER_CONTRACT B ON A.CONTRACT_CODE=B.CONTRACT_CODE
+    WHERE B.CUSTOMER_CODE=#{customerCode,jdbcType=VARCHAR} 
+    AND B.CONTRACT_START_TIME=TO_DATE(#{contractStartTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS') 
+    AND B.CONTRACT_END_TIME=TO_DATE(#{contractEndTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS') 
+    AND A.RECORD_MONTH=TO_DATE(#{recordMonth,jdbcType=VARCHAR},'YYYY/MM/DD HH24:MI:SS') 
+    AND A.ACTIVE='Y' AND B.ACTIVE='Y'
+	</select>
+	
+	<update id="delCouponAcceptor" 
+	 parameterType="com.hoau.miser.module.api.facade.shared.domain.CouponAcceptorEntity">
+	  UPDATE T_COUPON_ACCEPTOR SET
+    ACTIVE=#{active,jdbcType=VARCHAR},
+    MODIFY_TIME=#{modifyDate,jdbcType=TIMESTAMP},
+    MODIFY_USER_CODE=#{modifyUser,jdbcType=VARCHAR}
+    WHERE ID=#{id,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="addCouponAcceptor" 
+	 parameterType="com.hoau.miser.module.api.facade.shared.domain.CouponAcceptorEntity">
+	  INSERT INTO T_COUPON_ACCEPTOR
+    (
+    ID,
+    ACCEPTOR_NAME,
+    ACCEPTOR_PHONE,
+    IDENTITY_CARD_NO,
+    BANK_NAME,
+    CREDIT_CARD_NO,
+    RELATIONSHIP_WITH_CUSTOMER,
+    ALIPAY_ACCOUNT,
+    ACTIVE,
+    CREATE_TIME,
+    CREATE_USER_CODE,
+    MODIFY_TIME,
+    MODIFY_USER_CODE
+    )
+    VALUES(
+    #{id,jdbcType=VARCHAR},
+    #{acceptorName,jdbcType=VARCHAR},
+    #{acceptorPhone,jdbcType=VARCHAR},
+    #{identityCardNo,jdbcType=VARCHAR},
+    #{bankName,jdbcType=VARCHAR},
+    #{creditCardNo,jdbcType=VARCHAR},
+    #{relationshipWithCustomer,jdbcType=VARCHAR},
+    #{alipayAccount,jdbcType=VARCHAR},
+    #{active,jdbcType=VARCHAR},
+    #{createDate,jdbcType=TIMESTAMP},
+    #{createUser,jdbcType=VARCHAR},
+    #{modifyDate,jdbcType=TIMESTAMP},
+    #{modifyUser,jdbcType=VARCHAR}
+    )
+	</insert>
+	
+	<update id="delPrivilegeCoupon" 
+	 parameterType="com.hoau.miser.module.api.facade.shared.domain.PrivilegeCouponEntity">
+	  UPDATE T_PRIVILEGE_COUPON SET
+	  ACTIVE=#{active,jdbcType=VARCHAR},
+	  MODIFY_TIME=#{modifyDate,jdbcType=TIMESTAMP},
+	  MODIFY_USER_CODE=#{modifyUser,jdbcType=VARCHAR}
+	  WHERE ID=#{id,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="addPrivilegeCoupon" 
+	 parameterType="com.hoau.miser.module.api.facade.shared.domain.PrivilegeCouponEntity">
+	  INSERT INTO T_PRIVILEGE_COUPON
+    (
+    ID,
+    CONTRACT_CODE,
+    RECORD_MONTH,
+    HAS_COUPON,
+    COUPON_SCALE,
+    COUPON_AMOUNT,
+    COUPON_STATE,
+    COUPON_ACCEPTOR_ID,
+    CHECK_TIME,
+    CHECK_REMARK,
+    COUPON_REMARK,
+    COUPON_TIME,
+    SHOULD_PAY_AMOUNT_SUM,
+    ACTIVE,
+    CREATE_TIME,
+    CREATE_USER_CODE,
+    MODIFY_TIME,
+    MODIFY_USER_CODE
+    )
+    VALUES(
+    #{id,jdbcType=VARCHAR},
+    #{contractCode,jdbcType=VARCHAR},
+    #{recordMonth,jdbcType=VARCHAR},
+    #{hasCoupon,jdbcType=VARCHAR},
+    #{couponScale,jdbcType=VARCHAR},
+    #{couponAmount,jdbcType=VARCHAR},
+    #{couponState,jdbcType=VARCHAR},
+    #{couponAcceptorId,jdbcType=VARCHAR},
+    #{checkTime,jdbcType=TIMESTAMP},
+    #{checkRemark,jdbcType=VARCHAR},
+    #{couponRemark,jdbcType=VARCHAR},
+    #{couponTime,jdbcType=TIMESTAMP},
+    #{shouldPayAmountSum,jdbcType=VARCHAR},
+    #{active,jdbcType=VARCHAR},
+    #{createDate,jdbcType=TIMESTAMP},
+    #{createUser,jdbcType=VARCHAR},
+    #{modifyDate,jdbcType=TIMESTAMP},
+    #{modifyUser,jdbcType=VARCHAR}
+    )
+	</insert>
+	
+</mapper>

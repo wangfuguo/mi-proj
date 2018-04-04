@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper	namespace="com.hoau.miser.module.biz.extrafee.server.dao.PriceUpstairsDao">
+	
+	<resultMap id="BaseResultMap"
+		type="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_CODE" property="transportType" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_NAME" property="transportTypeName" jdbcType="VARCHAR" />
+		<result column="SECTION_ITEM_CODE" property="sectionItemCode" jdbcType="VARCHAR" />
+		<result column="SECTION_ITEM_NAME" property="sectionItemName" jdbcType="VARCHAR" />
+		<result column="LOCK_TYPE" property="lockType" jdbcType="VARCHAR" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="CHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="withSectionDetailsResultMap"
+		type="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_CODE" property="transportType" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_NAME" property="transportTypeName" jdbcType="VARCHAR" />
+		<result column="SECTION_ITEM_CODE" property="sectionItemCode" jdbcType="VARCHAR" />
+		<result column="SECTION_ITEM_NAME" property="sectionItemName" jdbcType="VARCHAR" />
+		<result column="LOCK_TYPE" property="lockType" jdbcType="VARCHAR" />
+		<result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="CHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<collection property="sectionSubEntities" ofType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceSectionSubEntity">
+			<id column="SUB_ID" property="id" jdbcType="VARCHAR" />
+			<id column="SUB_SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+			<id column="SUB_START_VALUE" property="startValue" jdbcType="DOUBLE" />
+			<id column="SUB_END_VALUE" property="endValue" jdbcType="DOUBLE" />
+			<id column="SUB_SECTION_ACCODING_ITEM" property="sectionAccodingItem" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE_TYPE" property="priceType" jdbcType="VARCHAR" />
+			<id column="SUB_PRICE" property="price" jdbcType="DOUBLE" />
+			<id column="SUB_CALC_ALONE" property="calcAlone" jdbcType="VARCHAR" />
+			<id column="SUB_MIN_PRICE" property="minPrice" jdbcType="DOUBLE" />
+			<id column="SUB_MAX_PRICE" property="maxPrice" jdbcType="DOUBLE" />
+			<id column="SUB_REMARK" property="remark" jdbcType="VARCHAR" />
+			<id column="SUB_ACTIVE" property="active" jdbcType="VARCHAR" />
+			<id column="SUB_CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+			<id column="SUB_CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+			<id column="SUB_MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		</collection>
+	</resultMap>
+	
+	<sql id="query_main_params">
+		T.ID AS ID,
+		T.TYPE AS TYPE,
+		T.TRANS_TYPE_CODE AS TRANS_TYPE_CODE,
+		TRANSTYPE.NAME AS TRANS_TYPE_NAME, 
+		T.SECTION_ITEM_CODE AS SECTION_ITEM_CODE,
+		SECTION.NAME AS SECTION_ITEM_NAME,
+		T.LOCK_TYPE AS LOCK_TYPE,
+		T.EFFECTIVE_TIME AS EFFECTIVE_TIME,
+		T.INVALID_TIME AS INVALID_TIME,
+		T.REMARK AS REMARK,
+		T.ACTIVE AS ACTIVE,
+		T.CREATE_TIME AS CREATE_TIME,
+		T.CREATE_USER_CODE AS CREATE_USER_CODE,
+		T.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		T.MODIFY_TIME AS MODIFY_TIME,
+		<![CDATA[
+			CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+			WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN 'PASSED'
+			WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+			ELSE 'EFFECTIVE' END AS STATUS
+		]]>
+	</sql>
+	
+	<sql id="query_main_params_with_section_sub">
+		T.ID AS ID,
+		T.TYPE AS TYPE,
+		T.TRANS_TYPE_CODE AS TRANS_TYPE_CODE,
+		TRANSTYPE.NAME AS TRANS_TYPE_NAME, 
+		T.SECTION_ITEM_CODE AS SECTION_ITEM_CODE,
+		SECTION.NAME AS SECTION_ITEM_NAME,
+		T.LOCK_TYPE AS LOCK_TYPE,
+		T.EFFECTIVE_TIME AS EFFECTIVE_TIME,
+		T.INVALID_TIME AS INVALID_TIME,
+		T.REMARK AS REMARK,
+		T.ACTIVE AS ACTIVE,
+		T.CREATE_TIME AS CREATE_TIME,
+		T.CREATE_USER_CODE AS CREATE_USER_CODE,
+		T.MODIFY_USER_CODE AS MODIFY_USER_CODE,
+		T.MODIFY_TIME AS MODIFY_TIME,
+		<![CDATA[
+			CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+			WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN 'PASSED'
+			WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+			ELSE 'EFFECTIVE' END AS STATUS
+		]]>,
+		PSE_SUB.ID AS SUB_ID,
+		PSE_SUB.SECTION_ID AS SUB_SECTION_ID,
+		PSE_SUB.START_VALUE AS SUB_START_VALUE,
+		PSE_SUB.END_VALUE AS SUB_END_VALUE,
+		PSE_SUB.SECTION_ACCODING_ITEM AS SUB_SECTION_ACCODING_ITEM,
+		PSE_SUB.PRICE_TYPE AS SUB_PRICE_TYPE,
+		PSE_SUB.PRICE AS SUB_PRICE,
+		PSE_SUB.CALC_ALONE AS SUB_CALC_ALONE,
+		PSE_SUB.MIN_PRICE AS SUB_MIN_PRICE,
+		PSE_SUB.MAX_PRICE AS SUB_MAX_PRICE,
+		PSE_SUB.REMARK AS SUB_REMARK,
+		PSE_SUB.ACTIVE AS SUB_ACTIVE,
+		PSE_SUB.CREATE_TIME AS SUB_CREATE_TIME,
+		PSE_SUB.CREATE_USER_CODE AS SUB_CREATE_USER_CODE,
+		PSE_SUB.MODIFY_TIME AS SUB_MODIFY_TIME,
+		PSE_SUB.MODIFY_USER_CODE AS SUB_MODIFY_USER_CODE
+	</sql>
+	
+	<sql id="query_main_filter">
+		<where>
+			<if test="status!=null and status!=''">
+				<![CDATA[
+					AND CASE WHEN T.ACTIVE = 'N' THEN 'DELETED'
+					WHEN T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE THEN 'PASSED'
+					WHEN T.EFFECTIVE_TIME > SYSDATE THEN 'WAIT'
+					ELSE 'EFFECTIVE' END
+				]]> = #{status, jdbcType=VARCHAR} 
+			</if>
+			<if test="type!=null and type!=''">
+				AND T.TYPE = #{type, jdbcType=VARCHAR}
+			</if>
+			<if test="transportType!=null and transportType!=''">
+				AND T.TRANS_TYPE_CODE = #{transportType, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="query_exists_wait_filter">
+		<where>
+			 <![CDATA[ T.EFFECTIVE_TIME > SYSDATE]]>
+			 AND T.ACTIVE = #{active, jdbcType=VARCHAR}
+			 AND T.TYPE = #{type, jdbcType=VARCHAR}
+			 AND T.TRANS_TYPE_CODE = #{transportType, jdbcType=VARCHAR}
+			 AND SECTION.ACTIVE = 'Y'
+			 AND TRANSTYPE.ACTIVE = 'Y'
+		</where>
+	</sql>
+	
+	<sql id="query_exists_effective_filter">
+		<where>
+			<![CDATA[ T.EFFECTIVE_TIME <= SYSDATE 
+			AND NVL(T.INVALID_TIME, SYSDATE + 1) > SYSDATE]]>
+			AND T.ACTIVE = #{active, jdbcType=VARCHAR}
+			AND T.TYPE = #{type, jdbcType=VARCHAR}
+			AND T.TRANS_TYPE_CODE = #{transportType, jdbcType=VARCHAR}
+		</where>
+	</sql>
+	
+	<sql id="query_exists_passed_filter">
+		<where>
+			<![CDATA[ T.INVALID_TIME IS NOT NULL AND T.INVALID_TIME < SYSDATE ]]>
+			AND T.ACTIVE = #{active, jdbcType=VARCHAR}
+			AND T.ID = #{id, jdbcType=VARCHAR}
+		</where>
+	</sql>
+	
+	<select id="queryUpstairsPrices" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity"
+		resultMap="BaseResultMap">
+		SELECT 
+		<include refid="query_main_params"></include>
+		FROM T_PRICE_UPSTAIRS_FEE_STANDARD T
+		LEFT JOIN T_PRICE_SECTION SECTION ON T.SECTION_ITEM_CODE = SECTION.CODE AND SECTION.ACTIVE = 'Y'
+		LEFT JOIN T_BSE_TRANS_TYPE TRANSTYPE ON T.TRANS_TYPE_CODE = TRANSTYPE.CODE AND TRANSTYPE.ACTIVE = 'Y'
+		<include refid="query_main_filter"></include>
+		ORDER BY ACTIVE DESC, EFFECTIVE_TIME DESC 
+	</select>
+	
+	<select id="queryUpstairsPricesCount" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity"
+		resultType="Long">
+		SELECT 
+		COUNT(0)
+		FROM T_PRICE_UPSTAIRS_FEE_STANDARD T
+		LEFT JOIN T_PRICE_SECTION SECTION ON T.SECTION_ITEM_CODE = SECTION.CODE AND SECTION.ACTIVE = 'Y'
+		LEFT JOIN T_BSE_TRANS_TYPE TRANSTYPE ON T.TRANS_TYPE_CODE = TRANSTYPE.CODE AND TRANSTYPE.ACTIVE = 'Y'
+		<include refid="query_main_filter"></include>
+	</select>
+	
+	<select id="queryUpstairsEntityById" resultMap="BaseResultMap">
+		SELECT 
+		<include refid="query_main_params"></include>
+		FROM T_PRICE_UPSTAIRS_FEE_STANDARD T
+		LEFT JOIN T_PRICE_SECTION SECTION ON T.SECTION_ITEM_CODE = SECTION.CODE AND SECTION.ACTIVE = 'Y'
+		LEFT JOIN T_BSE_TRANS_TYPE TRANSTYPE ON T.TRANS_TYPE_CODE = TRANSTYPE.CODE AND TRANSTYPE.ACTIVE = 'Y'
+		WHERE T.ID = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="checkExistsWaitUpstairsPrice" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity"
+		resultMap="BaseResultMap">
+		SELECT 
+		<include refid="query_main_params"></include>
+		FROM T_PRICE_UPSTAIRS_FEE_STANDARD T
+		LEFT JOIN T_PRICE_SECTION SECTION ON T.SECTION_ITEM_CODE = SECTION.CODE AND SECTION.ACTIVE = 'Y'
+		LEFT JOIN T_BSE_TRANS_TYPE TRANSTYPE ON T.TRANS_TYPE_CODE = TRANSTYPE.CODE AND TRANSTYPE.ACTIVE = 'Y'
+		<include refid="query_exists_wait_filter"></include>
+	</select>
+	
+	<select id="checkExistsEffectiveUpstairsPrice" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity"
+		resultMap="BaseResultMap">
+		SELECT 
+		<include refid="query_main_params"></include>
+		FROM T_PRICE_UPSTAIRS_FEE_STANDARD T
+		LEFT JOIN T_PRICE_SECTION SECTION ON T.SECTION_ITEM_CODE = SECTION.CODE AND SECTION.ACTIVE = 'Y'
+		LEFT JOIN T_BSE_TRANS_TYPE TRANSTYPE ON T.TRANS_TYPE_CODE = TRANSTYPE.CODE AND TRANSTYPE.ACTIVE = 'Y'
+		<include refid="query_exists_effective_filter"></include>
+	</select>
+	
+	<select id="checkExistsPassedUpstairsPrice" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity"
+		resultMap="BaseResultMap">
+		SELECT 
+		<include refid="query_main_params"></include>
+		FROM T_PRICE_UPSTAIRS_FEE_STANDARD T
+	LEFT JOIN T_PRICE_SECTION SECTION ON T.SECTION_ITEM_CODE = SECTION.CODE AND SECTION.ACTIVE = 'Y'
+		LEFT JOIN T_BSE_TRANS_TYPE TRANSTYPE ON T.TRANS_TYPE_CODE = TRANSTYPE.CODE AND TRANSTYPE.ACTIVE = 'Y'
+		<include refid="query_exists_passed_filter"></include>
+	</select>
+	
+	<update id="deleteUpstairsPrice" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity">
+		UPDATE T_PRICE_UPSTAIRS_FEE_STANDARD 
+		SET 
+		ACTIVE = #{active, jdbcType=VARCHAR},
+		MODIFY_USER_CODE = #{modifyUser, jdbcType=VARCHAR}, 
+		MODIFY_TIME = #{modifyDate, jdbcType=TIMESTAMP}
+		WHERE ID = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateInvalidTime" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity">
+		UPDATE T_PRICE_UPSTAIRS_FEE_STANDARD 
+		SET 
+		<if test="active != null and active != ''">
+			ACTIVE = #{active, jdbcType=VARCHAR},
+		</if>
+		INVALID_TIME = #{invalidTime, jdbcType=TIMESTAMP},
+		MODIFY_USER_CODE = #{modifyUser, jdbcType=VARCHAR}, 
+		MODIFY_TIME = #{modifyDate, jdbcType=TIMESTAMP}
+		WHERE ID = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="addUpstairsPrice"
+		parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity">
+		insert into T_PRICE_UPSTAIRS_FEE_STANDARD 
+		(ID,
+		TYPE, 
+		TRANS_TYPE_CODE, 
+		SECTION_ITEM_CODE, 
+		LOCK_TYPE, 
+		EFFECTIVE_TIME, 
+		INVALID_TIME, 
+		REMARK, 
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_USER_CODE,
+		MODIFY_TIME)
+		values 
+		(#{id,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR}, 
+		#{transportType,jdbcType=VARCHAR},
+		#{sectionItemCode,jdbcType=VARCHAR},
+		#{lockType,jdbcType=VARCHAR},
+		#{effectiveTime,jdbcType=TIMESTAMP}, 
+		#{invalidTime,jdbcType=TIMESTAMP}, 
+		#{remark,jdbcType=VARCHAR},
+		#{active,jdbcType=CHAR}, 
+		#{createDate,jdbcType=TIMESTAMP}, 
+		#{createUser,jdbcType=VARCHAR}, 
+		#{modifyUser,jdbcType=VARCHAR}, 
+		#{modifyDate,jdbcType=TIMESTAMP})
+	</insert>
+	
+	<select id="queryUpstairsEntityWithSectionDetailsById" parameterType="com.hoau.miser.module.biz.extrafee.shared.domain.PriceUpstairsEntity"
+		resultMap="withSectionDetailsResultMap"
+	>
+		SELECT 
+		<include refid="query_main_params_with_section_sub"></include>
+		FROM T_PRICE_UPSTAIRS_FEE_STANDARD T
+		LEFT JOIN T_PRICE_SECTION SECTION ON T.SECTION_ITEM_CODE = SECTION.CODE
+		LEFT JOIN T_BSE_TRANS_TYPE TRANSTYPE ON T.TRANS_TYPE_CODE = TRANSTYPE.CODE
+		LEFT JOIN T_PRICE_SECTION_SUB PSE_SUB ON SECTION.ID = PSE_SUB.SECTION_ID 
+		WHERE T.ID = #{id,jdbcType=VARCHAR} 
+		AND EXISTS(SELECT 1 FROM (
+			SELECT B.CODE, MAX(B.MODIFY_TIME) AS MAX_MODIFY_TIME
+			FROM T_PRICE_UPSTAIRS_FEE_STANDARD A 
+			LEFT JOIN T_PRICE_SECTION B ON A.SECTION_ITEM_CODE = B.CODE 
+			WHERE A.ID = #{id,jdbcType=VARCHAR} 
+			GROUP BY B.CODE) X
+			WHERE X.CODE = SECTION.CODE AND X.MAX_MODIFY_TIME = SECTION.MODIFY_TIME)
+		AND TRANSTYPE.ACTIVE = 'Y'
+	</select>
+	
+</mapper>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.facade.server.dao.PrivilegeContractDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.PrivilegeContractEntity"
+		id="PrivilegeContractResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CONTRACT_CODE" property="contractCode" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+		<result column="NAME" property="customerName" jdbcType="VARCHAR" />
+		<result column="CONTACT_NAME" property="contactName" jdbcType="VARCHAR" />
+		<result column="CONTACT_PHONE" property="contactPhone" jdbcType="VARCHAR" />
+		<result column="CONTRACT_START_TIME" property="contractStartTime" jdbcType="TIMESTAMP" />
+		<result column="CONTRACT_END_TIME" property="contractEndTime" jdbcType="TIMESTAMP" />
+		<result column="PRIVILEGE_START_TIME" property="privilegeStartTime" jdbcType="TIMESTAMP" />
+    <result column="PRIVILEGE_END_TIME" property="privilegeEndTime" jdbcType="TIMESTAMP" />
+    <result column="HAS_COUPON" property="hasCoupon" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="COMMITMENT_PRODUCT" property="commitmentProduct" jdbcType="DOUBLE" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap
+		type="com.hoau.miser.module.api.facade.shared.domain.PrivilegeContractDetailEntity"
+		id="PrivilegeContractDetailResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CUSTOMER_CONTRACT_ID" property="customerContractId" jdbcType="VARCHAR" />
+		<result column="START_AMOUNT" property="startAmount" jdbcType="DOUBLE" />
+		<result column="END_AMOUNT" property="endAmount" jdbcType="DOUBLE" />
+		<result column="DD_MIN_FREIGHT_DISCOUNT" property="ddMinFreightDiscount" jdbcType="DOUBLE" />
+		<result column="DU_MIN_FREIGHT_DISCOUNT" property="duMinFreightDiscount" jdbcType="DOUBLE" />
+		<result column="MAX_COUPON_SCALE" property="maxCouponScale" jdbcType="DOUBLE" />
+		<result column="DATA_ORIGN" property="dataOrign" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 增加一条越发越惠客户合同 -->
+	<insert id="addPrivilegeContract" parameterType="com.hoau.miser.module.api.facade.shared.domain.PrivilegeContractEntity">
+	    INSERT INTO T_CUSTOMER_CONTRACT
+	     (
+	    	ID,
+	    CONTRACT_CODE,
+			CUSTOMER_CODE,
+			CONTACT_NAME,
+			CONTACT_PHONE,
+			CONTRACT_START_TIME,
+			CONTRACT_END_TIME,
+			PRIVILEGE_START_TIME,
+			PRIVILEGE_END_TIME,
+			HAS_COUPON,
+			REMARK,
+			COMMITMENT_PRODUCT,
+			ACTIVE,
+			CREATE_TIME,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{contractCode,jdbcType=VARCHAR},
+	    	#{customerCode,jdbcType=VARCHAR},
+	    	#{contactName,jdbcType=VARCHAR},
+	    	#{contactPhone,jdbcType=VARCHAR},
+	    	#{contractStartTime,jdbcType=TIMESTAMP},
+	    	#{contractEndTime,jdbcType=TIMESTAMP},
+	    	#{privilegeStartTime,jdbcType=TIMESTAMP},
+	    	#{privilegeEndTime,jdbcType=TIMESTAMP},
+	    	#{hasCoupon,jdbcType=VARCHAR},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{commitmentProduct,jdbcType=DOUBLE},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 增加一条越发越惠客户合同 -->
+	<insert id="addPrivilegeContractDetail" parameterType="com.hoau.miser.module.api.facade.shared.domain.PrivilegeContractDetailEntity">
+	    INSERT INTO T_CUSTOMER_CONTRACT_DETAIL
+	     (
+	    ID,
+		CUSTOMER_CONTRACT_ID,
+		START_AMOUNT,
+		END_AMOUNT,
+		DD_MIN_FREIGHT_DISCOUNT,
+		DU_MIN_FREIGHT_DISCOUNT,
+		MAX_COUPON_SCALE,
+		DATA_ORIGN,
+		REMARK,
+		ACTIVE,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE
+	    )
+	    VALUES(
+	    	#{id,jdbcType=VARCHAR},
+	    	#{customerContractId,jdbcType=VARCHAR},
+	    	#{startAmount,jdbcType=DOUBLE},
+	    	#{endAmount,jdbcType=DOUBLE},
+	    	#{ddMinFreightDiscount,jdbcType=DOUBLE},
+	    	#{duMinFreightDiscount,jdbcType=DOUBLE},
+	    	#{maxCouponScale,jdbcType=DOUBLE},
+	    	#{dataOrign,jdbcType=VARCHAR},
+	    	#{remark,jdbcType=VARCHAR},
+	    	#{active,jdbcType=VARCHAR},
+	    	#{createDate,jdbcType=TIMESTAMP},
+	    	#{createUser,jdbcType=VARCHAR},
+	    	#{modifyDate,jdbcType=TIMESTAMP},
+	    	#{modifyUser,jdbcType=VARCHAR}
+	    )
+	</insert>
+	<!-- 根据客户CODE查询合同 -->
+	<select id="findPrivilegeContract" 
+	  parameterType="com.hoau.miser.module.api.facade.shared.domain.PrivilegeContractEntity" 
+	  resultMap="PrivilegeContractResultMap">
+	  <![CDATA[
+      SELECT ID,CONTRACT_CODE FROM T_CUSTOMER_CONTRACT WHERE CUSTOMER_CODE=#{customerCode,jdbcType=VARCHAR} 
+      AND CONTRACT_START_TIME<=#{contractEndTime,jdbcType=TIMESTAMP} 
+      AND CONTRACT_END_TIME>=#{contractStartTime,jdbcType=TIMESTAMP}
+      AND ACTIVE='Y' 
+	  ]]>  
+	</select>
+	<!-- 删除越发越惠客户合同 -->
+	<update id="delPrivilegeContract" 
+	  parameterType="com.hoau.miser.module.api.facade.shared.domain.PrivilegeContractEntity">
+    UPDATE T_CUSTOMER_CONTRACT SET
+    ACTIVE = 'N',
+    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR} 
+    WHERE ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <!-- 删除越发越惠客户合同明细 -->
+	<update id="delPrivilegeContractDetail" 
+	  parameterType="com.hoau.miser.module.api.facade.shared.domain.PrivilegeContractDetailEntity">
+    UPDATE T_CUSTOMER_CONTRACT_DETAIL SET
+    ACTIVE = 'N',
+    MODIFY_TIME = #{modifyDate,jdbcType=VARCHAR},
+    MODIFY_USER_CODE = #{modifyUser,jdbcType=VARCHAR} 
+    WHERE CUSTOMER_CONTRACT_ID = #{customerContractId,jdbcType=VARCHAR} AND ACTIVE = 'Y'
+  </update>
+</mapper>

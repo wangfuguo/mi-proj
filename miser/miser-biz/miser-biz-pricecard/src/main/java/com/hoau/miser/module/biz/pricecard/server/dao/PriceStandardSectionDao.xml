@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 易入户标准价格管理Dao -->
+<mapper
+	namespace="com.hoau.miser.module.biz.pricecard.server.dao.PriceStandardSectionDao">
+	<!-- 分段标准价格ResultMap -->
+	<resultMap
+		type="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceStandardSectionEntity"
+		id="priceStandardSectionResultMap">
+		<!-- id -->
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<!-- 运输类型 -->
+		<id column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<!-- 运输类型名称 -->
+		<id column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+		<!-- 一段首重 -->
+		<id column="FIRST_WEIGHT" property="firstWeight" jdbcType="DOUBLE" />
+		<!-- 一段首重单价 -->
+		<id column="FIRST_WEIGHT_PRICE" property="firstWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 一段续重单价 -->
+		<id column="FIRST_ADD_WEIGHT_PRICE" property="firstAddWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 二段首重 -->
+		<id column="SECOND_WEIGHT" property="secondWeight" jdbcType="DOUBLE" />
+		<!-- 二段首重单价 -->
+		<id column="SECOND_WEIGHT_PRICE" property="secondWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 二段续重单价 -->
+		<id column="SECOND_ADD_WEIGHT_PRICE" property="secondAddWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 三段首重 -->
+		<id column="THIRD_WEIGHT" property="thirdWeight" jdbcType="DOUBLE" />
+		<!-- 三段首重单价 -->
+		<id column="THIRD_WEIGHT_PRICE" property="thirdWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 三段续重单价 -->
+		<id column="THIRD_ADD_WEIGHT_PRICE" property="thirdAddWeightPrice"
+			jdbcType="DOUBLE" />
+		<!-- 生效时间 -->
+		<id column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<!-- 失效时间 -->
+		<id column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<!-- 备注 -->
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<!-- 创建时间 -->
+		<id column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<!-- 创建人 -->
+		<id column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<!-- 更新时间 -->
+		<id column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<!-- 更新人 -->
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<!-- 更新人 -->
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<!-- 是否可用 -->
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<!-- 当前状态 -->
+		<id column="state" property="state" jdbcType="VARCHAR" />
+		<!-- 出发价格城市 -->
+		<association property="sendPriceCity" resultMap="sendPriceCityResultMap" />
+		<!-- 到达价格城市 -->
+		<association property="arrivePriceCity" resultMap="arrivePriceCityResultMap" />
+	</resultMap>
+	<!-- 出发价格城市ResultMap -->
+	<resultMap id="sendPriceCityResultMap"
+		type="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+		<!-- ID -->
+		<result property="id" column="SENDCITY_ID" jdbcType="VARCHAR" />
+		<!-- 编码 -->
+		<result property="code" column="SENDCITY_CODE" jdbcType="VARCHAR" />
+		<!-- 名称 -->
+		<result property="name" column="SENDCITY_NAME" jdbcType="VARCHAR" />
+		<!-- 备注 -->
+		<result property="remark" column="SENDCITY_REMARK" jdbcType="VARCHAR" />
+		<!-- 是否可用 -->
+		<result property="active" column="SENDCITY_ACTIVE" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 到达价格城市ResultMap -->
+	<resultMap id="arrivePriceCityResultMap"
+		type="com.hoau.miser.module.biz.base.api.shared.domain.PriceCityEntity">
+		<!-- ID -->
+		<result property="id" column="ARRIVECITY_ID" jdbcType="VARCHAR" />
+		<!-- 编码 -->
+		<result property="code" column="ARRIVECITY_CODE" jdbcType="VARCHAR" />
+		<!-- 名称 -->
+		<result property="name" column="ARRIVECITY_NAME" jdbcType="VARCHAR" />
+		<!-- 备注 -->
+		<result property="remark" column="ARRIVECITY_REMARK" jdbcType="VARCHAR" />
+		<!-- 是否可用 -->
+		<result property="active" column="ARRIVEPRICECITY_ACTIVE"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 分段标准价格Column -->
+	<sql id="priceStandardSectionColumn">
+		PSS.ID,
+		PSS.TRANS_TYPE_CODE,
+		PSS.TRANS_TYPE_NAME,
+		PSS.SEND_PRICE_CITY,
+		PSS.ARRIVE_PRICE_CITY,
+		PSS.FIRST_WEIGHT,
+		PSS.FIRST_WEIGHT_PRICE,
+		PSS.FIRST_ADD_WEIGHT_PRICE,
+		PSS.SECOND_WEIGHT,
+		PSS.SECOND_WEIGHT_PRICE,
+		PSS.SECOND_ADD_WEIGHT_PRICE,
+		PSS.THIRD_WEIGHT,
+		PSS.THIRD_WEIGHT_PRICE,
+		PSS.THIRD_ADD_WEIGHT_PRICE,
+		PSS.EFFECTIVE_TIME,
+		PSS.INVALID_TIME,
+		PSS.REMARK,
+		PSS.CREATE_TIME,
+		PSS.CREATE_USER_CODE,
+		PSS.MODIFY_TIME,
+		PSS.MODIFY_USER_CODE,
+		PSS.ACTIVE,
+		<![CDATA[
+		case when (PSS.invalid_time < sysdate and PSS.active = 'Y') then 'PASSED'
+ 			                     when (PSS.effective_time <= sysdate and PSS.active = 'Y') then 'EFFECTIVE'
+ 			                     when (PSS.effective_time > sysdate and PSS.active = 'Y') then 'WAIT'
+ 			                     when (PSS.active = 'N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+	</sql>
+	<!-- 出发价格城市column -->
+	<sql id="sendCityColumn">
+		SENDCITY.ID as SENDCITY_ID,
+		SENDCITY.CODE as SENDCITY_CODE,
+		SENDCITY.NAME AS SENDCITY_NAME,
+		SENDCITY.REMARK AS SENDCITY_REMARK,
+		SENDCITY.ACTIVE AS SENDCITY_ACTIVE
+	</sql>
+	<!-- 到达价格城市column -->
+	<sql id="arriveCityColumn">
+		ARRIVECITY.ID as ARRIVECITY_ID,
+		ARRIVECITY.CODE as
+		ARRIVECITY_CODE,
+		ARRIVECITY.NAME AS ARRIVECITY_NAME,
+		ARRIVECITY.REMARK
+		AS ARRIVECITY_REMARK,
+		ARRIVECITY.ACTIVE AS ARRIVECITY_ACTIVE
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			<if
+				test="priceStandardSectionEntity.sendPriceCity != null and priceStandardSectionEntity.sendPriceCity.code != null and priceStandardSectionEntity.sendPriceCity.code != ''">
+				and PSS.SEND_PRICE_CITY
+				=#{priceStandardSectionEntity.sendPriceCity.code,jdbcType=VARCHAR}
+			</if>
+
+			<if
+				test="(sendProvinceCode != null and sendProvinceCode != '') or (sendCityCode != null and sendCityCode != '') or (sendAreaCode != null and sendAreaCode != '')">
+				and PSS.SEND_PRICE_CITY in (select PRICE_CITY from
+				T_PRICE_CITY_MAPPING_DISTRICT
+				<where>
+					and ACTIVE='Y'
+					<if test="sendProvinceCode != null and sendProvinceCode != ''">
+						and PROVINCE_CODE=#{sendProvinceCode,jdbcType=VARCHAR}
+					</if>
+					<if test="sendCityCode != null and sendCityCode != ''">
+						and CITY_CODE=#{sendCityCode,jdbcType=VARCHAR}
+					</if>
+					<if test="sendAreaCode != null and sendAreaCode != ''">
+						and AREA_CODE=#{sendAreaCode,jdbcType=VARCHAR}
+					</if>
+				</where>
+				GROUP BY PRICE_CITY)
+			</if>
+
+			<if
+				test="priceStandardSectionEntity.arrivePriceCity != null and priceStandardSectionEntity.arrivePriceCity.code != null and priceStandardSectionEntity.arrivePriceCity.code != ''">
+				and
+				PSS.ARRIVE_PRICE_CITY=#{priceStandardSectionEntity.arrivePriceCity.code,jdbcType=VARCHAR}
+			</if>
+
+			<if
+				test="(arriveProvinceCode != null and arriveProvinceCode != '') or (arriveCityCode != null and arriveCityCode != '') or (arriveAreaCode != null and arriveAreaCode != '')">
+
+				and PSS.ARRIVE_PRICE_CITY in (select PRICE_CITY from
+				T_PRICE_CITY_MAPPING_DISTRICT
+				<where>
+					and ACTIVE='Y'
+
+					<if test="arriveProvinceCode != null and arriveProvinceCode != ''">
+						and
+						PROVINCE_CODE=#{arriveProvinceCode,jdbcType=VARCHAR}
+					</if>
+					<if test="arriveCityCode != null and arriveCityCode != ''">
+						and CITY_CODE=#{arriveCityCode,jdbcType=VARCHAR}
+					</if>
+					<if test="arriveAreaCode != null and arriveAreaCode != ''">
+						and AREA_CODE=#{arriveAreaCode,jdbcType=VARCHAR}
+					</if>
+				</where>
+				GROUP BY PRICE_CITY)
+			</if>
+			<if
+				test="priceStandardSectionEntity.state==null or priceStandardSectionEntity.state==''">
+				<![CDATA[ and PSS.active='Y']]>
+			</if>
+			<if
+				test="priceStandardSectionEntity.state!=null and priceStandardSectionEntity.state!=''">
+
+				<choose>
+					<when test='priceStandardSectionEntity.state=="PASSED"'>
+						<![CDATA[ and (sysdate>PSS.invalid_time and PSS.active='Y')]]>
+					</when>
+					<when test='priceStandardSectionEntity.state=="EFFECTIVE"'>
+						<![CDATA[ 
+							and (
+								(sysdate>=PSS.effective_time and nvl(PSS.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=sysdate and PSS.active='Y')
+								
+							)
+						]]>
+					</when>
+					<when test='priceStandardSectionEntity.state=="WAIT"'>
+						<![CDATA[ and (sysdate<=PSS.effective_time and PSS.active='Y')]]>
+					</when>
+					<when test='priceStandardSectionEntity.state=="DELETED"'>
+						<![CDATA[ and PSS.active='N']]>
+					</when>
+					<otherwise>
+					</otherwise>
+				</choose>
+			</if>
+			<if
+				test="priceStandardSectionEntity.transTypeCode!=null and priceStandardSectionEntity.transTypeCode!=''">
+				and
+				PSS.trans_type_code=#{priceStandardSectionEntity.transTypeCode,jdbcType=VARCHAR}
+			</if>
+			<if
+				test="priceStandardSectionEntity.id!=null and priceStandardSectionEntity.id!=''">
+				and PSS.id=#{priceStandardSectionEntity.id,jdbcType=VARCHAR}
+			</if>
+			<if test="effectiveTime!=null and effectiveTime!=''">
+				and (<![CDATA[PSS.effective_time<=to_date]]>(#{effectiveTime,jdbcType=VARCHAR},'yyyy-mm-dd
+				hh24:mi:ss')
+				and (<![CDATA[nvl(PSS.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=to_date]]>(#{effectiveTime,jdbcType=VARCHAR},'yyyy-mm-dd
+				hh24:mi:ss'))
+				)
+			</if>
+		</where>
+	</sql>
+
+	<!-- 根据条件查询分页结果集 -->
+	<select id="queryPageByCondition" resultMap="priceStandardSectionResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="priceStandardSectionColumn"></include>
+		,
+		<include refid="sendCityColumn"></include>
+		,
+		<include refid="arriveCityColumn"></include>
+		FROM
+		T_PRICE_STANDARD_SECTION pss
+		LEFT JOIN
+		T_PRICE_CITY sendcity ON
+		pss.SEND_PRICE_CITY = sendcity.CODE
+		and sendcity.ACTIVE = 'Y'
+		LEFT JOIN
+		T_PRICE_CITY arrivecity ON
+		pss.ARRIVE_PRICE_CITY = arrivecity.CODE
+		and arrivecity.ACTIVE = 'Y'
+		<include refid="queryCondition"></include>
+		ORDER BY PSS.SEND_PRICE_CITY
+		<if test="order!=null and order!=''">
+			#{order,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<!-- 根据条件查询所有记录 -->
+	<select id="queryAllByCondition" resultMap="priceStandardSectionResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="priceStandardSectionColumn"></include>
+		,
+		<include refid="sendCityColumn"></include>
+		,
+		<include refid="arriveCityColumn"></include>
+		FROM
+		T_PRICE_STANDARD_SECTION pss
+		LEFT JOIN
+		T_PRICE_CITY sendcity ON
+		pss.SEND_PRICE_CITY = sendcity.CODE
+		and sendcity.ACTIVE = 'Y'
+		LEFT JOIN
+		T_PRICE_CITY arrivecity ON
+		pss.ARRIVE_PRICE_CITY = arrivecity.CODE
+		and arrivecity.ACTIVE = 'Y'
+		<include refid="queryCondition"></include>
+		ORDER BY PSS.SEND_PRICE_CITY
+		<if test="order!=null and order!=''">
+			#{order,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<!-- 根据条件查询记录数 -->
+	<select id="queryCountByCondition" parameterType="map"
+		resultType="long">
+		SELECT
+		count(1)
+		FROM
+		T_PRICE_STANDARD_SECTION pss
+		LEFT JOIN
+		T_PRICE_CITY
+		sendcity ON
+		pss.SEND_PRICE_CITY = sendcity.CODE
+		and sendcity.ACTIVE = 'Y'
+		LEFT JOIN
+		T_PRICE_CITY
+		arrivecity ON
+		pss.ARRIVE_PRICE_CITY = arrivecity.CODE
+		and arrivecity.ACTIVE = 'Y'
+		<include refid="queryCondition"></include>
+	</select>
+
+	<!-- 根据ID查询结果 -->
+	<select id="queryById" resultMap="priceStandardSectionResultMap"
+		parameterType="String">
+		SELECT
+		<include refid="priceStandardSectionColumn"></include>
+		,
+		<include refid="sendCityColumn"></include>
+		,
+		<include refid="arriveCityColumn"></include>
+		FROM
+		T_PRICE_STANDARD_SECTION pss
+		LEFT JOIN
+		T_PRICE_CITY sendcity ON
+		pss.SEND_PRICE_CITY = sendcity.CODE
+		LEFT JOIN
+		T_PRICE_CITY arrivecity ON
+		pss.ARRIVE_PRICE_CITY = arrivecity.CODE
+		WHERE
+		pss.id =
+		#{id,jdbcType=VARCHAR}
+	</select>
+	<!-- 根据查询条件查询记录数 -->
+	<select id="queryCountByParam" resultType="Long" parameterType="map">
+		SELECT
+		count(1)
+		FROM
+		T_PRICE_STANDARD_SECTION pss
+		LEFT JOIN
+		T_PRICE_CITY
+		sendcity ON
+		pss.SEND_PRICE_CITY = sendcity.CODE
+		LEFT JOIN
+		T_PRICE_CITY
+		arrivecity ON
+		pss.ARRIVE_PRICE_CITY = arrivecity.CODE
+		<include refid="queryCondition"></include>
+	</select>
+	<select id="queryActive" parameterType="map"
+		resultMap="priceStandardSectionResultMap">
+		SELECT
+		ID,
+		INVALID_TIME,
+		<![CDATA[
+		case when (PSS.invalid_time < sysdate and PSS.active = 'Y') then 'PASSED'
+ 			                     when (PSS.effective_time <= sysdate and PSS.active = 'Y') then 'EFFECTIVE'
+ 			                     when (PSS.effective_time > sysdate and PSS.active = 'Y') then 'WAIT'
+ 			                     when (PSS.active = 'N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+		FROM
+		T_PRICE_STANDARD_SECTION pss
+		WHERE
+		PSS.TRANS_TYPE_CODE =
+		#{transTypeCode,jdbcType=VARCHAR}
+		AND
+		PSS.SEND_PRICE_CITY =
+		#{sendPriceCity,jdbcType=VARCHAR}
+		AND
+		PSS.ARRIVE_PRICE_CITY =
+		#{arrivePriceCity,jdbcType=VARCHAR}
+		AND
+		PSS.ACTIVE =
+		#{active,jdbcType=VARCHAR}
+	</select>
+	<!-- 添加记录 -->
+	<insert id="addPriceStandardSection"
+		parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceStandardSectionEntity">
+		INSERT INTO
+		T_PRICE_STANDARD_SECTION
+		(
+		ID,
+		TRANS_TYPE_CODE,
+		TRANS_TYPE_NAME,
+		SEND_PRICE_CITY,
+		ARRIVE_PRICE_CITY,
+		FIRST_WEIGHT,
+		FIRST_WEIGHT_PRICE,
+		FIRST_ADD_WEIGHT_PRICE,
+		SECOND_WEIGHT,
+		SECOND_WEIGHT_PRICE,
+		SECOND_ADD_WEIGHT_PRICE,
+		THIRD_WEIGHT,
+		THIRD_WEIGHT_PRICE,
+		THIRD_ADD_WEIGHT_PRICE,
+		EFFECTIVE_TIME,
+		INVALID_TIME,
+		REMARK,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE,
+		ACTIVE
+		)
+		VALUES
+		(
+		#{id,jdbcType=VARCHAR},
+		#{transTypeCode,jdbcType=VARCHAR},
+		#{transTypeName,jdbcType=VARCHAR},
+		#{sendPriceCity.code,jdbcType=VARCHAR},
+		#{arrivePriceCity.code,jdbcType=VARCHAR},
+		#{firstWeight,jdbcType=DOUBLE},
+		#{firstWeightPrice,jdbcType=DOUBLE},
+		#{firstAddWeightPrice,jdbcType=DOUBLE},
+		#{secondWeight,jdbcType=DOUBLE},
+		#{secondWeightPrice,jdbcType=DOUBLE},
+		#{secondAddWeightPrice,jdbcType=DOUBLE},
+		#{thirdWeight,jdbcType=DOUBLE},
+		#{thirdWeightPrice,jdbcType=DOUBLE},
+		#{thirdAddWeightPrice,jdbcType=DOUBLE},
+		#{effectiveTime,jdbcType=TIMESTAMP},
+		#{invalidTime,jdbcType=TIMESTAMP},
+		#{remark,jdbcType=VARCHAR},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{modifyDate,jdbcType=TIMESTAMP},
+		#{modifyUser,jdbcType=VARCHAR},
+		#{active,jdbcType=VARCHAR}
+		)
+	</insert>
+	<update id="updatePriceStandardSection"
+		parameterType="com.hoau.miser.module.biz.pricecard.api.shared.domain.PriceStandardSectionEntity">
+		UPDATE
+		T_PRICE_STANDARD_SECTION
+		SET
+		<if test="firstWeight != null">
+			FIRST_WEIGHT = #{firstWeight,jdbcType=DOUBLE},
+		</if>
+		<if test="firstWeightPrice != null">
+			FIRST_WEIGHT_PRICE = #{firstWeightPrice,jdbcType=DOUBLE},
+		</if>
+		<if test="firstAddWeightPrice != null">
+			FIRST_ADD_WEIGHT_PRICE =
+			#{firstAddWeightPrice,jdbcType=DOUBLE},
+		</if>
+		<if test="secondWeight != null">
+			SECOND_WEIGHT = #{secondWeight,jdbcType=DOUBLE},
+		</if>
+		<if test="secondWeightPrice != null">
+			SECOND_WEIGHT_PRICE =
+			#{secondWeightPrice,jdbcType=DOUBLE},
+		</if>
+		<if test="secondAddWeightPrice != null">
+			SECOND_ADD_WEIGHT_PRICE =
+			#{secondAddWeightPrice,jdbcType=DOUBLE},
+		</if>
+		<if test="thirdWeight != null">
+			THIRD_WEIGHT = #{thirdWeight,jdbcType=DOUBLE},
+		</if>
+		<if test="thirdWeightPrice != null">
+			THIRD_WEIGHT_PRICE = #{thirdWeightPrice,jdbcType=DOUBLE},
+		</if>
+		<if test="thirdAddWeightPrice != null">
+			THIRD_ADD_WEIGHT_PRICE =
+			#{thirdAddWeightPrice,jdbcType=DOUBLE},
+		</if>
+		<if test="effectiveTime != null">
+			EFFECTIVE_TIME = #{effectiveTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="invalidTime != null">
+			INVALID_TIME = #{invalidTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="remark != null">
+			REMARK = #{remark,jdbcType=VARCHAR},
+		</if>
+		<if test="active != null">
+			ACTIVE = #{active,jdbcType=VARCHAR},
+		</if>
+		MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+		MODIFY_USER_CODE =
+		#{modifyUser,jdbcType=VARCHAR}
+		WHERE
+		ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>	

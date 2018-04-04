@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.CustomerDisCountAndSurchargeDao">
+	
+	<resultMap id="BaseResultMap" type="com.hoau.miser.module.biz.job.shared.domain.DiscountCustomerEntity" >
+	    <id column="ID" property="id" jdbcType="VARCHAR" />
+	    <result column="CUSTOMER_CODE" property="customerCode" jdbcType="VARCHAR" />
+	    <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+	    <result column="DISCOUNT_PRIORITY_TYPE" property="discountPriorityType" jdbcType="VARCHAR" />
+	    <result column="FREIGHT_SECTION_CODE" property="freightSectionCode" jdbcType="VARCHAR" />
+	    <result column="PICKUP_SECTION_CODE" property="pickupSectionCode" jdbcType="VARCHAR" />
+	    <result column="DELIVERY_SECTION_CODE" property="deliverySectionCode" jdbcType="VARCHAR" />
+	    <result column="INSURANCE_RATE_SECTION_CODE" property="insuranceRateSectionCode" jdbcType="VARCHAR" />
+	    <result column="INSURANCE_SECTION_CODE" property="insuranceSectionCode" jdbcType="VARCHAR" />
+	    <result column="PAPER_SECTION_CODE" property="paperSectionCode" jdbcType="VARCHAR" />
+	    <result column="SMS_SECTION_CODE" property="smsSectionCode" jdbcType="VARCHAR" />
+	    <result column="FUEL_SECTION_CODE" property="fuelSectionCode" jdbcType="VARCHAR" />
+	    <result column="COLLECTION_RATE_SECTION_CODE" property="collectionRateSectionCode" jdbcType="VARCHAR" />
+	    <result column="COLLECTION_SECTION_CODE" property="collectionSectionCode" jdbcType="VARCHAR" />
+	    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+	    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+	    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+	    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+	    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+	    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+	    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+	    <result column="ADD_SECTION_CODE" property="addSectionCode" jdbcType="VARCHAR" />
+	    <result column="DEFAULT_SHOW_DISCOUNT_VALUE" property="defaultShowDiscountValue" jdbcType="CHAR" />
+	    <result column="UPSTAIRS_SECTION_CODE" property="upstairsSectionCode" jdbcType="VARCHAR" />
+	    <result column="DISCOUNT_ACCODING_PC_TIME" property="discountAccodingPcTime" jdbcType="TIMESTAMP" />
+	    <result column="HEAVY_FLOAT_PRICE" property="heavyFloatPrice" jdbcType="DECIMAL" />
+	    <result column="LIGHT_FLOAT_PRICE" property="lightFloatPrice" jdbcType="DECIMAL" />
+	    <result column="DATA_ORIGN" property="dataOrign" jdbcType="VARCHAR" />
+	    <result column="FLOAT_PERCENTAGE" property="floatPercentage" jdbcType="DECIMAL" />
+	    
+	    <!-- 客户折扣对应分段费用 -->
+	    <result column="subcharge" property="subcharge" jdbcType="DOUBLE" />
+	    <result column="fuelSubcharge" property="fuelSubcharge" jdbcType="VARCHAR" />
+	    <result column="pickFees" property="pickFees" jdbcType="DOUBLE" />
+	    <result column="deliverFees" property="deliverFees" jdbcType="DOUBLE" />
+	    <result column="insuranceRate" property="insuranceRate" jdbcType="DOUBLE" />
+	    <result column="lowestInsuranceFees" property="lowestInsuranceFees" jdbcType="DOUBLE" />
+	    <result column="payableServiceRate" property="payableServiceRate" jdbcType="DOUBLE" />
+	    <result column="flatCost" property="flatCost" jdbcType="DOUBLE" />
+	    <result column="informationFees" property="informationFees" jdbcType="DOUBLE" />
+	    <result column="state" property="state" jdbcType="VARCHAR"/>
+	  </resultMap>
+	<sql id="queryCondition_discardDeal_discount">
+		<where>
+	       <trim  prefixOverrides="OR">
+				<if test="startTime != null  and startTime != '' ">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= Effective_Time and Effective_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+				<if test=" endTime != null  and endTime != ''">
+					<![CDATA[OR (#{startTime, jdbcType=TIMESTAMP} <= Invalid_Time and Invalid_Time<= #{endTime, jdbcType=TIMESTAMP} ) ]]> 
+				</if>
+			</trim>
+	      </where>
+	</sql>
+	<!-- 拿到本次符合条件的客户折扣信息 -->
+	<select id="queryNeedDiscountCustomerData" parameterType="java.util.Map" resultMap="BaseResultMap">
+					SELECT 
+					T.ID,
+					T.customer_code,
+					T.trans_type_code,
+					T.add_Section_Code,
+					T.DISCOUNT_PRIORITY_TYPE,
+					T.FREIGHT_SECTION_CODE,
+					T.pickup_Section_Code,
+					T.upstairs_Section_Code,
+					T.fuel_Section_Code,
+					T.delivery_Section_Code,
+					T.insurance_Rate_Section_Code,
+					T.insurance_Section_Code,
+					T.collection_Rate_Section_Code,
+					T.collection_Section_Code,
+					T.paper_Section_Code,
+					T.sms_Section_Code,
+					T.ACTIVE,
+					T.REMARK,
+					T.EFFECTIVE_TIME,
+					T.INVALID_TIME,
+					btt.code AS transportType,
+				nvl((select price from T_PRICE_SECTION_SUB pss where ascc.id = pss.section_id and rownum = 1),0) as subcharge,
+				(select price from T_PRICE_SECTION_SUB pss where fscc.id = pss.section_id and rownum = 1) as fuelSubcharge,
+				(select price from T_PRICE_SECTION_SUB pss where psc.id = pss.section_id and rownum = 1) as pickFees,
+				(select price from T_PRICE_SECTION_SUB pss where dsc.id = pss.section_id and rownum = 1) as deliverFees,
+				(select price from T_PRICE_SECTION_SUB pss where irsc.id = pss.section_id and rownum = 1) as insuranceRate,
+				(select price from T_PRICE_SECTION_SUB pss where isc.id = pss.section_id and rownum = 1) as lowestInsuranceFees,
+				(select price from T_PRICE_SECTION_SUB pss where crsc.id = pss.section_id and rownum = 1) as payableServiceRate,
+				(select price from T_PRICE_SECTION_SUB pss where pscc.id = pss.section_id and rownum = 1) as flatCost,
+				(select price from T_PRICE_SECTION_SUB pss where ssc.id = pss.section_id and rownum = 1) as informationFees,
+				<![CDATA[
+					case when (T.invalid_time<sysdate and T.active='Y') then 'PASSED'
+			 			                     when (T.effective_time<=sysdate and T.active='Y') then 'EFFECTIVE'
+			 			                     when (T.effective_time>sysdate and T.active='Y') then 'WAIT'
+			 			                     when (T.active='N') then 'DELETED'
+			                           else 
+			                                ''
+			        end as state
+			    ]]>
+				FROM
+					T_DISCOUNT_CUSTOMER T 
+					left join T_BSE_TRANS_TYPE btt on btt.code = T.trans_type_code and btt.active = 'Y'
+					left join T_PRICE_SECTION fsc on fsc.code = T.Freight_Section_Code and fsc.active = 'Y'
+					left join T_PRICE_SECTION ascc on ascc.code = T.add_Section_Code and ascc.active = 'Y'
+					left join T_PRICE_SECTION fscc on fscc.code = T.fuel_Section_Code and fscc.active = 'Y'
+					left join T_PRICE_SECTION psc on psc.code = T.pickup_Section_Code and psc.active = 'Y'
+					left join T_PRICE_SECTION dsc on dsc.code = T.delivery_Section_Code and dsc.active = 'Y'
+					left join T_PRICE_SECTION usc on usc.code = T.upstairs_Section_Code and usc.active = 'Y'
+					left join T_PRICE_SECTION irsc on irsc.code = T.insurance_Rate_Section_Code and irsc.active = 'Y'
+					left join T_PRICE_SECTION isc on isc.code = T.insurance_Section_Code and isc.active = 'Y'
+					left join T_PRICE_SECTION crsc on crsc.code = T.collection_Rate_Section_Code and crsc.active = 'Y'
+					left join T_PRICE_SECTION csc on csc.code = T.collection_Section_Code and csc.active = 'Y'
+					left join T_PRICE_SECTION pscc on pscc.code = T.paper_Section_Code and pscc.active = 'Y'
+					left join T_PRICE_SECTION ssc on ssc.code = T.sms_Section_Code and ssc.active = 'Y'
+				WHERE (t.trans_type_code,t.customer_code,t.modify_time,t.CREATE_TIME) in(SELECT TRANS_TYPE_CODE,CUSTOMER_CODE,MAX_MODIFY_TIME,MAX_CREATE_TIME FROM (
+			SELECT PSE.TRANS_TYPE_CODE,PSE.CUSTOMER_CODE, MAX(PSE.MODIFY_TIME) AS MAX_MODIFY_TIME, MAX(PSE.CREATE_TIME) AS MAX_CREATE_TIME
+			FROM T_DISCOUNT_CUSTOMER PSE
+     	  <include refid="queryCondition_discardDeal_discount"></include>
+	  GROUP BY PSE.TRANS_TYPE_CODE,PSE.CUSTOMER_CODE))
+	</select>
+	
+	
+	<!-- 拿到本次符合条件的客户折扣运费信息 -->
+	<select id="queryNeedDiscountCustomerFreightData" parameterType="java.util.Map" resultMap="BaseResultMap">
+					SELECT T.ID,
+					T.customer_code,
+					T.trans_type_code,
+					T.DISCOUNT_PRIORITY_TYPE,
+					T.DEFAULT_SHOW_DISCOUNT_VALUE,
+					T.FREIGHT_SECTION_CODE,
+					T.ACTIVE,
+					T.REMARK,
+					T.EFFECTIVE_TIME,
+					T.INVALID_TIME,
+					btt.code AS transportType,
+					<![CDATA[
+					case when (T.invalid_time<sysdate and T.active='Y') then 'PASSED'
+			 			                     when (T.effective_time<=sysdate and T.active='Y') then 'EFFECTIVE'
+			 			                     when (T.effective_time>sysdate and T.active='Y') then 'WAIT'
+			 			                     when (T.active='N') then 'DELETED'
+			                           else 
+			                                ''
+			        end as state
+			    ]]>
+				FROM  T_DISCOUNT_CUSTOMER T 
+				left join T_BSE_TRANS_TYPE btt on btt.code = T.trans_type_code and btt.active = 'Y'
+			WHERE (t.trans_type_code,t.customer_code,t.modify_time,t.CREATE_TIME) in(SELECT TRANS_TYPE_CODE,CUSTOMER_CODE,MAX_MODIFY_TIME,MAX_CREATE_TIME FROM (
+			SELECT PSE.TRANS_TYPE_CODE, PSE.CUSTOMER_CODE, MAX(PSE.MODIFY_TIME) AS MAX_MODIFY_TIME, MAX(PSE.CREATE_TIME) AS MAX_CREATE_TIME
+			FROM T_DISCOUNT_CUSTOMER PSE
+     	  <include refid="queryCondition_discardDeal_discount"></include>
+	  GROUP BY PSE.TRANS_TYPE_CODE,PSE.CUSTOMER_CODE))
+	</select>
+</mapper>

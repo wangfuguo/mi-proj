@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="bizbase" namespace="/bizbase" extends="miser-default">
+		
+		<!-- 业务公共选择器demo -->
+		<action name="bizIndexCommonSelectorDemo" class="bizCommonSelectorDemoAction">
+			<result name="success">bizcommonSelector.jsp</result>
+		</action>
+
+		<!-- 价格城市映射关系管理 -->
+		<action name="priceCityMappingAction" class="priceCityMappingAction" method="index">
+			<result name="index">priceCityMapping.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<!-- 价格城市Customer映射关系管理 -->
+		<action name="priceCityMappingCustomerAction" class="priceCityMappingCustomerAction" method="index">
+			<result name="index">priceCityMappingCustomer.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<!-- 时效管理 -->
+		<action name="agingCityAction" class="agingCityAction" method="index">
+			<result name="index">agingCity.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<!--运输类型维护 -->
+		<action name="transtypeAction" class="transtypeAction" method="index">
+			<result name="index">transtype.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<!-- 组织数据查询  -->
+		<action name="orgAction" class="orgAction">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<!-- lwq20151222_add 增加包装费 -->
+		<action name="pricePackageFeeItems" class="pricePackageFeeItemsAction">
+			<result name="index">pricePackageFeeItems.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		<!-- lwq20151223_add 增加特服费 -->
+		<action name="priceAddvalueFeeItems" class="priceAddvalueFeeItemsAction">
+			<result name="index">priceAddvalueFeeItems.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+		
+		<!-- Chenyl@20160308 客户信息 -->
+		<action name="customerAction" class="customerAction">
+			<result name="index">customer.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>	
+		</action>
+
+		<!-- Chenyl@20160309 价格城市 -->
+		<action name="priceCityAction" class="priceCityAction">
+			<result name="index">priceCity.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+		<action name="priceCityCustomerAction" class="priceCityCustomerAction">
+			<result name="index">priceCityCustomer.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+	   <action name="outLineAction" class="outLineAction">
+			<result name="index">outLine.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="cityTypeAction" class="cityTypeAction">
+			<result name="index">cityType.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+	   <!-- add by dengyin 2016-4-22 18:22:19 添加 价格时效查询 -->
+	   <action name="priceTimeAction" class="priceTimeAction">
+			<result name="index">priceTime.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+	   </action>		
+	   <!-- end by dengyin 2016-4-22 18:22:19 添加 价格时效查询 -->
+		
+		<!-- 时效城市定义 -->
+		<action name="timeCityAction" class="timeCityAction">
+			<result name="index">timeCity.jsp</result>
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+	</package>
+</struts>

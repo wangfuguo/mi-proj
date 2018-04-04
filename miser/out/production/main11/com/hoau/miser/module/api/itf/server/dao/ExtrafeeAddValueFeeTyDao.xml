@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hoau.miser.module.api.itf.server.dao.ExtrafeeAddValueFeeTyDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.itf.api.shared.domain.ExtrafeeAddValueFeeEntity"
+		id="ExtrafeeAddValueFeeResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="CODE" property="code" jdbcType="VARCHAR" />
+		<id column="CODE_NAME" property="codeName" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<id column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+		<id column="CALCULATION_TYPE" property="calculationType" jdbcType="VARCHAR" />
+		<id column="WEIGHT_PRICE" property="weightPrice" jdbcType="DOUBLE" />
+		<id column="LIGHT_PRICE" property="lightPrice" jdbcType="DOUBLE" />
+		<id column="LOWEST_MONEY" property="lowestMoney" jdbcType="DOUBLE" />
+		<id column="LOCK_TYPE" property="lockType" jdbcType="DOUBLE" />
+		<id column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<id column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+		<id column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<id column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<id column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+		<id column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<id column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+		<id column="state" property="state" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="query_mian_param">
+		PSE.ID AS id,
+		PSE.CODE AS code,
+		(select NAME from
+		T_PRICE_ADDVALUE_FEE_ITEMS TAF where TAF.CODE=PSE.CODE and
+		TAF.active='Y') AS CODE_NAME,
+		PSE.TRANS_TYPE_CODE AS trans_type_code,
+		(select NAME from T_BSE_TRANS_TYPE TTT where
+		TTT.CODE=PSE.TRANS_TYPE_CODE and TTT.active='Y') AS trans_type_name,
+		PSE.CALCULATION_TYPE AS calculationType,
+		PSE.WEIGHT_PRICE AS
+		weightPrice,
+		PSE.LIGHT_PRICE AS lightPrice,
+		PSE.LOWEST_MONEY AS
+		lowestMoney,
+		PSE.LOCK_TYPE AS lockType,
+		PSE.EFFECTIVE_TIME AS
+		effectiveTime,
+		PSE.INVALID_TIME AS invalidTime,
+		PSE.REMARK AS remark,
+		PSE.ACTIVE AS active,
+		PSE.CREATE_TIME AS createDate,
+		PSE.CREATE_USER_CODE AS createUser,
+		PSE.MODIFY_TIME AS modifyDate,
+		PSE.MODIFY_USER_CODE AS modifyUser,
+		<![CDATA[
+		case when (PSE.invalid_time<sysdate and PSE.active='Y') then 'PASSED'
+ 			                     when (PSE.effective_time<=sysdate and PSE.active='Y') then 'EFFECTIVE'
+ 			                     when (PSE.effective_time>sysdate and PSE.active='Y') then 'WAIT'
+ 			                     when (PSE.active='N') then 'DELETED'
+                           else 
+                                ''
+        end as state
+        ]]>
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			PSE.ACTIVE='Y'
+			<if test="code!=null and code!=''">
+				and PSE.CODE=#{code,jdbcType=VARCHAR}
+			</if>
+			<if test="transTypeCode!=null and transTypeCode!=''">
+				and
+				PSE.TRANS_TYPE_CODE=#{transTypeCode,jdbcType=VARCHAR}
+			</if>
+			and (<![CDATA[PSE.effective_time<=]]>#{billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(PSE.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=#{billTime,jdbcType=TIMESTAMP} ]]>)
+				)
+		</where>
+	</sql>
+
+	<!-- 根据参数查询特服费信息 -->
+	<select id="queryListByParam" resultMap="ExtrafeeAddValueFeeResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		FROM T_PRICE_ADDVALUE_FEE_STANDARD PSE
+		<include refid="queryCondition"></include>
+		ORDER BY PSE.CREATE_TIME
+	</select>
+
+</mapper>

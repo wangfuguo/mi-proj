@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/jee
+			http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<!-- 当前时间线路可用运输类型缓存 -->
+	<bean id="availableTransportTypeCache" class="com.hoau.miser.module.api.itf.server.cache.AvailableTransportTypeCache"
+		lazy-init="false">
+		<property name="cacheProvider" ref="availableTransportTypeCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+
+	<!-- 组织所属价格城市缓存 -->
+	<bean id="corpPriceCityCache" class="com.hoau.miser.module.api.itf.server.cache.CorpPriceCityCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="corpPriceCityCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+
+	<!-- 组织所属时效城市缓存 -->
+	<bean id="corpAgingCityCache" class="com.hoau.miser.module.api.itf.server.cache.CorpAgingCityCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="corpAgingCityCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 组织所属客户价格城市缓存 -->
+	<bean id="custPriceCityCache" class="com.hoau.miser.module.api.itf.server.cache.CustPriceCityCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="custPriceCityCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+
+	<!-- 组织所属时效城市缓存 -->
+	<bean id="priceEventDiscountDetailTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceEventDiscountDetailTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceEventDiscountDetailTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+
+	<!-- 组织所属时效城市缓存 -->
+	<bean id="priceEventWithDetailTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceEventWithDetailTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceEventWithDetailTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+
+	<!-- 组织所属时效城市缓存 -->
+	<bean id="priceEventWithoutDetailTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceEventWithoutDetailTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceEventWithoutDetailTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+
+	<!-- 组织所属时效城市缓存 -->
+	<bean id="priceSectionTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceSectionTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceSectionTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 网点价格缓存 -->
+	<bean id="priceCorpTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceCorpTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceCorpTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 客户价格缓存 -->
+	<bean id="priceCustTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceCustTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceCustTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 提货费缓存 -->
+	<bean id="pricePickupFeeTyCache" class="com.hoau.miser.module.api.itf.server.cache.PricePickupFeeTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="pricePickupFeeTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 标准价格缓存 -->
+	<bean id="priceStandardTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceStandardTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceStandardTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 客户信息缓存 -->
+	<bean id="bseCustomerTyCache" class="com.hoau.miser.module.api.itf.server.cache.BseCustomerTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="bseCustomerTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 网点折扣缓存 -->
+	<bean id="discountCorpTyCache" class="com.hoau.miser.module.api.itf.server.cache.DiscountCorpTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="discountCorpTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 客户折扣缓存 -->
+	<bean id="discountCustomerTyCache" class="com.hoau.miser.module.api.itf.server.cache.DiscountCustomerTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="discountCustomerTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 越发越惠折扣缓存 -->
+	<bean id="discountPrivilegeTyCache" class="com.hoau.miser.module.api.itf.server.cache.DiscountPrivilegeTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="discountPrivilegeTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 外发偏线缓存 -->
+	<bean id="outLineTyCache" class="com.hoau.miser.module.api.itf.server.cache.OutLineTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="outLineTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+
+	<!-- 特服费缓存 -->
+	<bean id="extrafeeAddValueFeeCache" class="com.hoau.miser.module.api.itf.server.cache.ExtrafeeAddValueFeeCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="extrafeeAddValueFeeCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 标准附加费缓存 -->
+	<bean id="priceExtrafeeStandardCache" class="com.hoau.miser.module.api.itf.server.cache.PriceExtrafeeStandardCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceExtrafeeStandardCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 标准价格城市包装费缓存 -->
+	<bean id="pricePackageFeePcCache" class="com.hoau.miser.module.api.itf.server.cache.PricePackageFeePcCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="pricePackageFeePcCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 标准包装费缓存 -->
+	<bean id="pricePackageFeeStandardCache" class="com.hoau.miser.module.api.itf.server.cache.PricePackageFeeStandardCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="pricePackageFeeStandardCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 上楼费缓存 -->
+	<bean id="priceUpstairsTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceUpstairsTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceUpstairsTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 城市类别缓存 -->
+	<bean id="cityTypeTyCache" class="com.hoau.miser.module.api.itf.server.cache.CityTypeTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="cityTypeTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 送货费分级收费缓存 -->
+	<bean id="priceDeliveryFeeCityTypeTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceDeliveryFeeCityTypeTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceDeliveryFeeCityTypeTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 配送费分级收费缓存 -->
+	<bean id="distributionFeeCityTypeTyCache" class="com.hoau.miser.module.api.itf.server.cache.DistributionFeeCityTypeTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="distributionFeeCityTypeTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 分段标准价格缓存 -->
+	<bean id="priceStandardSectionTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceStandardSectionTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceStandardSectionTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 分段网点价格缓存 -->
+	<bean id="priceCorpSectionTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceCorpSectionTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceCorpSectionTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 分段客户价格缓存 -->
+	<bean id="priceCustSectionTyCache" class="com.hoau.miser.module.api.itf.server.cache.PriceCustSectionTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="priceCustSectionTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 组织省市区信息缓存 -->
+	<bean id="orgBasicInfoTyCache" class="com.hoau.miser.module.api.itf.server.cache.OrgBasicInfoTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="orgBasicInfoTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 省市区县对应时效城市缓存 -->
+	<bean id="districtAgingCityCache" class="com.hoau.miser.module.api.itf.server.cache.DistrictAgingCityCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="districtAgingCityCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+	<!-- 代收货款手续费管理缓存 -->
+	<bean id="collectDeliveryFeeTyCache" class="com.hoau.miser.module.api.itf.server.cache.CollectDeliveryFeeTyCache"
+		  lazy-init="false">
+		<property name="cacheProvider" ref="collectDeliveryFeeTyCacheProvider"></property>
+		<property name="cacheStorage" ref="storage"></property>
+		<!-- 缓存过期时间 -->
+		<property name="timeOut" value="600"></property>
+	</bean>
+</beans>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.PricePackageFeePcTyDao">
+
+	<resultMap
+		type="com.hoau.miser.module.api.itf.api.shared.domain.PricePackageFeePcEntity"
+		id="ppFeePcResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result property="code" column="PPFI_CODE" jdbcType="VARCHAR"/>
+		<result property="name" column="PPFI_NAME" jdbcType="VARCHAR"/>
+		<result column="CALCULATION_TYPE" property="calculationType" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+		<result column="TRANS_TYPE_NAME" property="transTypeName" jdbcType="VARCHAR" />
+		<result column="PRICE_CITY" property="priceCity" jdbcType="VARCHAR" />
+		<result column="SPCE_NAME" property="priceCityName" jdbcType="VARCHAR" />
+		<result column="MIN_MONEY" property="minMoney" jdbcType="DOUBLE" />
+		<result column="MAX_MONEY2" property="maxMoney2" jdbcType="DOUBLE" />
+		<result column="MONEY" property="money" jdbcType="DOUBLE" />
+		<result column="RATE" property="rate" jdbcType="DOUBLE" />
+		<result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+		<result column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="lock_type" property="lockType" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="active" property="active" jdbcType="VARCHAR" />
+		<result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+		<result column="modify_time" property="modifyDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="query_mian_param">
+		PPFS.ID AS ID,
+		PPFS.CODE,
+		PPFS.PRICE_CITY,
+		PPFS.CALCULATION_TYPE,
+		PPFS.MONEY,
+		PPFS.RATE,
+		PPFS.MIN_MONEY,
+		PPFS.MAX_MONEY2,
+		PPFS.LOCK_TYPE,
+		PPFS.effective_time AS effective_time,
+		PPFS.invalid_time AS invalid_time,
+		PPFS.remark AS remark,
+		PPFS.active AS active,
+		PPFS.create_time AS create_time,
+		PPFS.CREATE_USER_CODE create_user_code,
+		PPFS.modify_time AS modify_time,
+		PPFS.MODIFY_USER_CODE AS MODIFY_USER_CODE
+	</sql>
+	<sql id="query_ppFeeItems_param">
+		PPFI.name AS PPFI_NAME,
+		PPFI.code AS PPFI_CODE
+	</sql>
+	<sql id="query_transTypeCode_param">
+		tt.name AS TRANS_TYPE_NAME,
+		tt.code AS TRANS_TYPE_CODE
+	</sql>
+	<sql id="query_send_pricecisty_param">
+		SPCE.ID AS SPCE_ID,
+		SPCE.CODE AS SPCE_CODE,
+		SPCE.NAME AS SPCE_NAME,
+		SPCE.REMARK AS SPCE_REMARK,
+		SPCE.ACTIVE AS SPCE_ACTIVE
+	</sql>
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			PPFS.ACTIVE='Y'
+			<if test="code!='' and  code!=null">
+				and PPFS.CODE=#{code,jdbcType=VARCHAR}
+			</if>
+			<if test="priceCity!=null and priceCity!=''">
+				and PPFS.price_city=#{priceCity,jdbcType=VARCHAR}
+			</if>
+			<if test="transTypeCode!=null and transTypeCode!=''">
+				and PPFS.TRANS_TYPE_CODE=#{transTypeCode,jdbcType=VARCHAR}
+			</if>
+			and (<![CDATA[PPFS.effective_time<=]]>#{billTime,jdbcType=TIMESTAMP}
+					and (<![CDATA[nvl(PPFS.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=#{billTime,jdbcType=TIMESTAMP} ]]>)
+				)
+		</where> 
+
+	</sql>
+
+	<!-- 根据参数查询信息-->
+	<select id="queryListByParam" resultMap="ppFeePcResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="query_mian_param"></include>
+		,
+		<include refid="query_send_pricecisty_param"></include>
+		,
+		<include refid="query_transTypeCode_param"></include>
+		,
+		<include refid="query_ppFeeItems_param"></include>
+		FROM T_PRICE_PACKAGE_FEE_PC PPFS
+		Left join T_PRICE_PACKAGE_FEE_ITEMS PPFI on PPFS.CODE=PPFI.CODE and PPFI.Active='Y' 
+		Left join T_PRICE_CITY SPCE on PPFS.PRICE_CITY=SPCE.CODE and SPCE.Active='Y'
+		Left join T_BSE_TRANS_TYPE tt on tt.CODE=PPFS.TRANS_TYPE_CODE and tt.Active='Y'
+		<include refid="queryCondition"></include>
+		ORDER BY PPFS.CREATE_TIME
+	</select>
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.OutLineTyDao">
+	<resultMap id="baseResultMapping"
+		type="com.hoau.miser.module.api.itf.api.shared.domain.OutLineTyEntity">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="PROVINCE_CODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="PROVINCE_NAME" property="provinceName" jdbcType="VARCHAR" />
+		<result column="CITY_CODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+		<result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR" />
+		<result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+		<result column="LOWEST_FEE" property="lowestFee" jdbcType="DECIMAL" />
+		<result column="WEIGHT_FEE" property="weightRate" jdbcType="DECIMAL" />
+		<result column="VOLUME_FEE" property="volumeRate" jdbcType="DECIMAL" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+		<result column="CREATE_USER_NAME" property="createUserName" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_NAME" property="modifyUserName" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="CHAR" />
+	</resultMap>
+
+	<sql id="mainSqlBody">
+		R.ID,
+		R.PROVINCE_CODE,
+		A.DISTRICT_NAME AS PROVINCE_NAME,
+		R.CITY_CODE,
+		B.DISTRICT_NAME AS CITY_NAME,
+		R.AREA_CODE,
+		C.DISTRICT_NAME AS AREA_NAME,
+		R.LOWEST_FEE,
+		R.WEIGHT_FEE,
+		R.VOLUME_FEE,
+		R.REMARK,
+		R.CREATE_TIME,
+		R.CREATE_USER_CODE,
+		R.CREATE_USER_CODE AS CREATE_USER_NAME,
+		R.MODIFY_TIME,
+		R.MODIFY_USER_CODE,
+		R.MODIFY_USER_CODE AS MODIFY_USER_NAME,
+		R.ACTIVE
+	</sql>
+
+	<sql id="mainSqlCondtion">
+
+	</sql>
+
+	<!--查询偏线外发价格定义-->
+	<select id="queryOutLineByDestCode" parameterType="string"
+		resultMap="baseResultMapping">
+		SELECT
+		<include refid="mainSqlBody"></include>
+		FROM T_PRICE_OUTER_BRANCH R
+		INNER JOIN T_BSE_DISTRICT A ON R.PROVINCE_CODE = A.DISTRICT_CODE
+		INNER JOIN T_BSE_DISTRICT B ON R.CITY_CODE = B.DISTRICT_CODE
+		INNER JOIN T_BSE_DISTRICT C ON R.AREA_CODE = C.DISTRICT_CODE
+		<where>
+			R.AREA_CODE = (SELECT COUNTY_CODE FROM T_BSE_ORG WHERE CODE = #{destOrgCode, jdbcType=VARCHAR})
+			AND R.ACTIVE = 'Y'
+		</where>
+		 ORDER BY R.MODIFY_TIME DESC
+	</select>
+
+</mapper>

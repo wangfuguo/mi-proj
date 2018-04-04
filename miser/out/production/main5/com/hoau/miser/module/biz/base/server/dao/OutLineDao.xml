@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.base.server.dao.OutLineDao">
+	<resultMap id="baseResultMapping"
+		type="com.hoau.miser.module.biz.base.api.shared.domain.OutLineEntity">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="PROVINCE_CODE" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="PROVINCE_NAME" property="provinceName" jdbcType="VARCHAR" />
+		<result column="CITY_CODE" property="cityCode" jdbcType="VARCHAR" />
+		<result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+		<result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR" />
+		<result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+		<result column="LOWEST_FEE" property="lowestFee" jdbcType="DECIMAL" />
+		<result column="WEIGHT_FEE" property="weightRate" jdbcType="DECIMAL" />
+		<result column="VOLUME_FEE" property="volumeRate" jdbcType="DECIMAL" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+		<result column="CREATE_USER_NAME" property="createUserName" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<result column="MODIFY_USER_NAME" property="modifyUserName" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="CHAR" />
+	</resultMap>
+	
+	<sql id="mainSqlBody">
+			 SELECT R.ID,
+					       R.PROVINCE_CODE,
+					       D.PROVINCE_NAME,
+					       R.CITY_CODE,
+					       D.CITY_NAME,
+					       R.AREA_CODE,
+					       D.AREA_NAME,
+					       R.LOWEST_FEE,
+					       R.WEIGHT_FEE,
+					       R.VOLUME_FEE,
+					       R.REMARK,
+					       R.CREATE_TIME,
+					       R.CREATE_USER_CODE,
+					       R.CREATE_USER_CODE || F.CREATE_USER_NAME AS CREATE_USER_NAME,
+					       R.MODIFY_TIME,
+					       R.MODIFY_USER_CODE,
+					       R.MODIFY_USER_CODE || H.MODIFY_USER_NAME AS MODIFY_USER_NAME,
+					       R.ACTIVE
+					  FROM T_PRICE_OUTER_BRANCH R
+					 INNER JOIN (SELECT A.DISTRICT_NAME AS PROVINCE_NAME,
+					                    A.DISTRICT_CODE AS PROVINCE_CODE,
+					                    B.DISTRICT_NAME AS CITY_NAME,
+					                    B.DISTRICT_CODE AS CITY_CODE,
+					                    C.DISTRICT_NAME AS AREA_NAME,
+					                    C.DISTRICT_CODE AS AREA_CODE
+					               FROM T_BSE_DISTRICT A
+					               LEFT JOIN T_BSE_DISTRICT B
+					                 ON A.DISTRICT_CODE = B.PARENT_DISTRICT_CODE
+					               LEFT JOIN T_BSE_DISTRICT C
+					                 ON B.DISTRICT_CODE = C.PARENT_DISTRICT_CODE
+					              WHERE A.DISTRICT_TYPE = 'PROVINCE'
+					                AND B.DISTRICT_TYPE = 'CITY'
+					                AND C.DISTRICT_TYPE = 'AREA') D
+					    ON R.PROVINCE_CODE = D.PROVINCE_CODE
+					   AND R.CITY_CODE = D.CITY_CODE
+					   AND R.AREA_CODE = D.AREA_CODE
+					 INNER JOIN (SELECT E.USER_NAME CREATE_USER_CODE,
+					                    E.EMP_NAME  CREATE_USER_NAME
+					               FROM T_BSE_USER E
+					               WHERE E.ACTIVE = 'Y') F
+					    ON R.CREATE_USER_CODE = F.CREATE_USER_CODE
+					 INNER JOIN (SELECT G.USER_NAME MODIFY_USER_CODE,
+					                    G.EMP_NAME  MODIFY_USER_NAME
+					               FROM T_BSE_USER G
+					               WHERE G.ACTIVE = 'Y') H
+					    ON R.MODIFY_USER_CODE = H.MODIFY_USER_CODE
+			 WHERE 1 = 1		
+	</sql>
+	
+	<sql id="mainSqlCondtion">
+		<if test="provinceCode != null and provinceCode != ''">
+			   	    AND R.PROVINCE_CODE = #{provinceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="cityCode != null and cityCode != ''">
+			   	    AND R.CITY_CODE = #{cityCode,jdbcType=VARCHAR}
+		</if>	
+		<if test="areaCode != null and areaCode != ''">
+			   	   AND R.AREA_CODE = #{areaCode,jdbcType=VARCHAR}
+		</if>	
+		<if test="id != null and id != ''">
+			   	   AND R.ID = #{id,jdbcType=VARCHAR}
+		</if>				   
+			   AND R.ACTIVE = 'Y'	  
+	</sql>
+	 
+
+	 
+	<select id="queryOutLineByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.OutLineEntity"
+		resultMap="baseResultMapping">
+               
+		<include refid="mainSqlBody"></include>
+		<include refid="mainSqlCondtion"></include>
+			 ORDER BY R.MODIFY_TIME DESC
+	</select>
+	 
+	 
+	<select id="countOfOutLineByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.OutLineEntity"
+		resultType="Long">
+			 SELECT  COUNT(1)
+					  FROM T_PRICE_OUTER_BRANCH R
+					 INNER JOIN (SELECT A.DISTRICT_NAME AS PROVINCE_NAME,
+					                    A.DISTRICT_CODE AS PROVINCE_CODE,
+					                    B.DISTRICT_NAME AS CITY_NAME,
+					                    B.DISTRICT_CODE AS CITY_CODE,
+					                    C.DISTRICT_NAME AS AREA_NAME,
+					                    C.DISTRICT_CODE AS AREA_CODE
+					               FROM T_BSE_DISTRICT A
+					               LEFT JOIN T_BSE_DISTRICT B
+					                 ON A.DISTRICT_CODE = B.PARENT_DISTRICT_CODE
+					               LEFT JOIN T_BSE_DISTRICT C
+					                 ON B.DISTRICT_CODE = C.PARENT_DISTRICT_CODE
+					              WHERE A.DISTRICT_TYPE = 'PROVINCE'
+					                AND B.DISTRICT_TYPE = 'CITY'
+					                AND C.DISTRICT_TYPE = 'AREA') D
+					    ON R.PROVINCE_CODE = D.PROVINCE_CODE
+					   AND R.CITY_CODE = D.CITY_CODE
+					   AND R.AREA_CODE = D.AREA_CODE
+					 INNER JOIN (SELECT E.USER_NAME CREATE_USER_CODE,
+					                    E.EMP_NAME  CREATE_USER_NAME
+					               FROM T_BSE_USER E
+					               WHERE E.ACTIVE = 'Y') F
+					    ON R.CREATE_USER_CODE = F.CREATE_USER_CODE
+					 INNER JOIN (SELECT G.USER_NAME MODIFY_USER_CODE,
+					                    G.EMP_NAME  MODIFY_USER_NAME
+					               FROM T_BSE_USER G
+					               WHERE G.ACTIVE = 'Y') H
+					    ON R.MODIFY_USER_CODE = H.MODIFY_USER_CODE
+			 WHERE 1 = 1
+		<include refid="mainSqlCondtion"></include>
+			 ORDER BY R.MODIFY_TIME DESC
+	</select>
+	 
+	<select id="excelQueryOutLineByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.OutLineEntity"
+		resultMap="baseResultMapping">
+		<include refid="mainSqlBody"></include>
+		<include refid="mainSqlCondtion"></include>
+			 ORDER BY R.MODIFY_TIME DESC
+	</select>
+	 
+	<update id="updateByEntity" parameterType="com.hoau.miser.module.biz.base.api.shared.domain.OutLineEntity">
+	 	UPDATE T_PRICE_OUTER_BRANCH T
+		   SET T.LOWEST_FEE  = #{lowestFee,jdbcType=DECIMAL},
+		       T.WEIGHT_FEE = #{weightRate,jdbcType=DECIMAL},
+		       T.VOLUME_FEE = #{volumeRate,jdbcType=DECIMAL},
+		       T.REMARK      = #{remark,jdbcType=VARCHAR},
+		       T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+		       T.MODIFY_TIME = SYSDATE
+		 WHERE T.ID = #{id,jdbcType=VARCHAR}
+	</update>
+	 
+	<insert id="batchInsertEntityList" parameterType="java.util.List" >
+		    insert into T_PRICE_OUTER_BRANCH (
+						id, 
+						province_code, 
+						city_code, 
+						area_code, 
+						lowest_fee, 
+						weight_fee, 
+						volume_fee, 
+						remark, 
+						create_time, 
+						create_user_code, 
+						modify_time, 
+						modify_user_code, 
+						active
+			)
+		<foreach collection="list" item="item" index="index" separator="union all" >  
+				(
+				select
+					#{item.id}, 
+					#{item.provinceCode}, 
+					#{item.cityCode}, 
+					#{item.areaCode}, 
+					#{item.lowestFee}, 
+					#{item.weightRate}, 
+					#{item.volumeRate},  
+			<if test="item.remark != null" >
+				  	  #{item.remark},
+			</if>
+			<if test="item.remark == null" >
+				  	  null,
+			</if>
+					#{item.createTime}, 
+					#{item.createUserCode}, 
+					#{item.modifyTime}, 
+					#{item.modifyUserCode}, 
+					#{item.active}
+				 from dual
+				)  
+		</foreach>  
+	</insert>
+	  
+	<update id="batchUpdateEntityList" parameterType="java.util.List">  
+        begin 
+		<foreach collection="list" item="item" index="index"  separator=";">  
+                UPDATE T_PRICE_OUTER_BRANCH
+			<set>  
+				        lowest_fee = #{item.lowestFee},
+				        weight_fee = #{item.weightRate},
+				        volume_fee =#{item.volumeRate},
+				        remark = #{item.remark},
+				        modify_user_code=#{item.modifyUserCode},
+				        modify_time=sysdate,
+				        active = 'Y'				      				      				      
+			</set>  
+                WHERE PROVINCE_CODE = ${item.provinceCode}
+                AND CITY_CODE = ${item.cityCode}
+                AND AREA_CODE = ${item.areaCode}
+		</foreach>  
+         ;end;
+	</update>
+	
+	
+	<!-- 添加作废功能 -->  	 
+	<update id="destroy" parameterType="java.util.Map">
+	  	UPDATE T_PRICE_OUTER_BRANCH T
+		        SET T.ACTIVE = 'N',
+		               T.MODIFY_TIME = SYSDATE, 
+		               T.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		 WHERE 1=1 
+		 ${destoryIdStr}
+	</update>
+	 
+</mapper>

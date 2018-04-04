@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.biz.job.server.dao.PriceCitySendDao">
+
+	<resultMap type="com.hoau.miser.module.biz.job.shared.domain.PriceCitySendEntity" 
+		id="priceCityResultMap">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACTIVE" property="active" jdbcType="VARCHAR" />
+		<result column="PRICECITYSCOPE" property="priceCityScope" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<update id="updateFailureRepeatData" parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		UPDATE T_JOB_SEND_FAILURE A SET A.ACTIVE = 'N', REMARK = #{remark, jdbcType=VARCHAR}
+		WHERE A.ACTIVE = #{active, jdbcType=VARCHAR} 
+		AND A.TYPE = #{type, jdbcType=VARCHAR}
+		AND EXISTS(SELECT 1 FROM T_PRICE_CITY B 
+			WHERE B.ID = A.BUSINESS_ID AND EXISTS(SELECT 1 FROM T_PRICE_CITY C WHERE C.CODE = B.CODE
+			<if test="lastSendTime != null and lastSendTime != ''">
+				<![CDATA[AND C.MODIFY_TIME >= #{lastSendTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+			<if test="sendTime != null and sendTime != ''">
+				<![CDATA[AND C.MODIFY_TIME < #{sendTime, jdbcType=TIMESTAMP}]]> 
+			</if>))
+	</update>
+	
+	<select id="queryFailureData" resultMap="priceCityResultMap" 
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobFailureEntity">
+		SELECT A.ID AS ID,
+		LPAD(B.CODE, 4, '0') AS CODE, /** 迪辰数据类型为char(4)，此处需要进行类型转换 */
+		B.NAME AS NAME,
+		B.TYPE AS TYPE,
+		B.REMARK AS REMARK,
+		B.ACTIVE AS ACTIVE,
+		B.PRICECITYSCOPE AS PRICECITYSCOPE
+		FROM T_JOB_SEND_FAILURE A 
+		JOIN T_PRICE_CITY B ON A.BUSINESS_ID = B.ID
+		<where>
+			EXISTS (SELECT 1 FROM (
+			SELECT B.CODE, MAX(A.MODIFY_TIME) AS MAX_MODIFY_TIME
+			FROM T_JOB_SEND_FAILURE A 
+			JOIN T_PRICE_CITY B ON A.BUSINESS_ID = B.ID
+			<where>
+				<if test="type != null and type != ''">
+					AND A.TYPE = #{type, jdbcType=VARCHAR}
+				</if>
+				<if test="active != null and active != ''">
+					AND A.ACTIVE = #{active, jdbcType=VARCHAR}
+				</if>
+			</where> 
+			GROUP BY B.CODE ) X
+			WHERE X.CODE = B.CODE AND X.MAX_MODIFY_TIME = A.MODIFY_TIME)
+			<if test="retryTimes != null and retryTimes != ''">
+				AND RETRY_TIMES <![CDATA[ < ]]> #{retryTimes, jdbcType=INTEGER}
+			</if>
+			<if test="type != null and type != ''">
+				AND A.TYPE = #{type, jdbcType=VARCHAR}
+			</if>
+		</where> 
+	</select>
+	
+	<select id="queryNeedSendData" resultMap="priceCityResultMap" 
+		parameterType="com.hoau.miser.module.biz.job.shared.domain.DataSendJobQueryFilterEntity">
+		SELECT A.ID AS ID,
+		LPAD(A.CODE, 4, '0') AS CODE, /** 迪辰数据类型为char(4)，此处需要进行类型转换 */
+		A.NAME AS NAME,
+		A.TYPE AS TYPE,
+		A.REMARK AS REMARK,
+		A.ACTIVE AS ACTIVE,
+		A.PRICECITYSCOPE AS PRICECITYSCOPE
+		FROM T_PRICE_CITY A
+		WHERE 
+		EXISTS (SELECT 1 FROM (
+		SELECT A.CODE, MAX(CREATE_TIME) AS MAX_CREATE_TIME, MAX(A.MODIFY_TIME) AS MAX_MODIFY_TIME
+		FROM T_PRICE_CITY A 
+		<where>
+			<if test="startTime != null and startTime != ''">
+				<![CDATA[AND A.MODIFY_TIME >= #{startTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[AND A.MODIFY_TIME < #{endTime, jdbcType=TIMESTAMP}]]> 
+			</if>
+		</where> 
+		GROUP BY A.CODE ) 
+		WHERE CODE = A.CODE AND MAX_CREATE_TIME = A.CREATE_TIME AND MAX_MODIFY_TIME = A.MODIFY_TIME)
+		
+	</select>
+
+</mapper>

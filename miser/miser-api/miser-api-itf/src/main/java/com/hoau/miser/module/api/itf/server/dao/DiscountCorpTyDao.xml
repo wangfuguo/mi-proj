@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.DiscountCorpTyDao" >
+  <resultMap id="BaseResultMap" type="com.hoau.miser.module.api.itf.api.shared.domain.DiscountCustomerTyEntity" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="TRANS_TYPE_CODE" property="transTypeCode" jdbcType="VARCHAR" />
+    <result column="FREIGHT_SECTION_CODE" property="freightSectionCode" jdbcType="VARCHAR" />
+    <result column="PICKUP_SECTION_CODE" property="pickupSectionCode" jdbcType="VARCHAR" />
+    <result column="DELIVERY_SECTION_CODE" property="deliverySectionCode" jdbcType="VARCHAR" />
+    <result column="INSURANCE_RATE_SECTION_CODE" property="insuranceRateSectionCode" jdbcType="VARCHAR" />
+    <result column="INSURANCE_SECTION_CODE" property="insuranceSectionCode" jdbcType="VARCHAR" />
+    <result column="PAPER_SECTION_CODE" property="paperSectionCode" jdbcType="VARCHAR" />
+    <result column="SMS_SECTION_CODE" property="smsSectionCode" jdbcType="VARCHAR" />
+    <result column="FUEL_SECTION_CODE" property="fuelSectionCode" jdbcType="VARCHAR" />
+    <result column="COLLECTION_RATE_SECTION_CODE" property="collectionRateSectionCode" jdbcType="VARCHAR" />
+    <result column="COLLECTION_SECTION_CODE" property="collectionSectionCode" jdbcType="VARCHAR" />
+    <result column="EFFECTIVE_TIME" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="INVALID_TIME" property="invalidTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_USER_CODE" property="createUser" jdbcType="VARCHAR" />
+    <result column="MODIFY_TIME" property="modifyDate" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_USER_CODE" property="modifyUser" jdbcType="VARCHAR" />
+    <result column="ACTIVE" property="active" jdbcType="CHAR" />
+    <result column="ADD_SECTION_CODE" property="addSectionCode" jdbcType="VARCHAR" />
+    <result column="UPSTAIRS_SECTION_CODE" property="upstairsSectionCode" jdbcType="VARCHAR" />
+    <result column="DATA_ORIGN" property="dataOrign" jdbcType="VARCHAR" />
+
+    <!-- 扩展信息 -->
+    <result column="ROADAREA" property="roadArea" jdbcType="VARCHAR" />
+    <result column="BIGREGION" property="bigRegion" jdbcType="VARCHAR" />
+    <result column="DIVISION" property="division" jdbcType="VARCHAR" />
+    <result column="ORGCODENAME" property="orgCodeName" jdbcType="VARCHAR" />
+    <result column="TRANSTYPENAME" property="transTypeName" jdbcType="VARCHAR" />
+    <result column="FREIGHTSECTIONNAME" property="freightSectionName" jdbcType="VARCHAR" />
+    <result column="PICKUPSECTIONNAME" property="pickupSectionName" jdbcType="VARCHAR" />
+    <result column="DELIVERYSECTIONNAME" property="deliverySectionName" jdbcType="VARCHAR" />
+    <result column="INSURANCERATESECTIONNAME" property="insuranceRateSectionName" jdbcType="VARCHAR" />
+    <result column="INSURANCESECTIONNAME" property="insuranceSectionName" jdbcType="VARCHAR" />
+    <result column="PAPERSECTIONNAME" property="paperSectionName" jdbcType="VARCHAR" />
+    <result column="SMSSECTIONNAME" property="smsSectionName" jdbcType="VARCHAR" />
+    <result column="FUELSECTIONNAME" property="fuelSectionName" jdbcType="VARCHAR" />
+    <result column="COLLECTIONRATESECTIONNAME" property="collectionRateSectionName" jdbcType="VARCHAR" />
+    <result column="COLLECTIONSECTIONNAME" property="collectionSectionName" jdbcType="VARCHAR" />
+    <result column="ADDSECTIONNAME" property="addSectionName" jdbcType="VARCHAR" />
+    <result column="NOWDATE" property="nowDate" jdbcType="TIMESTAMP" />
+    <result column="UPSTAIRSSECTIONNAME" property="upstairsSectionName" jdbcType="VARCHAR" />
+    <result column="CREATEUSERNAME" property="createUserName" jdbcType="VARCHAR" />
+    <result column="MODIFYUSERNAME" property="modifyUserName" jdbcType="VARCHAR" />
+    <result column="LOGIST_CODE" property="logistCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, ORG_CODE, TRANS_TYPE_CODE, FREIGHT_SECTION_CODE, PICKUP_SECTION_CODE, DELIVERY_SECTION_CODE,
+    INSURANCE_RATE_SECTION_CODE, INSURANCE_SECTION_CODE, PAPER_SECTION_CODE, SMS_SECTION_CODE,
+    FUEL_SECTION_CODE, COLLECTION_RATE_SECTION_CODE, COLLECTION_SECTION_CODE, EFFECTIVE_TIME,
+    INVALID_TIME, REMARK, CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE,
+    ACTIVE, ADD_SECTION_CODE,UPSTAIRS_SECTION_CODE,DATA_ORIGN
+  </sql>
+
+
+
+	<!-- 根据参数查询网点折扣信息  -->
+	<select id="queryListByParam" resultMap="BaseResultMap"
+		parameterType="map">
+		SELECT
+		<include refid="Base_Column_List"></include>
+		,A.NAME AS ORGCODENAME,B.NAME AS ROADAREA,A.LOGIST_CODE AS LOGIST_CODE,B.CODE AS ROADAREACODE,C.NAME AS BIGREGION,C.CODE AS BIGREGIONCODE,D.NAME AS DIVISION,D.CODE AS DIVISIONCODE,E.NAME AS TRANSTYPENAME,
+		F.NAME AS FREIGHTSECTIONNAME,G.NAME AS PICKUPSECTIONNAME,H.NAME AS DELIVERYSECTIONNAME,I.NAME AS INSURANCERATESECTIONNAME,J.NAME AS INSURANCESECTIONNAME,
+	    K.NAME AS PAPERSECTIONNAME,L.NAME AS SMSSECTIONNAME,M.NAME AS FUELSECTIONNAME,N.NAME AS COLLECTIONRATESECTIONNAME,O.NAME AS COLLECTIONSECTIONNAME,P.NAME AS ADDSECTIONNAME,
+	    Q.NAME AS UPSTAIRSSECTIONNAME,R.EMP_NAME AS CREATEUSERNAME,S.EMP_NAME AS MODIFYUSERNAME
+		FROM T_DISCOUNT_CORP TDC
+		LEFT JOIN (SELECT CODE,NAME,PARENT_CODE,LOGIST_CODE FROM T_BSE_ORG WHERE  IS_SALES_DEPARTMENT = 'Y') A
+		ON A.CODE = TDC.ORG_CODE
+		LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_ROAD_AREA = 'Y') B
+		ON A.PARENT_CODE = B.CODE
+		LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_BIG_REGION = 'Y') C
+		ON B.PARENT_CODE = C.CODE
+		LEFT JOIN (SELECT CODE,NAME,PARENT_CODE FROM T_BSE_ORG WHERE IS_DIVISION = 'Y') D
+		ON C.PARENT_CODE = D.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_BSE_TRANS_TYPE WHERE ACTIVE = 'Y') E
+		ON TDC.TRANS_TYPE_CODE = E.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='FREIGHT') F
+		ON TDC.FREIGHT_SECTION_CODE = F.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='PICKUP') G
+		ON TDC.PICKUP_SECTION_CODE = G.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='DELIVERY') H
+		ON TDC.DELIVERY_SECTION_CODE = H.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='INSURANCE_RATE') I
+		ON TDC.INSURANCE_RATE_SECTION_CODE = I.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='INSURANCE') J
+		ON TDC.INSURANCE_SECTION_CODE = J.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='PAPER') K
+		ON TDC.PAPER_SECTION_CODE = K.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='SMS') L
+		ON TDC.SMS_SECTION_CODE = L.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='FUEL') M
+		ON TDC.FUEL_SECTION_CODE = M.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='COLLECT_RATE') N
+		ON TDC.COLLECTION_RATE_SECTION_CODE = N.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='COLLECTION_RATE') O
+		ON TDC.COLLECTION_SECTION_CODE = O.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='EXTRA_FEE') P
+		ON TDC.ADD_SECTION_CODE = P.CODE
+		LEFT JOIN (SELECT CODE,NAME FROM T_PRICE_SECTION WHERE ACTIVE = 'Y' AND SECTIONED_ITEM='UPSTAIRS') Q
+		ON TDC.UPSTAIRS_SECTION_CODE = Q.CODE
+		LEFT JOIN (SELECT EMP_NAME,USER_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') R
+		ON TDC.CREATE_USER_CODE = R.USER_NAME
+		LEFT JOIN (SELECT EMP_NAME,USER_NAME FROM T_BSE_USER WHERE ACTIVE = 'Y') S
+		ON TDC.MODIFY_USER_CODE = S.USER_NAME
+		<include refid="queryCondition"></include>
+		ORDER BY TDC.CREATE_TIME
+	</select>
+
+
+	<!-- 查询条件 -->
+	<sql id="queryCondition">
+		<where>
+			    1=1
+            AND TDC.TRANS_TYPE_CODE=#{transTypeCode,jdbcType=VARCHAR}
+            AND TDC.ORG_CODE=#{originCode,jdbcType=VARCHAR}
+            and (<![CDATA[TDC.effective_time<=to_date]]>(#{billTime,jdbcType=TIMESTAMP},'yyyy-mm-dd hh24:mi:ss')
+             and (<![CDATA[nvl(TDC.invalid_time,to_date('2999-12-31 23:59:59',
+                                 'yyyy-mm-dd hh24:mi:ss'))>=to_date]]>(#{billTime,jdbcType=TIMESTAMP},'yyyy-mm-dd hh24:mi:ss'))
+            )
+            AND  TDC.ACTION ='Y'
+		</where>
+	</sql>
+</mapper>

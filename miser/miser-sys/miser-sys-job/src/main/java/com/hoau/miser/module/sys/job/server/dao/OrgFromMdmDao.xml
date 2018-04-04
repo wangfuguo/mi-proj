@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.sys.job.server.dao.OrgFromMdmDao">
+      <!-- 获取上词更新的最大时间截 -->
+    <select id="getLastUpdateTime" resultType="long">
+	  SELECT MAX(VERSION_NO) FROM T_BSE_ORG_MDM
+	</select>
+	
+	<insert id="addOrganMdm" parameterType="com.hoau.miser.module.sys.job.shared.domain.OrganDto">
+		INSERT /** 综合-从MDM系统中同步新增的组织数据 **/
+		INTO T_BSE_ORG_MDM(
+			ID,
+		  	CODE,
+			NAME,
+			PARENT_CODE,
+			PARENT_NAME,
+			BIG_REGION_CODE,
+			DIVISION_CODE,
+			LOGIST_CODE,
+			MANAGER_CODE,
+			MANAGER_NAME,
+			PROVINCE,
+			PROVINCE_CODE,
+			CITY,
+			CITY_CODE,
+			COUNTY,
+			COUNTY_CODE,
+			AREA_CODE,
+			PHONE,
+			FAX,
+			ADDRESS_DETAIL,
+			LNG,
+			LAT,
+			NATURE,
+			IS_SPECIFIEDTIME,
+			IS_SHIPMENT,
+			IS_DELIVERY,
+			IS_PICKUP,
+			ACTIVE,
+			VERSION_NO,
+			CREATE_USER_CODE,
+			MODIFY_TIME,
+			MODIFY_USER_CODE,
+			CREATE_TIME
+		  ) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{deptCode,jdbcType=VARCHAR},
+			#{deptName,jdbcType=VARCHAR},
+			#{parentDeptCode,jdbcType=VARCHAR},
+			#{parentDeptName,jdbcType=VARCHAR},
+			#{bigRegionCode,jdbcType=VARCHAR},
+			#{divisionCode,jdbcType=VARCHAR},
+			#{logistCode,jdbcType=VARCHAR},
+			#{managerCode,jdbcType=VARCHAR},
+			#{managerName,jdbcType=VARCHAR},
+			#{province,jdbcType=VARCHAR},
+			#{provinceCode,jdbcType=VARCHAR},
+			#{city,jdbcType=VARCHAR},
+			#{cityCode,jdbcType=VARCHAR},
+			#{county,jdbcType=VARCHAR},
+			#{countyCode,jdbcType=VARCHAR},
+			#{areaCode,jdbcType=VARCHAR},
+			#{phone,jdbcType=VARCHAR},
+			#{fax,jdbcType=VARCHAR},
+			#{addressDetail,jdbcType=VARCHAR},
+			#{lng,jdbcType=NUMERIC},
+			#{lat,jdbcType=NUMERIC},
+			#{deptNature,jdbcType=NUMERIC},
+			#{isSpecifiedTime,jdbcType=CHAR},
+			#{isShipment,jdbcType=CHAR},
+			#{isDelivery,jdbcType=CHAR},
+			#{isPickUp,jdbcType=CHAR},
+			#{active,jdbcType=CHAR},
+			#{versionNo,jdbcType=NUMERIC},
+			'CTMS',
+			#{createDate,jdbcType=TIMESTAMP},
+			'CTMS',
+			#{modifyDate,jdbcType=TIMESTAMP}
+			)
+	</insert>
+	
+   
+	<update id="updateOrganMdm" parameterType="com.hoau.miser.module.sys.job.shared.domain.OrganDto">
+	    UPDATE /** 综合-从MDM系统中更新修改的组织数据 **/
+	    T_BSE_ORG_MDM SET
+			NAME = #{deptName,jdbcType=VARCHAR},
+			PARENT_CODE = #{parentDeptCode,jdbcType=VARCHAR},
+			PARENT_NAME = #{parentDeptName,jdbcType=VARCHAR},
+			BIG_REGION_CODE = #{bigRegionCode,jdbcType=VARCHAR},
+			DIVISION_CODE = #{divisionCode,jdbcType=VARCHAR},
+			LOGIST_CODE = #{logistCode,jdbcType=VARCHAR},
+			MANAGER_CODE = #{managerCode,jdbcType=VARCHAR},
+			MANAGER_NAME = #{managerName,jdbcType=VARCHAR},
+			PROVINCE = #{province,jdbcType=VARCHAR},
+			PROVINCE_CODE = #{provinceCode,jdbcType=VARCHAR},
+			CITY = #{city,jdbcType=VARCHAR},
+			CITY_CODE = #{cityCode,jdbcType=VARCHAR},
+			COUNTY = #{county,jdbcType=VARCHAR},
+			COUNTY_CODE = #{countyCode,jdbcType=VARCHAR},
+			AREA_CODE = #{areaCode,jdbcType=VARCHAR},
+			PHONE = #{phone,jdbcType=VARCHAR},
+			FAX = #{fax,jdbcType=VARCHAR},
+			ADDRESS_DETAIL = #{addressDetail,jdbcType=VARCHAR},
+			LNG = #{lng,jdbcType=NUMERIC},
+			LAT = #{lat,jdbcType=NUMERIC},
+			NATURE = #{deptNature,jdbcType=NUMERIC},
+			IS_SPECIFIEDTIME = #{isSpecifiedTime,jdbcType=CHAR},
+			IS_SHIPMENT = #{isShipment,jdbcType=CHAR},
+			IS_DELIVERY = #{isDelivery,jdbcType=CHAR},
+			IS_PICKUP = #{isPickUp,jdbcType=CHAR},
+			ACTIVE = #{active,jdbcType=CHAR},
+			VERSION_NO = #{versionNo,jdbcType=NUMERIC},
+			MODIFY_TIME = #{modifyDate,jdbcType=TIMESTAMP},
+			MODIFY_USER_CODE = 'CTMS'
+		WHERE
+			CODE = #{deptCode,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 判断是否有当前数据 -->
+	<select id="selectCountOrganByCode" parameterType="string" resultType="Long">
+		SELECT /** 综合-是否存在组织数据 **/
+		 COUNT(ID)
+		FROM T_BSE_ORG_MDM
+		WHERE CODE =  #{deptCode,jdbcType=VARCHAR}    
+	</select>
+	
+</mapper>

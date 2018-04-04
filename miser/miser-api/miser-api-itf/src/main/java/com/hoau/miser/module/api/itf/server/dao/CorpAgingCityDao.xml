@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoau.miser.module.api.itf.server.dao.CorpAgingCityDao">
+
+    <!--时效城市返回实体-->
+    <resultMap type="com.hoau.miser.module.api.itf.api.shared.domain.CorpAgingCityEntity" id="agingCityMap">
+        <result property="orgCode" column="ORG_CODE" jdbcType="VARCHAR"/>
+        <result property="orgName" column="ORG_NAME" jdbcType="VARCHAR"/>
+        <result property="logisticCode" column="LOGIST_CODE" jdbcType="VARCHAR"/>
+        <result property="provinceCode" column="PROVINCE_CODE" jdbcType="VARCHAR"/>
+        <result property="provinceName" column="PROVINCE_NAME" jdbcType="VARCHAR"/>
+        <result property="cityCode" column="CITY_CODE" jdbcType="VARCHAR"/>
+        <result property="cityName" column="CITY_NAME" jdbcType="VARCHAR"/>
+        <result property="areaCode" column="COUNTY_CODE" jdbcType="VARCHAR"/>
+        <result property="areaName" column="COUNTY_NAME" jdbcType="VARCHAR"/>
+        <result property="sendAgingCityCode" column="SEND_AGING_CITY_CODE" jdbcType="VARCHAR"/>
+        <result property="sendAgingCityName" column="SEND_AGING_CITY_NAME" jdbcType="VARCHAR"/>
+        <result property="arrivalAgingCityCode" column="ARRIVAL_AGING_CITY_CODE" jdbcType="VARCHAR"/>
+        <result property="arrivalAgingCityName" column="ARRIVAL_AGING_CITY_NAME" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--时效映射-->
+    <resultMap id="timeResultMap" type="com.hoau.miser.module.api.itf.api.shared.vo.TimeQueryResult">
+        <result property="sendTimeCityCode" column="SEND_TIME_CITY" jdbcType="CHAR"/>
+        <result property="arrivalTimeCityCode" column="ARRIVE_TIME_CITY" jdbcType="CHAR"/>
+        <result property="transportType" column="TRANS_TYPE_CODE" jdbcType="VARCHAR"/>
+        <result property="minDay" column="MIN_NOTIFY_DAY" jdbcType="INTEGER"/>
+        <result property="maxDay" column="MAX_NOTIFY_DAY" jdbcType="INTEGER"/>
+        <result property="deliveryDay" column="DELIVERY_PROM_DAY" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--根据组织编号查询出发到达时效城市-->
+    <select id="queryAgingCityByOrgCode" parameterType="string" resultMap="agingCityMap">
+        SELECT
+            A.CODE      AS ORG_CODE,
+            A.NAME      AS ORG_NAME,
+            A.LOGIST_CODE,
+            A.PROVINCE_CODE,
+            A.PROVINCE  AS
+            PROVINCE_NAME,
+            A.CITY_CODE,
+            A.CITY      AS CITY_NAME,
+            A.COUNTY_CODE,
+            A.COUNTY    AS COUNTY_NAME,
+              (SELECT TIME_CITY FROM T_TIME_CITY_MAPPING_DISTRICT LEFT JOIN T_TIME_CITY ON T_TIME_CITY_MAPPING_DISTRICT.TIME_CITY = T_TIME_CITY.CODE
+              WHERE PROVINCE_CODE = A.PROVINCE_CODE AND CITY_CODE = A.CITY_CODE AND AREA_CODE = A.COUNTY_CODE AND T_TIME_CITY_MAPPING_DISTRICT.ACTIVE = 'Y' AND T_TIME_CITY.ACTIVE = 'Y' AND T_TIME_CITY.TYPE = 'SEND') AS SEND_AGING_CITY_CODE,
+              (SELECT T_TIME_CITY.NAME FROM T_TIME_CITY_MAPPING_DISTRICT LEFT JOIN T_TIME_CITY ON T_TIME_CITY_MAPPING_DISTRICT.TIME_CITY = T_TIME_CITY.CODE
+              WHERE PROVINCE_CODE = A.PROVINCE_CODE AND CITY_CODE = A.CITY_CODE AND AREA_CODE = A.COUNTY_CODE AND T_TIME_CITY_MAPPING_DISTRICT.ACTIVE = 'Y' AND T_TIME_CITY.ACTIVE = 'Y' AND T_TIME_CITY.TYPE = 'SEND') AS SEND_AGING_CITY_NAME,
+              (SELECT TIME_CITY FROM T_TIME_CITY_MAPPING_DISTRICT LEFT JOIN T_TIME_CITY ON T_TIME_CITY_MAPPING_DISTRICT.TIME_CITY = T_TIME_CITY.CODE
+              WHERE PROVINCE_CODE = A.PROVINCE_CODE AND CITY_CODE = A.CITY_CODE AND AREA_CODE = A.COUNTY_CODE AND T_TIME_CITY_MAPPING_DISTRICT.ACTIVE = 'Y' AND T_TIME_CITY.ACTIVE = 'Y' AND T_TIME_CITY.TYPE = 'ARRIVAL') AS ARRIVAL_AGING_CITY_CODE,
+              (SELECT T_TIME_CITY.NAME FROM T_TIME_CITY_MAPPING_DISTRICT LEFT JOIN T_TIME_CITY ON T_TIME_CITY_MAPPING_DISTRICT.TIME_CITY = T_TIME_CITY.CODE
+              WHERE PROVINCE_CODE = A.PROVINCE_CODE AND CITY_CODE = A.CITY_CODE AND AREA_CODE = A.COUNTY_CODE AND T_TIME_CITY_MAPPING_DISTRICT.ACTIVE = 'Y' AND T_TIME_CITY.ACTIVE = 'Y' AND T_TIME_CITY.TYPE = 'ARRIVAL') AS ARRIVAL_AGING_CITY_NAME
+            FROM T_BSE_ORG A
+            WHERE A.ACTIVE = 'Y' AND A.CODE = #{orgCode, jdbcType=VARCHAR}
+	</select>
+
+    <!--根据省市区县查询出发/到达时效城市-->
+    <select id="queryAgingCityByDistrict" parameterType="com.hoau.miser.module.api.itf.api.shared.domain.DistrictAgingCityRequestEntity" resultMap="agingCityMap">
+        SELECT A.PROVINCE_CODE, A.CITY_CODE, A.AREA_CODE,
+        <if test='agingCityType == "SEND"'>
+            A.TIME_CITY AS SEND_AGING_CITY_CODE, B.NAME AS SEND_AGING_CITY_NAME
+        </if>
+        <if test='agingCityType == "ARRIVAL"'>
+            A.TIME_CITY AS ARRIVAL_AGING_CITY_CODE, B.NAME AS ARRIVAL_AGING_CITY_NAME
+        </if>
+        FROM T_TIME_CITY_MAPPING_DISTRICT A LEFT JOIN T_TIME_CITY B ON A.TIME_CITY = B.CODE
+        WHERE PROVINCE_CODE = #{provinceCode, jdbcType=VARCHAR}
+        AND CITY_CODE = #{cityCode, jdbcType=VARCHAR}
+        AND AREA_CODE = #{areaCode, jdbcType=VARCHAR}
+        AND A.ACTIVE = 'Y'
+        AND B.ACTIVE = 'Y'
+        AND B.TYPE = #{agingCityType, jdbcType=VARCHAR}
+    </select>
+
+    <!--查询时效-->
+    <select id="queryTime" parameterType="com.hoau.miser.module.api.itf.api.shared.vo.TimeQueryParam" resultMap="timeResultMap">
+        SELECT SEND_TIME_CITY, ARRIVE_TIME_CITY, TRANS_TYPE_CODE,
+        MIN_NOTIFY_DAY - 1 AS MIN_NOTIFY_DAY, MAX_NOTIFY_DAY - 1 AS MAX_NOTIFY_DAY, DELIVERY_PROM_DAY - 1 AS DELIVERY_PROM_DAY
+        FROM T_TIME_STANDARD
+        <where>
+            SEND_TIME_CITY = #{sendTimeCityCode, jdbcType=VARCHAR}
+            AND ARRIVE_TIME_CITY = #{arrivalTimeCityCode, jdbcType=VARCHAR}
+            <if test="transportType != null and transportType != ''">
+                AND TRANS_TYPE_CODE = #{transportType, jdbcType=VARCHAR}
+            </if>
+            AND ACTIVE = 'Y'
+            <choose>
+                <when test="sendTime != null and sendTime != ''">
+                    AND <![CDATA[EFFECTIVE_TIME<=#{sendTime, jdbcType=TIMESTAMP}]]>
+                    AND (<![CDATA[NVL(INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                         'yyyy-mm-dd hh24:mi:ss')) > #{sendTime, jdbcType=TIMESTAMP}]]>
+                    )
+                </when>
+                <otherwise>
+                    AND <![CDATA[EFFECTIVE_TIME <= SYSDATE ]]>
+                    AND (<![CDATA[ NVL(INVALID_TIME, TO_DATE('2999-12-31 23:59:59',
+                                         'yyyy-mm-dd hh24:mi:ss')) > SYSDATE ]]>
+                    )
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!--根据区县编码获取时效城市-->
+    <select id="queryTimeCityByDistrict" parameterType="string" resultType="string">
+        SELECT TIME_CITY
+        FROM T_TIME_CITY_MAPPING_DISTRICT
+        WHERE AREA_CODE = #{districtCode, jdbcType=VARCHAR}
+        AND TYPE = #{type, jdbcType=VARCHAR}
+    </select>
+
+</mapper>
